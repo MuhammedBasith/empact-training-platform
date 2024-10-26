@@ -2,10 +2,7 @@ import React from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "../lib/utils";
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-} from "@tabler/icons-react";
+
 
 const SignupForm: React.FC = () => {
 
