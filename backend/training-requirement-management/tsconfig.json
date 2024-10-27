@@ -2,8 +2,10 @@
   "compilerOptions": {
     "sourceMap": true,
     "target": "es2017",
+    "module": "CommonJS",
     "outDir": "./dist",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*.ts"
