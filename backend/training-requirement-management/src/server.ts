@@ -2,8 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import trainingRequirementsRouter from './routes/trainingRequirements';
 import bodyParser from 'body-parser';
+import 'dotenv/config';
 import { config } from './config/db';
-import 'dotenv/config'
+
 
 
 const app = express();

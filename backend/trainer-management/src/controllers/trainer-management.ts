@@ -104,7 +104,7 @@ export async function deleteTrainer(
 export async function assignTrainingToTrainer(
     request: Request<{ id: string }, {}, { trainingId: string }>,
     response: Response
-): Promise<Response> {
+): Promise<any> {
     const { id } = request.params; // Extract the trainer ID from URL parameters
     const { trainingId } = request.body; // Get the training ID from the request body
 
