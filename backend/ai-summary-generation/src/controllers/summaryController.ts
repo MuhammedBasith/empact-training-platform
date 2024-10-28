@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Summary } from '../models/summaryModel';
-import { CreateSummaryDTO, EditSummaryDTO, ConfirmSummaryDTO } from '../dtos/SummaryDTO';
+import { CreateSummaryDTO, EditSummaryDTO, ConfirmSummaryDTO } from '../dtos/Summary.dto';
 
 export const generateSummary = async (req: Request<{}, {}, CreateSummaryDTO>, res: Response) => {
   const { trainingRequirementId, summary } = req.body;
