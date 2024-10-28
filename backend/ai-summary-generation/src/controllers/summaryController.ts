@@ -14,7 +14,7 @@ export const generateSummary = async (req: Request<{}, {}, CreateSummaryDTO>, re
   }
 };
 
-export const getSummary = async (req: Request, res: Response) => {
+export const getSummary = async (req: Request, res: Response): Promise<any> => {
   const { requirementId } = req.params;
   
   try {
@@ -28,7 +28,7 @@ export const getSummary = async (req: Request, res: Response) => {
   }
 };
 
-export const editSummary = async (req: Request<{ requirementId: string }, {}, EditSummaryDTO>, res: Response) => {
+export const editSummary = async (req: Request<{ requirementId: string }, {}, EditSummaryDTO>, res: Response): Promise<any> => {
   const { requirementId } = req.params;
   const { editedSummary } = req.body;
 
@@ -43,7 +43,7 @@ export const editSummary = async (req: Request<{ requirementId: string }, {}, Ed
   }
 };
 
-export const confirmSummary = async (req: Request<{ requirementId: string }, {}, ConfirmSummaryDTO>, res: Response) => {
+export const confirmSummary = async (req: Request<{ requirementId: string }, {}, ConfirmSummaryDTO>, res: Response): Promise<any> => {
   const { requirementId } = req.params;
   const { confirmed } = req.body;
 
