@@ -3,9 +3,11 @@ import { Summary } from '../models/summaryModel';
 import { CreateSummaryDTO, EditSummaryDTO, ConfirmSummaryDTO } from '../dtos/Summary.dto';
 import { generateTrainingSummaryPrompt } from '../prompts/trainingPrompts';
 import axios from 'axios';
-import 'config/dotenv'
 import GoogleGenerativeAI from '@google/generative-ai'
 import { geminiModel } from '../config/gemini';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 
 // TODO Add logic for generating summary.

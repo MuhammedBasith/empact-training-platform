@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 connectDB();
 
 // Routes
-app.use('/api/summaries', summaryRoutes);
+app.use('/api/v1/summaries', summaryRoutes);
 
 // Start Server
 app.listen(PORT, () => {
