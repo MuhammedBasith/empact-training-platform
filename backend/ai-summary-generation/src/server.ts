@@ -3,10 +3,9 @@ import bodyParser from 'body-parser';
 import cors from './middleware/cors';
 import connectDB from './config/db';
 import summaryRoutes from './routes/summaryRoutes';
-import { config } from './config/env';
 
 const app = express();
-const PORT = config.PORT;
+const PORT = process.env.PORT
 
 // Middleware
 app.use(cors);
