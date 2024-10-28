@@ -3,6 +3,9 @@ import { Summary } from '../models/summaryModel';
 import { CreateSummaryDTO, EditSummaryDTO, ConfirmSummaryDTO } from '../dtos/Summary.dto';
 import { generateTrainingSummaryPrompt } from '../prompts/trainingPrompts';
 import axios from 'axios';
+import 'config/dotenv'
+import GoogleGenerativeAI from '@google/generative-ai'
+import { geminiModel } from '../config/gemini';
 
 
 // TODO Add logic for generating summary.
@@ -13,22 +16,19 @@ export const generateSummary = async (req: Request<{}, {}, CreateSummaryDTO>, re
     // Generate the prompt
     const prompt = generateTrainingSummaryPrompt(department, trainingType, duration, objectives);
     
-    // Call to the AI service (Gemini or whichever you use)
-    const response = await axios.post('YOUR_AI_SERVICE_API_ENDPOINT', {
-      prompt,
-      // Include any other parameters required by the AI API
-    });
+    const result = await geminiModel.generateContent(prompt);
 
-    const summaryText = response.data.summary; // Adjust based on the actual response structure from the AI API
+    const summaryText = result.response.text(); // Adjust based on the actual response structure from the AI API
 
-    // Create a new summary entry in your database
     const newSummary = new Summary({
       trainingRequirementId,
       summary: summaryText,
+      confirmed: false
     });
 
     await newSummary.save();
     res.status(201).json(newSummary);
+    
   } catch (error) {
     console.error(error); // Log the error for debugging
     res.status(500).json({ error: 'Error generating summary' });
