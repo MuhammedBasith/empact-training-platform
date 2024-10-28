@@ -19,7 +19,7 @@ export async function createTrainingRequirement(
 export async function getTrainingRequirement(
     request: Request<{ id: string }>,
     response: Response<ITrainingRequirement | { message: string, error?: string }>
-): Promise<Response<ITrainingRequirement | { message: string; error?: string }>> {
+): Promise<any> {
     try {
         const requirement = await TrainingRequirement.findById(request.params.id);
         if (!requirement) {
@@ -47,7 +47,7 @@ export async function getAllTrainingRequirements(
 export async function updateTrainingRequirement(
     request: Request<{ id: string }, {}, UpdateTrainingRequirementDto>,
     response: Response<UpdateTrainingRequirementDto | {message?: string, error?: string}>
-): Promise<Response<UpdateTrainingRequirementDto | {message?: string, error?: string}>> {
+): Promise<any> {
     try {
         const updatedRequirement = await TrainingRequirement.findByIdAndUpdate(request.params.id, request.body, { new: true });
         if (!updatedRequirement) {
@@ -62,7 +62,7 @@ export async function updateTrainingRequirement(
 export async function deleteTrainingRequirement(
     request: Request<{ id: string }>,
     response: Response<{message?:string, error?: string}>
-): Promise<Response<{message?:string, error?: string}>> {
+): Promise<any> {
     try {
         const deletedRequirement = await TrainingRequirement.findByIdAndDelete(request.params.id);
         if (!deletedRequirement) {
