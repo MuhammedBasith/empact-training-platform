@@ -16,5 +16,5 @@ mongoose.connect(config.mongoUri)
 app.use("/api/baseline-assessment",BaselineAssessmentRoutes);
 
 app.listen(PORT,()=>{
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`server started on ${PORT}`)
 })
