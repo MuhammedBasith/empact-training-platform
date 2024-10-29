@@ -22,35 +22,11 @@ export const sendBaselineAssessments = async (
         const employeeIds = training.employeeIds; // Assuming training includes an array of employee IDs
         const employees = employeeIds.data;
 
-        // Set up Nodemailer transport
-        const transporter = nodemailer.createTransport({
-            service: 'Gmail', 
-            auth: {
-                user: process.env.EMAIL_USER, 
-                pass: process.env.EMAIL_PASS, 
-            },
+         // Call the notification service using Axios
+         const response = await axios.post('http://localhost:8000/api/v1/notification-service/send-notification', {
         });
-
-        // Send email to each employee
-        const promises = employees.map(async (employee: any) => {
-            const email = employee.email;
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: email,
-                subject: 'Baseline Assessment',
-                text: `Hello ${employee.name},\n\nPlease complete your baseline assessment for the training: ${training.name}.\n\nThank you!`,
-            };
-
-            // Save a baseline assessment entry in the database
-            await BaselineAssessment.create({
-                trainingId,
-                employeeId: employee._id,
-                email,
-                assessmentStatus: 'pending',
-            });
-
-            return transporter.sendMail(mailOptions);
-        });
+    
+       
         return res.status(200).json({ message: 'Baseline assessments sent successfully' });
     } catch (error) {
         console.error(error);
