@@ -2,6 +2,41 @@ import { Request,Response } from "express";
 import TrainingProgress,{ITrainingProgress} from "../model/training-progress"
 
 
+export const createTrainingProgress = async (req: Request, res: Response): Promise<any> => {
+    const {
+        trainerId,
+        trainingRequirementId,
+        employeeId,
+        progress = 0, 
+        status = 'not started', 
+        startedAt,
+        completedAt
+    } = req.body;
+
+    // Validate required fields
+    if (!trainerId || !trainingRequirementId || !employeeId) {
+        return res.status(400).json({ message: 'Trainer ID, Training Requirement ID, and Employee ID are required' });
+    }
+
+    // Create a new training progress document
+    const newTrainingProgress = new TrainingProgress({
+        trainerId,
+        trainingRequirementId,
+        employeeId,
+        progress,
+        status,
+        startedAt,
+        completedAt
+    });
+
+    try {
+        const savedTrainingProgress = await newTrainingProgress.save();
+        return res.status(201).json(savedTrainingProgress); // Return the created document
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error creating training progress', error: error.message });
+    }
+};
 // GET /api/training-progress
 export const getAllTrainingProgress = async (
     req: Request,

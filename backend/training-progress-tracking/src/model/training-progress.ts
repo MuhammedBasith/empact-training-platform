@@ -4,7 +4,7 @@ export interface  ITrainingProgress extends Document{
     trainerId:mongoose.Types.ObjectId,
     trainingRequirementId:mongoose.Types.ObjectId,
     employeeId:mongoose.Types.ObjectId,
-    progress:string,
+    progress:number,
     status:'not started' | 'in progress' | 'completed',
     startedAt?:Date,
     completedAt?:Date;
@@ -26,7 +26,7 @@ const TrainingProgressSchema=new mongoose.Schema({
         required:true
     },
     progress:{
-        type:String,
+        type:Number,
         required:true,
     },
     status:{
