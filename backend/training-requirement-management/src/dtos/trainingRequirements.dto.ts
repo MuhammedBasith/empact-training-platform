@@ -12,3 +12,7 @@ export interface UpdateTrainingRequirementDto {
     duration?: string;
     objectives?: string;
 }
+
+export interface UpdateTrainingRequirementStatusDto {
+    status?: boolean;
+}

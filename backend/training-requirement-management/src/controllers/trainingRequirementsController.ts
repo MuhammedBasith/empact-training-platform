@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import TrainingRequirement, { ITrainingRequirement } from '../models/trainingRequirement.model';
-import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../dtos/trainingRequirements.dto';
+import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto, UpdateTrainingRequirementStatusDto } from '../dtos/trainingRequirements.dto';
 
 export async function createTrainingRequirement(
     request: Request<{}, {}, CreateTrainingRequirementDto>,
@@ -73,3 +73,21 @@ export async function deleteTrainingRequirement(
         response.status(500).json({ message: 'Error deleting training requirement', error });
     }
 }
+
+
+
+export const confirmRequirement = async (req: Request<{ requirementId: string }, {}, UpdateTrainingRequirementStatusDto>, res: Response): Promise<any> => {
+    const { requirementId } = req.params;
+    const { status } = req.body;
+  
+    try {
+      const updatedRequirement = await TrainingRequirement.findByIdAndUpdate(requirementId, { status }, { new: true });
+      if (!updatedRequirement) {
+        return res.status(404).json({ error: 'Requirement not found' });
+      }
+      res.json(updatedRequirement);
+    } catch (error) {
+      res.status(500).json({ error: 'Error confirming Requirement' });
+    }
+  };
+  
