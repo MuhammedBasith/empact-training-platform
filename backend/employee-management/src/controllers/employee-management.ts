@@ -3,7 +3,7 @@ import EmployeeManagement ,{IEmployeeManagement}  from "../models/employee-manag
 
 export const createEmployee = async (req: Request, res: Response) => {
     try {
-      const data: Omit<IEmployeeManagement, '_id'> = req.body; // Assuming req.body contains the employee data
+      const data: Omit<IEmployeeManagement, '_id'| 'userId'> = req.body; // Assuming req.body contains the employee data
       const employee = new EmployeeManagement(data);
       await employee.save();
       res.status(201).json(employee); // Respond with the created employee
