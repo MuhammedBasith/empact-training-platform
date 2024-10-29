@@ -37,7 +37,7 @@ export async function getAllTrainingRequirements(
     response: Response
 ) {
     try {
-        const requirements = await TrainingRequirement.find({ managerId: request.body.managerId });
+        const requirements = await TrainingRequirement.find();
         response.json(requirements);
     } catch (error) {
         response.status(500).json({ message: 'Error retrieving training requirements', error });
