@@ -40,7 +40,7 @@ const SignupForm: React.FC = () => {
           <Input id="durationpreference" placeholder="Weeks" type="number" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="Preferredtimeframe">Preferred TimeFrame</Label>
+          <Label htmlFor="Preferredtimeframe">Preferred Time Frame</Label>
           <Input id="Preferredtimeframe" placeholder="Date" type="date" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
@@ -59,10 +59,6 @@ const SignupForm: React.FC = () => {
         <LabelInputContainer className="mb-4">
           <Label htmlFor="trained">Skills to be trained</Label>
           <Input id="trained" placeholder="Skills" type="text" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="count">Employee Count</Label>
-          <Input id="count" placeholder="Number of Emp" type="number" />
         </LabelInputContainer>
 
 
