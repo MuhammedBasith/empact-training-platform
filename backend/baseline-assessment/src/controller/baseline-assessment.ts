@@ -62,7 +62,7 @@ export const updateAssessment = async (
     res: Response
 ): Promise<any> => {
     const { trainingId, employeeId } = req.params;
-    const { assessmentStatus, score } = req.body;
+    const { score } = req.body;
 
     try {
         // Find the assessment for the specified employeeId and trainingId
@@ -76,9 +76,7 @@ export const updateAssessment = async (
         }
 
         // Update the fields that were provided
-        if (assessmentStatus) {
-            assessment.assessmentStatus = assessmentStatus;
-        }
+       
         if (score !== undefined) { // Check for undefined to allow 0 score
             assessment.score = score;
         }

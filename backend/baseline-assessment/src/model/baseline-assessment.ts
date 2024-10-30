@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 // Interface for BaselineAssessment
 export interface IBaselineAssessment extends Document {
     trainingId: mongoose.Types.ObjectId; 
-    assessmentStatus: string; 
+    empId: { type: mongoose.Types.ObjectId, ref: 'employees'},
     score?: number; 
     completedAt?: Date; 
 }
@@ -12,7 +12,7 @@ export interface IBaselineAssessment extends Document {
 const BaselineAssessmentSchema: Schema = new Schema(
     {
         trainingId: { type: mongoose.Types.ObjectId, ref: 'trainingRequirements', required: true },
-        assessmentStatus: { type: String, enum: ['pending', 'completed'], default: 'pending' },
+        empId: { type: mongoose.Types.ObjectId, ref: 'employees', required: true },
         score: { type: Number, min: 0, max: 100 }, // Optional score
         completedAt: { type: Date } // Date of completion
     },
