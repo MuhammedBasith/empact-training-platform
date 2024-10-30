@@ -2,10 +2,9 @@ import React from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "../lib/utils";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 
-
-const SignupForm: React.FC = () => {
-
+const RequirementsForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -21,22 +20,20 @@ const SignupForm: React.FC = () => {
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
-
         <LabelInputContainer className="mb-4">
           <Label htmlFor="trainingname">Training Name</Label>
-          <Input id="trainingname" placeholder="Techinical/Soft Skills" type="text" />
+          <Input id="trainingname" placeholder="Technical/Soft Skills" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="targetaudience">Target Audience</Label>
-          <Input id="argetaudience" placeholder="Department/Role" type="text" />
+          <Input id="targetaudience" placeholder="Department/Role" type="text" />
         </LabelInputContainer>
-
         <LabelInputContainer className="mb-4">
           <Label htmlFor="outcomes">Desired Outcomes</Label>
           <Input id="outcomes" placeholder="Outcomes" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="durationpreference">Duration Prefernce</Label>
+          <Label htmlFor="durationpreference">Duration Preference</Label>
           <Input id="durationpreference" placeholder="Weeks" type="number" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
@@ -44,13 +41,13 @@ const SignupForm: React.FC = () => {
           <Input id="Preferredtimeframe" placeholder="Date" type="date" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="deliverymode" >Delivery Mode</Label>
-           <select id="deliverymode" >
+          <Label htmlFor="deliverymode">Delivery Mode</Label>
+          <GlowSelect id="deliverymode">
             <option value="" disabled>Select</option>
             <option value="hybrid">Hybrid</option>
             <option value="online">Online</option>
-            <option value="online">Remote</option>
-          </select>
+            <option value="remote">Remote</option>
+          </GlowSelect>
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="Prerequisites">Prerequisites</Label>
@@ -61,10 +58,8 @@ const SignupForm: React.FC = () => {
           <Input id="trained" placeholder="Skills" type="text" />
         </LabelInputContainer>
 
-
-
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-transform duration-200 ease-in-out transform hover:scale-105"
           type="submit"
         >
           Submit &rarr;
@@ -72,10 +67,57 @@ const SignupForm: React.FC = () => {
         </button>
 
       </form>
-
     </div>
   );
-}
+};
+
+const GlowSelect = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
+  ({ className, children, ...props }, ref) => {
+    const radius = 100; // Change this to increase the radius of the hover effect
+    const [visible, setVisible] = React.useState(false);
+    let mouseX = useMotionValue(0);
+    let mouseY = useMotionValue(0);
+
+    function handleMouseMove({ currentTarget, clientX, clientY }: any) {
+      let { left, top } = currentTarget.getBoundingClientRect();
+      mouseX.set(clientX - left);
+      mouseY.set(clientY - top);
+    }
+
+    return (
+      <motion.div
+        style={{
+          background: useMotionTemplate`
+          radial-gradient(
+            ${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px,
+            var(--blue-500),
+            transparent 80%
+          )
+        `,
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+        className="p-[2px] rounded-lg transition duration-300 group/select"
+      >
+        <select
+          ref={ref}
+          className={cn(
+            `flex h-10 w-full border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input rounded-md px-3 py-2 text-sm 
+            focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
+            disabled:cursor-not-allowed disabled:opacity-50
+            group-hover/select:shadow-none transition duration-400`,
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </select>
+      </motion.div>
+    );
+  }
+);
+GlowSelect.displayName = "GlowSelect";
 
 const BottomGradient = () => {
   return (
@@ -100,5 +142,4 @@ const LabelInputContainer = ({
   );
 };
 
-
-export default SignupForm
+export default RequirementsForm;
