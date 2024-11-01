@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IEmployeeManagement extends Document{
+    cognitoId: mongoose.Types.ObjectId;
     userId: number;
     empName: string,
     empEmail: string,
@@ -13,6 +14,7 @@ export interface IEmployeeManagement extends Document{
 }
 
 const EmployeeManagementSchema: Schema<IEmployeeManagement> = new Schema({
+  cognitoId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     userId: { type: Number, ref: 'users', required: true },
     empName: {type: String, required:true},
     empEmail: {type: String, required: true},
