@@ -8,8 +8,9 @@ import {
 
 const router = Router();
 
+
 router.post('/generate', generateSummary);
-router.get('/:requirementId', getSummary);
+router.get('/:traningRequirementId', getSummary);
 router.put('/:requirementId/edit', editSummary);
 router.post('/:requirementId/confirm', confirmSummary);
 

@@ -12,16 +12,17 @@ dotenv.config();
 
 // TODO Add logic for generating summary.
 export const generateSummary = async (req: Request<{}, {}, CreateSummaryDTO>, res: Response) => {
-  const { trainingRequirementId, department, trainingType, duration, objectives } = req.body;
+  const { trainingRequirementId, department, trainingName,trainingType, duration, objectives,prerequisite,skills_to_train } = req.body;
 
+  console.log(req.body.trainingRequirementId);
+  
   try {
     // Generate the prompt
-    const prompt = generateTrainingSummaryPrompt(department, trainingType, duration, objectives);
+    const prompt = generateTrainingSummaryPrompt(department, trainingName,trainingType, duration, objectives, prerequisite, skills_to_train);
     
-    const result = await geminiModel.generateContent(prompt);
+    const result = await geminiModel.generateContent(prompt);    
 
     const summaryText = result.response.text(); // Adjust based on the actual response structure from the AI API
-
     const newSummary = new Summary({
       trainingRequirementId,
       summary: summaryText,
@@ -38,10 +39,10 @@ export const generateSummary = async (req: Request<{}, {}, CreateSummaryDTO>, re
 };
 
 export const getSummary = async (req: Request, res: Response): Promise<any> => {
-  const { requirementId } = req.params;
+  const { trainingRequirementId } = req.params;
   
   try {
-    const summary = await Summary.findById(requirementId);
+    const summary = await Summary.findById({trainingRequirementId});
     if (!summary) {
       return res.status(404).json({ error: 'Summary not found' });
     }
