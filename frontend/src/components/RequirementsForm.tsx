@@ -3,6 +3,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "../lib/utils";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import { TextArea } from "./ui/textArea";
 
 const RequirementsForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,7 +31,7 @@ const RequirementsForm: React.FC = () => {
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="outcomes">Desired Outcomes</Label>
-          <Input id="outcomes" placeholder="Outcomes" type="text" />
+          <TextArea id="outcomes" placeholder="Outcomes" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="durationpreference">Duration Preference</Label>
