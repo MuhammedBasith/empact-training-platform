@@ -14,6 +14,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
 // Set up the JWT Verifier
 const verifier = CognitoJwtVerifier.create({
   userPoolId: process.env.USER_POOL_ID,
+  clientId: process.env.CLIENT_ID,
   tokenUse: "id", // or "access" depending on your use case
   jwksUri: `https://cognito-idp.${process.env.REGION}.amazonaws.com/${process.env.USER_POOL_ID}/.well-known/jwks.json`,
 });
