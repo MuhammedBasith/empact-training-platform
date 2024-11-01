@@ -1,6 +1,7 @@
 import mongoose, { Document, ObjectId, Schema } from 'mongoose';
 
 export interface ITrainingRequirement extends Document {
+    cognitoId: mongoose.Types.ObjectId;
     managerId: mongoose.Types.ObjectId;
     batchIds:mongoose.Types.ObjectId[] | null,
     department: string;
@@ -17,6 +18,7 @@ export interface ITrainingRequirement extends Document {
 }
 
 const trainingRequirementSchema = new Schema<ITrainingRequirement>({
+    cognitoId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     managerId: { type: Schema.Types.ObjectId,ref: 'users' },
     batchIds:{ type: [Schema.Types.ObjectId], ref: 'batches' ,default: null},
     department: { type: String, required: true },
