@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import TrainingRequirement, { ITrainingRequirement } from '../models/trainingRequirement.model';
 import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto, UpdateTrainingRequirementStatusDto } from '../dtos/trainingRequirements.dto';
-
+import axios from 'axios';
 export async function createTrainingRequirement(
     request: Request<{}, {}, CreateTrainingRequirementDto>,
     response: Response
@@ -9,7 +9,27 @@ export async function createTrainingRequirement(
     try {
         const newRequirement = new TrainingRequirement(request.body);
         await newRequirement.save();
-        response.status(201).json(newRequirement);
+        const trainingRequirementId = newRequirement._id;
+        console.log(trainingRequirementId);
+        
+        const summaryData = {
+            trainingRequirementId,
+            managerId: newRequirement.managerId,
+            batchIds: newRequirement.batchIds,
+            department: newRequirement.department,
+            trainingName: newRequirement.trainingName,
+            trainingType: newRequirement.trainingType,
+            duration: newRequirement.duration,
+            objectives: newRequirement.objectives,
+            empCount: newRequirement.empCount,
+            prerequisite: newRequirement.prerequisite,
+            skills_to_train: newRequirement.skills_to_train
+            
+        };
+        const responsedata = await axios.post('http://localhost:5000/api/v1/summaries/generate', summaryData);
+        const data = responsedata.data.summary
+
+        response.status(201).json({...summaryData, summary: data});
     } catch (error) {
         response.status(500).json({ message: 'Error creating training requirement', error });
     }
@@ -91,3 +111,20 @@ export const confirmRequirement = async (req: Request<{ requirementId: string },
     }
   };
   
+  export const getSummaryByTrainingId = async (req: Request, res: Response) => {
+    const { trainingRequirementId } = req.params; // Get the trainingRequirementId from the request parameters
+
+    try {
+        // Call the AI summary generation service
+        const summaryResponse = await axios.get(`http://localhost:5000/api/v1/summaries/${trainingRequirementId}`);
+
+        // Return the summary from the AI service
+      return res.status(200).json(summaryResponse.data);
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        if (error.response && error.response.status === 404) {
+            return res.status(404).json({ message: 'Summary not found' });
+        }
+        return  res.status(500).json({ message: 'Error retrieving summary', error });
+    }
+};

@@ -2,8 +2,12 @@ export interface CreateTrainingRequirementDto {
     managerId: string;
     department: string;
     trainingType: string;
+    trainingName:string,
     duration: string;
     objectives?: string;
+    empCount?: number; 
+    prerequisite?: string;
+    skills_to_train?: string;
 }
 
 export interface UpdateTrainingRequirementDto {
