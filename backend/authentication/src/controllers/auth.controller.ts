@@ -2,7 +2,6 @@
 
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
-import { DecodedToken } from 'types/decodedToken.types';
 
 // Verify controller
 export const verifyController: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
