@@ -64,18 +64,31 @@ export async function getAllTrainingRequirements(
     }
 }
 
-export async function updateTrainingRequirement(
-    request: Request<{ id: string }, {}, UpdateTrainingRequirementDto>,
-    response: Response<UpdateTrainingRequirementDto | {message?: string, error?: string}>
+export async function updateEmployeeCount(
+    request: Request<{ id: string }, {}, { empCount: number }>,
+    response: Response<{ empCount: number } | { message?: string; error?: string }>
 ): Promise<any> {
+    const { empCount } = request.body;
+
+    // Validate empCount
+    if (typeof empCount !== 'number') {
+        return response.status(400).json({ message: 'Invalid employee count. Must be a number.' });
+    }
+
     try {
-        const updatedRequirement = await TrainingRequirement.findByIdAndUpdate(request.params.id, request.body, { new: true });
+        const updatedRequirement = await TrainingRequirement.findByIdAndUpdate(
+            request.params.id,
+            { empCount }, // Update only the empCount field
+            { new: true } // Return the updated document
+        );
+
         if (!updatedRequirement) {
             return response.status(404).json({ message: 'Training requirement not found' });
         }
+
         response.json(updatedRequirement);
     } catch (error) {
-        response.status(500).json({ message: 'Error updating training requirement', error });
+        response.status(500).json({ message: 'Error updating employee count', error });
     }
 }
 

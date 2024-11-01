@@ -5,7 +5,7 @@ export interface CreateTrainingRequirementDto {
     trainingName:string,
     duration: string;
     objectives?: string;
-    empCount?: number; 
+    empCount: number; 
     prerequisite?: string;
     skills_to_train?: string;
 }
@@ -14,6 +14,7 @@ export interface UpdateTrainingRequirementDto {
     department?: string;
     trainingType?: string;
     duration?: string;
+    empCount: number; 
     objectives?: string;
 }
 

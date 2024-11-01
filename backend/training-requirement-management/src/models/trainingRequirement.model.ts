@@ -8,7 +8,7 @@ export interface ITrainingRequirement extends Document {
     trainingType: string;
     duration: string;
     objectives?: string;
-    empCount?: number; 
+    empCount: number; 
     prerequisite?: string;
     skills_to_train?: string;
     status: boolean;
