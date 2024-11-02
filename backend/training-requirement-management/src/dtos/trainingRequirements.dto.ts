@@ -1,5 +1,5 @@
 export interface CreateTrainingRequirementDto {
-    managerId: string;
+  
     department: string;
     trainingType: string;
     trainingName:string,

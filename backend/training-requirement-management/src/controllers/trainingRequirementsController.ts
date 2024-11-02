@@ -15,7 +15,6 @@ export async function createTrainingRequirement(
         
         const summaryData = {
             trainingRequirementId,
-            managerId: newRequirement.managerId,
             batchIds: newRequirement.batchIds,
             department: newRequirement.department,
             trainingName: newRequirement.trainingName,
