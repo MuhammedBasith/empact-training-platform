@@ -1,5 +1,5 @@
 import express from 'express';
-import { createBatch, getAllBatches, addFeedback } from '../controllers/batchController';
+import { createBatch, getAllBatches, addFeedback, updateTrainerId } from '../controllers/batchController';
 
 const router = express.Router();
 
@@ -11,5 +11,7 @@ router.get('/', getAllBatches);
 
 // Add feedback
 router.post('/feedback', addFeedback);
+
+router.put('/:id/trainerId',updateTrainerId);
 
 export default router;

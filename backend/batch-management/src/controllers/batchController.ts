@@ -3,6 +3,7 @@ import Batch from '../models/batchModel';
 import TrainerFeedback from '../models/trainerFeedbackModel';
 import { CreateBatchDto, GetBatchResponse } from '../dtos/batch.dto';
 import { CreateTrainerFeedbackDto, TrainerFeedbackResponse } from '../dtos/trainerFeedback.dto';
+import mongoose from 'mongoose';
 
 export const createBatch = async (req: Request<{}, {}, CreateBatchDto>, res: Response<GetBatchResponse>) => {
     const { trainingRequirementId } = req.body;
@@ -41,3 +42,34 @@ export const addFeedback = async (req: Request<{}, {}, CreateTrainerFeedbackDto>
         res.status(500).json({ success: false, message, data: null });
     }
 };
+export async function updateTrainerId(
+    request: Request<{ id: string }, {}, { trainerID: mongoose.Types.ObjectId }>,
+    response: Response<{ message?: string; updatedBatch?: any } | { message: string }>
+): Promise<any> {
+    const { trainerID } = request.body;
+
+    // Validate trainerID
+    if (!mongoose.Types.ObjectId.isValid(trainerID)) {
+        return response.status(400).json({ message: 'Invalid trainer ID. Must be a valid ObjectId.' });
+    }
+
+    try {
+        const updatedBatch = await Batch.findByIdAndUpdate(
+            request.params.id,
+            {
+                trainerID, // Update the trainerID field
+                requiredEqualToTrue: false // Set requiredEqualToTrue to false
+            },
+            { new: true, runValidators: true } // Return the updated document and run validation
+        ).exec();
+
+        if (!updatedBatch) {
+            return response.status(404).json({ message: 'Batch not found' });
+        }
+
+        response.json({ message: 'Trainer ID updated successfully', updatedBatch });
+    } catch (error) {
+        console.error(error); // Log error for debugging
+        response.status(500).json({ message: 'Error updating trainer ID' });
+    }
+}
