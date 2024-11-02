@@ -70,3 +70,29 @@ export async function updateEmployeeTrainingIds(
     response.status(500).json({ message: 'Error updating training IDs', error });
   }
 }
+
+export async function findEmployeesByTrainingId(
+  request: Request<{ trainingId: string }, {}, {}>,
+  response: Response
+): Promise<any> {
+  const { trainingId } = request.params; // Extract the training ID from the request parameters
+
+  try {
+    // Ensure that the trainingId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(trainingId)) {
+      return response.status(400).json({ message: 'Invalid training ID format' });
+    }
+
+    // Find all employees with the specified training ID
+    const employees = await EmployeeManagement.find({ trainingIds: trainingId });
+
+    if (employees.length === 0) {
+      return response.status(404).json({ message: 'No employees found with the specified training ID' });
+    }
+
+    response.status(200).json(employees);
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    response.status(500).json({ message: 'Error retrieving employees', error });
+  }
+}
