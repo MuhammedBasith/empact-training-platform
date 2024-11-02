@@ -8,6 +8,30 @@ import Avatar06 from "../assets/images/avatar-06.jpg";
 // import { BackgroundGradient } from "./ui/background-gradient";
 
 export default function HeroHome() {
+
+  const words = [
+    {
+      text: "The",
+    },
+    {
+      text: "Training",
+      className: "mb-6 border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl",
+    },
+    {
+      text: "Management",
+      className: "text-blue-500 dark:text-blue-500",
+    },
+    {
+      text: "Platform",
+    },
+    {
+      text: "You",
+    },
+    {
+      text: "Need",
+    },
+  ];
+
   return (
     <section className="relative">
       <PageIllustration />
@@ -66,12 +90,13 @@ export default function HeroHome() {
               </div>
             </div>
             <h1
-              className="mb-6 border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl"
+              className="mb-6 border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl "
               data-aos="zoom-y-out"
               data-aos-delay={150}
             >
               The Training Management<br className="max-lg:hidden" />
               Platform You Need
+
             </h1>
             <div className="mx-auto max-w-3xl">
               <p
