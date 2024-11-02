@@ -1,5 +1,5 @@
 export interface CreateTrainingRequirementDto {
-  
+    congnitoId;string;
     department: string;
     trainingType: string;
     trainingName:string,
