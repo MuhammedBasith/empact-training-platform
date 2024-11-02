@@ -1,4 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
+
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
 module.exports = {
   // Specify the files to scan for class names
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
@@ -102,7 +109,20 @@ module.exports = {
   },
   // Include Tailwind CSS plugins
   plugins: [
+    addVariablesForColors,
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"), // Optional: add typography plugin if needed
   ],
 };
+
+
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+ 
+  addBase({
+    ":root": newVars,
+  });
+}

@@ -135,6 +135,7 @@ export default function HeroHome() {
           </div>
           {/* Hero image */}
           {/* <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-white dark:bg-zinc-900"> */}
+
           <div
             className="mx-auto max-w-3xl"
             data-aos="zoom-y-out"
