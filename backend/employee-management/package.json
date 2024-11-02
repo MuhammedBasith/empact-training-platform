@@ -3,11 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-<<<<<<< Updated upstream
+
     "test": "echo \"Error: no test specified\" && exit 1",
-=======
->>>>>>> Stashed changes
-    "dev": "ts-node ./src/server.ts"
+     "dev": "ts-node ./src/server.ts"
   },
   "keywords": [],
   "author": "",
