@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn, initiatePasswordReset, confirmNewPassword } from "../AuthService"; // Adjust the import path as necessary
+import { signIn, initiatePasswordReset } from "../AuthService"; // Adjust the import path as necessary
 
 export const metadata = {
     title: "Sign In - Simple",
@@ -12,7 +12,6 @@ export default function SignIn() {
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [isVerificationRequired, setIsVerificationRequired] = useState(false);
-    const [verificationCode, setVerificationCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const navigate = useNavigate(); // Hook to programmatically navigate
 
@@ -166,13 +165,6 @@ export default function SignIn() {
                 <div className="mt-6">
                     <h2 className="text-xl font-semibold">Verify Your Account</h2>
                     <input
-                        type="text"
-                        placeholder="Verification Code"
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                        className="form-input w-full py-2 mt-2"
-                    />
-                    <input
                         type="password"
                         placeholder="New Password"
                         value={newPassword}
@@ -183,7 +175,7 @@ export default function SignIn() {
                         onClick={handleVerifyAccount}
                         className="btn mt-4 w-full bg-gradient-to-t from-green-600 to-green-500 text-white"
                     >
-                        Verify and Set New Password
+                        Set New Password
                     </button>
                 </div>
             )}
