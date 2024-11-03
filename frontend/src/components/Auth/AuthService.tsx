@@ -140,7 +140,7 @@ export const isUserConfirmed = async (username: string): Promise<boolean> => {
         };
 
         const command = new AdminGetUserCommand(params);
-        
+
         const response = await cognitoClient.send(command);
         return response.UserStatus === "CONFIRMED";
     } catch (error) {

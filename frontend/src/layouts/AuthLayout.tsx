@@ -41,11 +41,11 @@ export default function AuthLayout({
         <>
           {/* Right side */}
           <div
-  className="relative my-6 mr-6 hidden w-[572px] shrink-0 overflow-hidden rounded-2xl lg:block"
-  style={{
-    background: 'radial-gradient(circle, rgba(100, 149, 237, 1) 0%, rgba(173, 216, 230, 1) 50%, rgba(173, 216, 230, 0) 100%)'
-  }}
->
+            className="relative my-6 mr-6 hidden w-[572px] shrink-0 overflow-hidden rounded-2xl lg:block"
+            style={{
+              background: 'radial-gradient(circle, rgba(100, 149, 237, 1) 0%, rgba(173, 216, 230, 1) 50%, rgba(173, 216, 230, 0) 100%)'
+            }}
+          >
             {/* Background */}
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -ml-24 -translate-x-1/2 -translate-y-1/2 bg-blue-50"

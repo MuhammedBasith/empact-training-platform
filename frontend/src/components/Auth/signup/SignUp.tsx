@@ -47,34 +47,34 @@ export default function SignUp() {
     if (!validateForm()) return;
 
     try {
-        // Assuming signUp returns the Cognito ID
-        const response = await signUp(formData.email, formData.password, formData.name, formData.role);
-        const cognitoId = await response.response.UserSub
-      
-        
-        const responseFromBackend = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                cognitoId, // Send the Cognito ID
-                email: formData.email,
-                name: formData.name,
-                role: formData.role,
-            }),
-        });
+      // Assuming signUp returns the Cognito ID
+      const response = await signUp(formData.email, formData.password, formData.name, formData.role);
+      const cognitoId = await response.response.UserSub
 
-        if (!responseFromBackend.ok) {
-            throw new Error('Failed to create account: ' + (await response.text()));
-        }
 
-        console.log("Sign up success:", await responseFromBackend.json());
-        setOtpSent(true); // Enable OTP section
+      const responseFromBackend = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cognitoId, // Send the Cognito ID
+          email: formData.email,
+          name: formData.name,
+          role: formData.role,
+        }),
+      });
+
+      if (!responseFromBackend.ok) {
+        throw new Error('Failed to create account: ' + (await response.text()));
+      }
+
+      console.log("Sign up success:", await responseFromBackend.json());
+      setOtpSent(true); // Enable OTP section
     } catch (err) {
-        setError("Failed to create account. " + err.message);
+      setError("Failed to create account. " + err.message);
     }
-};
+  };
 
 
   // Confirm the OTP and get tokens
