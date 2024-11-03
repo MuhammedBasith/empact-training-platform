@@ -2,9 +2,10 @@ import { useState } from "react";
 import { signUp, confirmSignUp } from "../AuthService";
 
 export const metadata = {
-  title: "Sign Up - Simple",
+  title: "Sign Up - Empact",
   description: "Page description",
 };
+
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ export default function SignUp() {
     email: "",
     password: "",
     repeatPassword: "",
-    role: "Employee", // Default role
+    role: "Employee",
   });
   const [error, setError] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -40,19 +41,41 @@ export default function SignUp() {
     return true;
   };
 
-  // Sign up the user with Cognito
+  // Sign up the user with Cognito UserSub
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     try {
-      const response = await signUp(formData.email, formData.password, formData.name, formData.role);
-      console.log("Sign up success:", response);
-      setOtpSent(true); // Enable OTP section
+        // Assuming signUp returns the Cognito ID
+        const response = await signUp(formData.email, formData.password, formData.name, formData.role);
+        const cognitoId = await response.response.UserSub
+      
+        
+        const responseFromBackend = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cognitoId, // Send the Cognito ID
+                email: formData.email,
+                name: formData.name,
+                role: formData.role,
+            }),
+        });
+
+        if (!responseFromBackend.ok) {
+            throw new Error('Failed to create account: ' + (await response.text()));
+        }
+
+        console.log("Sign up success:", await responseFromBackend.json());
+        setOtpSent(true); // Enable OTP section
     } catch (err) {
-      setError("Failed to create account. " + err.message);
+        setError("Failed to create account. " + err.message);
     }
-  };
+};
+
 
   // Confirm the OTP and get tokens
   const handleOtpSubmit = async () => {
@@ -145,6 +168,7 @@ export default function SignUp() {
             >
               <option value="Employee">Employee</option>
               <option value="Manager">Manager</option>
+              <option value="Trainer">Trainer</option>
             </select>
           </div>
         </div>
