@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn, initiatePasswordReset, confirmNewPassword, isUserConfirmed } from "../AuthService"; // Adjust the import path as necessary
+import { signIn, initiatePasswordReset, confirmNewPassword } from "../AuthService"; // Adjust the import path as necessary
 
 export const metadata = {
     title: "Sign In - Simple",
@@ -16,7 +16,7 @@ export default function SignIn() {
     const [newPassword, setNewPassword] = useState("");
     const navigate = useNavigate(); // Hook to programmatically navigate
 
-    const handleChange = (e) => {
+    const handleChange = (e: any) => {
         const { id, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [id]: value }));
     };
@@ -25,7 +25,7 @@ export default function SignIn() {
         e.preventDefault();
         setError("");
 
-        const checkUserStatus = async (username) => {
+        const checkUserStatus = async (username: string) => {
           try {
               const response = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/checkUserStatus?username=${username}`);
               const data = await response.json();
