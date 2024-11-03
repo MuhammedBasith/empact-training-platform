@@ -68,8 +68,23 @@ export default function SignIn() {
 
     const handleVerifyAccount = async () => {
         try {
-            await confirmNewPassword(formData.username, verificationCode, newPassword);
+            const response = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/confirm-new-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    newPassword,
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to change password: ' + (await response.text()));
+            }
+    
             setSuccessMessage("Password changed successfully. You can now log in.");
+            setError('')
             setIsVerificationRequired(false);
         } catch (err) {
             setError("Failed to change password: " + err.message);

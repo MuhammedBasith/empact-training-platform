@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
-import { isUserConfirmed } from "../services/auth.service";
+import { isUserConfirmed, confirmNewPassword } from "../services/auth.service";
 
 
 // Verify controller
@@ -49,4 +49,17 @@ export const checkUserStatus = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error checking user status", error: error.message });
     }
+};
+
+
+export const confirmNewPasswordController: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { username, verificationCode, newPassword } = req.body;
+
+  try {
+      await confirmNewPassword(username, newPassword);
+      res.status(200).json({ message: 'Password changed successfully.' });
+  } catch (error) {
+      console.error("Error confirming new password:", error);
+      res.status(500).json({ message: error.message || 'Failed to change password.' });
+  }
 };
