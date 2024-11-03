@@ -40,7 +40,12 @@ export default function AuthLayout({
 
         <>
           {/* Right side */}
-          <div className="relative my-6 mr-6 hidden w-[572px] shrink-0 overflow-hidden rounded-2xl lg:block">
+          <div
+  className="relative my-6 mr-6 hidden w-[572px] shrink-0 overflow-hidden rounded-2xl lg:block"
+  style={{
+    background: 'radial-gradient(circle, rgba(100, 149, 237, 1) 0%, rgba(173, 216, 230, 1) 50%, rgba(173, 216, 230, 0) 100%)'
+  }}
+>
             {/* Background */}
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -ml-24 -translate-x-1/2 -translate-y-1/2 bg-blue-50"
@@ -48,7 +53,7 @@ export default function AuthLayout({
             >
               <img
                 src={AuthBg}
-                className="max-w-none"
+                className="max-w-none z-1000000000000"
                 width={1285}
                 height={1684}
                 alt="Auth bg"
