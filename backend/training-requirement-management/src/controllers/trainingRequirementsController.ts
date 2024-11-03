@@ -15,7 +15,6 @@ export async function createTrainingRequirement(
         
         const summaryData = {
             trainingRequirementId,
-            managerId: newRequirement.managerId,
             batchIds: newRequirement.batchIds,
             department: newRequirement.department,
             trainingName: newRequirement.trainingName,
@@ -38,17 +37,26 @@ export async function createTrainingRequirement(
 
 
 export async function getTrainingRequirement(
-    request: Request<{ id: string }>,
+    request: Request<{ cognitoId: string; id: string}>,
     response: Response<ITrainingRequirement | { message: string, error?: string }>
 ): Promise<any> {
+    const { cognitoId,id } = request.params;
+
     try {
-        const requirement = await TrainingRequirement.findById(request.params.id);
-        if (!requirement) {
+        // Find the training requirement by cognitoId and trainingId
+        const trainingRequirement = await TrainingRequirement.findOne({
+            _id: id,
+            cognitoId: cognitoId
+        });
+
+        if (!trainingRequirement) {
             return response.status(404).json({ message: 'Training requirement not found' });
         }
-        return response.json(requirement);
+
+        response.status(200).json(trainingRequirement);
     } catch (error) {
-        return response.status(500).json({ message: 'Error retrieving training requirement', error });
+        console.error(error);
+        response.status(500).json({ message: 'Error retrieving training requirement', error });
     }
 }
 
@@ -148,4 +156,28 @@ export const confirmRequirement = async (req: Request<{ requirementId: string },
     }
   };
   
+  export async function getTrainingRequirementsByManager(
+    request: Request<{ id:string }, {}, {}>,
+    response: Response<{ trainingRequirements: ITrainingRequirement[] } | { message: string }>
+): Promise<any> {
+    const { id } = request.params;
+
+    // Validate managerId (ensure it is a valid ObjectId)
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return response.status(400).json({ message: 'Invalid manager ID. Must be a valid ObjectId.' });
+    }
+
+    try {
+        const trainingRequirements = await TrainingRequirement.find({ cognitoId: id}).exec();
+
+        if (trainingRequirements.length === 0) {
+            return response.status(404).json({ message: 'No training requirements found for this manager' });
+        }
+
+        response.json({ trainingRequirements });
+    } catch (error) {
+        console.error(error); // Log error for debugging
+        response.status(500).json({ message: 'Error fetching training requirements' });
+    }
+}
   

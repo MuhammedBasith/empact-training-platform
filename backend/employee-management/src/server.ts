@@ -22,4 +22,4 @@ app.listen(PORT, () => {
 });
 
 
-app.use('/api/employee-management',EmployeeManagementRoutes);
+app.use('/api/v1/employee-management',EmployeeManagementRoutes);

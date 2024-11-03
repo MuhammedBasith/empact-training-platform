@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { createEmployee,getAllEmployees,getEmployeeByUserId } from "../controllers/employee-management";
+import { createEmployee,findEmployeesByTrainingId,getAllEmployees,getEmployeeByCognitoId, updateEmployeeTrainingIds } from "../controllers/employee-management";
 
 const router=Router();
 
-router.post('/employee',createEmployee);
-router.get('/employee', getAllEmployees);
-router.get('/employee/:userId',getEmployeeByUserId);
-
+router.post('/',createEmployee);
+router.get('/', getAllEmployees);
+router.get('/:cognitoId',getEmployeeByCognitoId);
+router.put('/:cognitoId',updateEmployeeTrainingIds);
+router.get('/emp/:trainingId',findEmployeesByTrainingId)
 export default router;
