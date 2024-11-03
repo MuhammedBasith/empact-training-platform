@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { signUp, confirmSignUp } from "../AuthService";
 
 export const metadata = {
   title: "Sign Up - Simple",
@@ -18,7 +19,6 @@ export default function SignUp() {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
 
-  // Handle input changes
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -27,7 +27,6 @@ export default function SignUp() {
     }));
   };
 
-  // Validate form inputs
   const validateForm = () => {
     if (formData.password !== formData.repeatPassword) {
       setError("Passwords do not match.");
@@ -41,60 +40,30 @@ export default function SignUp() {
     return true;
   };
 
-  // Handle form submission
+  // Sign up the user with Cognito
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-        }),
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        setOtpSent(true); // Enable OTP section
-      } else {
-        setError("Failed to create account. Please try again.");
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again later.");
+      const response = await signUp(formData.email, formData.password, formData.name, formData.role);
+      console.log("Sign up success:", response);
+      setOtpSent(true); // Enable OTP section
+    } catch (err) {
+      setError("Failed to create account. " + err.message);
     }
   };
 
-  // Handle OTP verification
+  // Confirm the OTP and get tokens
   const handleOtpSubmit = async () => {
     try {
-      const response = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          otp,
-        }),
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        // Redirect to login
+      const result = await confirmSignUp(formData.email, otp);
+      if (result) {
+        // After successful confirmation, redirect to login or home page
         window.location.href = "/signin";
-      } else {
-        setOtpError("Invalid OTP. Please try again.");
       }
-    } catch (error) {
-      setOtpError("An error occurred. Please try again later.");
+    } catch (err) {
+      setOtpError("Invalid OTP. " + err.message);
     }
   };
 
@@ -104,14 +73,10 @@ export default function SignUp() {
         <h1 className="text-4xl font-bold">Create your account</h1>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="name"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="name">
               Full name
             </label>
             <input
@@ -125,10 +90,7 @@ export default function SignUp() {
             />
           </div>
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="email"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="email">
               Email
             </label>
             <input
@@ -142,10 +104,7 @@ export default function SignUp() {
             />
           </div>
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="password"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="password">
               Password
             </label>
             <input
@@ -160,10 +119,7 @@ export default function SignUp() {
             />
           </div>
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="repeatPassword"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="repeatPassword">
               Repeat Password
             </label>
             <input
@@ -178,10 +134,7 @@ export default function SignUp() {
             />
           </div>
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="role"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="role">
               Role
             </label>
             <select
@@ -226,31 +179,20 @@ export default function SignUp() {
         </div>
       )}
 
-      {/* Bottom link */}
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-500">
           By signing up, you agree to the{" "}
-          <a
-            className="whitespace-nowrap font-medium text-gray-700 underline hover:no-underline"
-            href="#0"
-          >
+          <a className="whitespace-nowrap font-medium text-gray-700 underline hover:no-underline" href="#0">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a
-            className="whitespace-nowrap font-medium text-gray-700 underline hover:no-underline"
-            href="#0"
-          >
+          <a className="whitespace-nowrap font-medium text-gray-700 underline hover:no-underline" href="#0">
             Privacy Policy
-          </a>
-          .
+          </a>.
         </p>
         <p className="mt-4 text-sm text-gray-500">
           Already have an account?{" "}
-          <a
-            className="font-medium text-blue-500 underline hover:no-underline"
-            href="/signin"
-          >
+          <a className="font-medium text-blue-500 underline hover:no-underline" href="/signin">
             Log in
           </a>
         </p>
