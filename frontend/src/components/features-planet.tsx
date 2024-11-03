@@ -8,7 +8,7 @@ import { BackgroundBeamsWithCollision } from "./ui/background-beams-with-collisi
 
 export default function FeaturesPlanet() {
   return (
-    <section className="relative before:absolute before:inset-0 before:-z-20 before:bg-gray-900">
+    <section className="relative before:absolute before:inset-0 before:-z-20 before:bg-gray-900" >
       <BackgroundBeamsWithCollision>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="py-12 md:py-20">
@@ -23,7 +23,7 @@ export default function FeaturesPlanet() {
               <div className="text-center">
                 <div className="relative inline-flex rounded-full before:absolute before:inset-0 before:-z-10 before:scale-[.85] before:animate-[pulse_4s_cubic-bezier(.4,0,.6,1)_infinite] before:bg-gradient-to-b before:from-blue-900 before:to-sky-700/50 before:blur-3xl after:absolute after:inset-0 after:rounded-[inherit] after:[background:radial-gradient(closest-side,theme(colors.blue.500),transparent)]">
                   <img
-                    className="rounded-full bg-gray-900"
+                    className="rounded-full bg-gray-800"
                     src={PlanetImg}
                     width={400}
                     height={400}
