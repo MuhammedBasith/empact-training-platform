@@ -1,13 +1,13 @@
 export const metadata = {
-    title: "Home - Simple",
+    title: "Home - Empact",
     description: "Page description",
   };
   
-  import Hero from "./hero-home";
-  import BusinessCategories from "./business-categories";
-  import FeaturesPlanet from "./features-planet";
-  import LargeTestimonial from "./large-testimonial";
-  import Cta from "./cta";
+  import Hero from "./LandingPage/hero-home";
+  import BusinessCategories from "./LandingPage/business-categories";
+  import FeaturesPlanet from "./LandingPage/features-planet";
+  import LargeTestimonial from "./LandingPage/large-testimonial";
+  import Cta from "./LandingPage/cta";
   
   export default function Home() {
     return (

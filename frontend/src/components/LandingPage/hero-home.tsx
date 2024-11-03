@@ -1,4 +1,4 @@
-import PageIllustration from "../components/page-illustration";
+import PageIllustration from "./page-illustration";
 import Avatar01 from "../assets/images/avatar-01.jpg";
 import Avatar02 from "../assets/images/avatar-02.jpg";
 import Avatar03 from "../assets/images/avatar-03.jpg";
