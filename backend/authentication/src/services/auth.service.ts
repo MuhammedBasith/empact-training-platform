@@ -1,11 +1,11 @@
-// auth.service.ts
-
 import {
   CognitoIdentityProviderClient,
   GetUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import User from '../models/user.model';
+import { AdminGetUserCommand } from "@aws-sdk/client-cognito-identity-provider";
+import cognitoClientConfigAdmin from "../config/awsConfig";
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.REGION,
@@ -45,4 +45,20 @@ export const findUserByCognitoId = async (cognitoId: string) => {
 export const saveUser = async (cognitoId: string, email: string, name: string, role: string) => {
   const user = new User({ cognitoId, email, name, role });
   return await user.save();
+};
+
+
+// Check if a user is confirmed in Cognito
+export const isUserConfirmed = async (username) => {
+  try {
+      const command = new AdminGetUserCommand({
+          UserPoolId: process.env.USER_POOL_ID,
+          Username: username,
+      });
+      const response = await cognitoClientConfigAdmin.send(command);
+      return response.UserStatus === "CONFIRMED";
+  } catch (error) {
+      console.error("Error checking user confirmation status:", error);
+      throw error;
+  }
 };

@@ -2,6 +2,8 @@
 
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
+import { isUserConfirmed } from "../services/auth.service";
+
 
 // Verify controller
 export const verifyController: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -35,4 +37,16 @@ export const verifyController: RequestHandler = async (req: Request, res: Respon
     console.error("Token verification error:", error);
     res.status(403).json({ message: error.message || 'Token is invalid' });
   }
+};
+
+
+export const checkUserStatus = async (req, res) => {
+    const { username } = req.query;
+
+    try {
+        const isConfirmed = await isUserConfirmed(username);
+        res.status(200).json({ isConfirmed });
+    } catch (error) {
+        res.status(500).json({ message: "Error checking user status", error: error.message });
+    }
 };
