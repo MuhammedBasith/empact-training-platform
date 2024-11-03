@@ -42,7 +42,7 @@ export default function SignUp() {
   };
 
   // Sign up the user with Cognito UserSub
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
 

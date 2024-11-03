@@ -20,7 +20,7 @@ export default function SignIn() {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError("");
 
