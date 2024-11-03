@@ -11,6 +11,7 @@ export default function SignUp() {
     email: "",
     password: "",
     repeatPassword: "",
+    role: "Employee", // Default role
   });
   const [error, setError] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -19,10 +20,11 @@ export default function SignUp() {
 
   // Handle input changes
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
   };
 
   // Validate form inputs
@@ -55,6 +57,7 @@ export default function SignUp() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          role: formData.role,
         }),
       });
       const data = await response.json();
@@ -86,7 +89,7 @@ export default function SignUp() {
 
       if (data.success) {
         // Redirect to login
-        window.location.href = "/login";
+        window.location.href = "/signin";
       } else {
         setOtpError("Invalid OTP. Please try again.");
       }
@@ -174,6 +177,23 @@ export default function SignUp() {
               required
             />
           </div>
+          <div>
+            <label
+              className="mb-1 block text-sm font-medium text-gray-700"
+              htmlFor="role"
+            >
+              Role
+            </label>
+            <select
+              id="role"
+              className="form-select w-full py-2"
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="Employee">Employee</option>
+              <option value="Manager">Manager</option>
+            </select>
+          </div>
         </div>
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="mt-6 space-y-3">
@@ -224,6 +244,15 @@ export default function SignUp() {
             Privacy Policy
           </a>
           .
+        </p>
+        <p className="mt-4 text-sm text-gray-500">
+          Already have an account?{" "}
+          <a
+            className="font-medium text-blue-500 underline hover:no-underline"
+            href="/signin"
+          >
+            Log in
+          </a>
         </p>
       </div>
     </>
