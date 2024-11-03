@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
-import { isUserConfirmed, confirmNewPassword } from "../services/auth.service";
+import { isUserConfirmed, confirmNewPassword, saveUserToDatabase  } from "../services/auth.service";
 
 
 // Verify controller
@@ -29,7 +29,7 @@ export const verifyController: RequestHandler = async (req: Request, res: Respon
     
     // Save user to MongoDB if not already present
     if (!user) {
-      user = await saveUser(cognitoId, email, name, role);
+      res.status(403).json({ message: "User does not exist" });
     }
 
     res.status(200).json({ message: 'Token is valid', user });
@@ -61,5 +61,18 @@ export const confirmNewPasswordController: RequestHandler = async (req: Request,
   } catch (error) {
       console.error("Error confirming new password:", error);
       res.status(500).json({ message: error.message || 'Failed to change password.' });
+  }
+};
+
+export const signUpController: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { cognitoId, email, name, role } = req.body;
+
+  try {
+      // Call the service to save the user data to the database
+      const user = await saveUserToDatabase(cognitoId, email, name, role);
+      res.status(201).json({ message: 'User created successfully', user });
+  } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ message: error.message || 'Failed to create user.' });
   }
 };

@@ -85,3 +85,22 @@ export const confirmNewPassword = async (
       throw error; // Rethrow to handle in the controller
   }
 };
+
+
+export const saveUserToDatabase = async (cognitoId: string, email: string, name: string, role: string) => {
+  // Create a new user record in MongoDB
+  const newUser = new User({
+      cognitoId,
+      email,
+      name,
+      role,
+  });
+
+  try {
+      const savedUser = await newUser.save();
+      return savedUser;
+  } catch (error) {
+      console.error("Error saving user to database:", error);
+      throw error; // Rethrow to handle in the controller
+  }
+};
