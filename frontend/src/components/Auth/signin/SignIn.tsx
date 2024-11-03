@@ -27,7 +27,7 @@ export default function SignIn() {
 
         const checkUserStatus = async (username) => {
           try {
-              const response = await fetch(`${process.env.AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/checkUserStatus?username=${username}`);
+              const response = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/checkUserStatus?username=${username}`);
               const data = await response.json();
               return data.isConfirmed;
           } catch (error) {
@@ -39,7 +39,7 @@ export default function SignIn() {
             // Check if user is confirmed
             // const isConfirmed = await isUserConfirmed(formData.username);
             // const isConfirmed = true
-            const isConfirmed = checkUserStatus(formData.username)
+            const isConfirmed = await checkUserStatus(formData.username)
             console.log(isConfirmed)
 
             if (!isConfirmed) {
