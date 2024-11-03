@@ -74,16 +74,19 @@ export default function AuthLayout({
                     --scope=@phanatic
                   </span>{" "}
                   <span className="animate-[code-4_10s_infinite]">
-                    Successfully logged-in.
+                    Successfully logged-in to Empact!
+
                   </span>
                   <br />
                   <br />
                   <span className="animate-[code-5_10s_infinite] text-gray-200">
-                    npm publish
+                    Your Empact journey has begun!
+
                   </span>
                   <br />
                   <span className="animate-[code-6_10s_infinite]">
-                    Package published.
+                    Transforming learning experiences for teams everywhere.
+
                   </span>
                 </div>
               </div>

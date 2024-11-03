@@ -1,9 +1,100 @@
+import { useState } from "react";
+
 export const metadata = {
   title: "Sign Up - Simple",
   description: "Page description",
 };
 
 export default function SignUp() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  // Validate form inputs
+  const validateForm = () => {
+    if (formData.password !== formData.repeatPassword) {
+      setError("Passwords do not match.");
+      return false;
+    }
+    if (!formData.email.endsWith("@ust.com")) {
+      setError("Email must be a valid ust.com email address.");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setOtpSent(true); // Enable OTP section
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again later.");
+    }
+  };
+
+  // Handle OTP verification
+  const handleOtpSubmit = async () => {
+    try {
+      const response = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          otp,
+        }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        // Redirect to login
+        window.location.href = "/login";
+      } else {
+        setOtpError("Invalid OTP. Please try again.");
+      }
+    } catch (error) {
+      setOtpError("An error occurred. Please try again later.");
+    }
+  };
+
   return (
     <>
       <div className="mb-10">
@@ -11,7 +102,7 @@ export default function SignUp() {
       </div>
 
       {/* Form */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div>
             <label
@@ -25,6 +116,8 @@ export default function SignUp() {
               className="form-input w-full py-2"
               type="text"
               placeholder="Corey Barker"
+              value={formData.name}
+              onChange={handleChange}
               required
             />
           </div>
@@ -39,22 +132,9 @@ export default function SignUp() {
               id="email"
               className="form-input w-full py-2"
               type="email"
-              placeholder="corybarker@email.com"
-              required
-            />
-          </div>
-          <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="phone"
-            >
-              Phone
-            </label>
-            <input
-              id="phone"
-              className="form-input w-full py-2"
-              type="text"
-              placeholder="(+750) 932-8907"
+              placeholder="corybarker@ust.com"
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -71,20 +151,60 @@ export default function SignUp() {
               type="password"
               autoComplete="on"
               placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label
+              className="mb-1 block text-sm font-medium text-gray-700"
+              htmlFor="repeatPassword"
+            >
+              Repeat Password
+            </label>
+            <input
+              id="repeatPassword"
+              className="form-input w-full py-2"
+              type="password"
+              autoComplete="on"
+              placeholder="••••••••"
+              value={formData.repeatPassword}
+              onChange={handleChange}
               required
             />
           </div>
         </div>
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="mt-6 space-y-3">
-          <button className="btn w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%]">
+          <button
+            type="submit"
+            className="btn w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%]"
+          >
             Register
-          </button>
-          <div className="text-center text-sm italic text-gray-400">Or</div>
-          <button className="btn w-full bg-gradient-to-t from-gray-900 to-gray-700 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%]">
-            Continue with GitHub
           </button>
         </div>
       </form>
+
+      {otpSent && (
+        <div className="mt-6 space-y-4">
+          <p>Enter the OTP sent to {formData.email}</p>
+          <input
+            type="text"
+            className="form-input w-full py-2"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          <button
+            onClick={handleOtpSubmit}
+            className="btn w-full bg-blue-500 text-white shadow"
+          >
+            Verify OTP
+          </button>
+          {otpError && <p className="text-red-500 text-sm mt-2">{otpError}</p>}
+        </div>
+      )}
 
       {/* Bottom link */}
       <div className="mt-6 text-center">
