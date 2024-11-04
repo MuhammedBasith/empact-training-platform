@@ -6,7 +6,7 @@ import TrainingProgressRoutes from "./routes/training-progress";
 const app=express();
 app.use(express.json());
 
-const PORT=process.env.PORT || 3002;
+const PORT=process.env.PORT || 3005;
 
 mongoose.connect(config.mongoUri)
    .then(()=>{console.log("mongoDB Connected")})
