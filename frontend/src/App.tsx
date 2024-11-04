@@ -40,16 +40,14 @@ function App() {
 
           {/* Protected Routes for Authenticated Users */}
           {isAuthenticated ? (
-            <Route path="/dashboard/*" element={<DashboardLayout />}>
-              <Routes>
-                {/* Role-Based Dashboard Routes */}
-                {role === 'admin' && <Route path="admin" element={<AdminDashboard />} />}
-                {role === 'manager' && <Route path="manager" element={<ManagerDashboard />} />}
-                {role === 'employee' && <Route path="employee" element={<EmployeeDashboard />} />}
-                {role === 'trainer' && <Route path="trainer" element={<TrainerDashboard />} />}
-                {/* Redirect to role-specific dashboard */}
-                <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
-              </Routes>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              {/* Role-Based Dashboard Routes */}
+              <Route path="admin" element={<AdminDashboard />} />
+              <Route path="manager" element={<ManagerDashboard />} />
+              <Route path="employee" element={<EmployeeDashboard />} />
+              <Route path="trainer" element={<TrainerDashboard />} />
+              {/* Redirect to role-specific dashboard */}
+              <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
             </Route>
           ) : (
             <Route path="*" element={<Navigate to="/signin" />} />

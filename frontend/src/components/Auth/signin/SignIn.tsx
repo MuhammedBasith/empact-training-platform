@@ -46,8 +46,10 @@ export default function SignIn() {
       const result = await signIn(formData.username, formData.password);
       if (result) {
         
+        console.log(result);
+        
         // Navigate to role-specific dashboard
-        const role = result.role.toLowerCase();
+        const role = result.Value?.toLowerCase();
         if(role !== 'nill'){
           navigate(`/dashboard/${role}`);
         }
