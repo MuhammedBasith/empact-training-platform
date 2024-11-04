@@ -25,15 +25,11 @@ const EmployeeDashboard = lazy(() => import('./components/Dashboard/EmployeeDash
 const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashboard'));
 
 function App() {
-<<<<<<< HEAD
-  const { isAuthenticated, role } = useContext(AuthContext); // Access AuthContext
+  const { isAuthenticated, role } = useContext(AuthContext);
   console.log(role);
   
-
-=======
->>>>>>> d8e7305641f106cd1d81b2646cb59d63d7c4b115
+  
   return (
-    <AuthProvider> {/* Wrap App in AuthProvider */}
       <RootLayout>
         <CssBaseline />
         <ThemeProvider theme={baselightTheme}>
@@ -45,40 +41,27 @@ function App() {
             <Route path="/reset-password" element={<AuthLayout><ResetPassword /></AuthLayout>} />
 
             {/* Protected Routes for Authenticated Users */}
-            <AuthRoutes />
-            
+            {isAuthenticated ? (
+              <Route path="/dashboard/*" element={<DashboardLayout />}>
+                <Routes>
+                  {/* Role-Based Dashboard Routes */}
+                  {role === 'admin' && <Route path="admin" element={<AdminDashboard />} />}
+                  {role === 'manager' && <Route path="manager" element={<ManagerDashboard />} />}
+                  {role === 'employee' && <Route path="employee" element={<EmployeeDashboard />} />}
+                  {role === 'trainer' && <Route path="trainer" element={<TrainerDashboard />} />}
+                  {/* Redirect to role-specific dashboard */}
+                  <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
+                </Routes>
+              </Route>
+            ) : (
+              <Route path="*" element={<Navigate to="/signin" />} />
+            )}
+
             {/* Fallback Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ThemeProvider>
       </RootLayout>
-    </AuthProvider>
-  );
-}
-
-// Extracted AuthRoutes for clarity
-const AuthRoutes = () => {
-  const { isAuthenticated, role } = useContext(AuthContext);
-  
-  if (!isAuthenticated) {
-    return <Route path="*" element={<Navigate to="/signin" />} />;
-  }
-
-  return (
-    <Route
-      path="/dashboard/*"
-      element={<DashboardLayout>
-        <Routes>
-          {/* Role-Based Dashboard Routes */}
-          {role === 'admin' && <Route path="admin" element={<AdminDashboard />} />}
-          {role === 'manager' && <Route path="manager" element={<ManagerDashboard />} />}
-          {role === 'employee' && <Route path="employee" element={<EmployeeDashboard />} />}
-          {role === 'trainer' && <Route path="trainer" element={<TrainerDashboard />} />}
-          {/* Redirect to role-specific dashboard */}
-          <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
-        </Routes>
-      </DashboardLayout>}
-    />
   );
 }
 
