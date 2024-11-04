@@ -27,6 +27,8 @@ const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashbo
 
 function App() {
   const { isAuthenticated, role } = useContext(AuthContext); // Access AuthContext
+  console.log(role);
+  
 
   return (
     <AuthProvider> {/* Wrap App in AuthProvider */}
