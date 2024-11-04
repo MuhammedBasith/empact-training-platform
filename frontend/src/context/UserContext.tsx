@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 // Define the shape of the user data
 interface User {
@@ -20,14 +20,26 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 // Create a provider component
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  const clearUser = () => setUser(null);
+  // Update localStorage whenever the user changes
+  const handleSetUser = (user: User) => {
+    setUser(user);
+    localStorage.setItem('user', JSON.stringify(user));
+  };
+
+  const clearUser = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+  };
 
   console.log("User context updated:", user);
 
   return (
-    <UserContext.Provider value={{ user, setUser, clearUser }}>
+    <UserContext.Provider value={{ user, setUser: handleSetUser, clearUser }}>
       {children}
     </UserContext.Provider>
   );

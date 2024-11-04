@@ -1,8 +1,8 @@
 import React, { lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baselightTheme } from './theme/DefaultColors';
-import { useUserContext } from './context/UserContext'; // Import the user context
+import { useUserContext } from './context/UserContext';
 
 // Import layouts
 import RootLayout from './layouts/RootLayout';
@@ -24,9 +24,10 @@ const EmployeeDashboard = lazy(() => import('./components/Dashboard/EmployeeDash
 const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashboard'));
 
 function App() {
-  const { user } = useUserContext(); // Use context to get user data
-  const isAuthenticated = !!user; // Determine authentication status
-  const role = user?.role?.toLowerCase(); // Get role from user object, if available
+  const { user } = useUserContext();
+  const isAuthenticated = !!user;
+  const role = user?.role?.toLowerCase();
+  const location = useLocation();
 
   console.log("User:", user);
   console.log("Is Authenticated:", isAuthenticated);
@@ -39,10 +40,26 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomeLayout><Home /></HomeLayout>} />
-          <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
-          <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+
+          {/* Redirect if authenticated */}
+          <Route path="/signin" element={
+            isAuthenticated ? (
+              <Navigate to={`/dashboard/${role}`} replace state={{ from: location }} />
+            ) : (
+              <AuthLayout><SignIn /></AuthLayout>
+            )
+          } />
+
+          <Route path="/signup" element={
+            isAuthenticated ? (
+              <Navigate to={`/dashboard/${role}`} replace state={{ from: location }} />
+            ) : (
+              <AuthLayout><SignUp /></AuthLayout>
+            )
+          } />
+
           <Route path="/reset-password" element={<AuthLayout><ResetPassword /></AuthLayout>} />
-          
+
           {/* Protected Routes for Authenticated Users */}
           {isAuthenticated ? (
             <Route path="/dashboard" element={<DashboardLayout />}>
