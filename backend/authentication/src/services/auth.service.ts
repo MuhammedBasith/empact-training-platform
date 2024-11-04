@@ -1,11 +1,11 @@
-// auth.service.ts
-
 import {
   CognitoIdentityProviderClient,
   GetUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import User from '../models/user.model';
+import { AdminGetUserCommand, AdminSetUserPasswordCommand } from "@aws-sdk/client-cognito-identity-provider";
+import cognitoClientConfigAdmin from "../config/awsConfig";
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.REGION,
@@ -45,4 +45,62 @@ export const findUserByCognitoId = async (cognitoId: string) => {
 export const saveUser = async (cognitoId: string, email: string, name: string, role: string) => {
   const user = new User({ cognitoId, email, name, role });
   return await user.save();
+};
+
+
+// Check if a user is confirmed in Cognito
+export const isUserConfirmed = async (username) => {
+  try {
+      const command = new AdminGetUserCommand({
+          UserPoolId: process.env.USER_POOL_ID,
+          Username: username,
+      });
+      const response = await cognitoClientConfigAdmin.send(command);
+      return response.UserStatus === "CONFIRMED";
+  } catch (error) {
+      console.error("Error checking user confirmation status:", error);
+      throw error;
+  }
+};
+
+
+
+export const confirmNewPassword = async (
+  username: string,
+  newPassword: string
+): Promise<void> => {
+  const params = {
+      UserPoolId:  process.env.USER_POOL_ID!, // Ensure user pool ID is set in your environment
+      Username: username,
+      Password: newPassword,
+      Permanent: true, // Set the password permanently
+  };
+
+  try {
+      const command = new AdminSetUserPasswordCommand(params);
+      await cognitoClientConfigAdmin.send(command);
+      console.log("New password confirmed successfully");
+  } catch (error) {
+      console.error("Error confirming new password:", error);
+      throw error; // Rethrow to handle in the controller
+  }
+};
+
+
+export const saveUserToDatabase = async (cognitoId: string, email: string, name: string, role: string) => {
+  // Create a new user record in MongoDB
+  const newUser = new User({
+      cognitoId,
+      email,
+      name,
+      role,
+  });
+
+  try {
+      const savedUser = await newUser.save();
+      return savedUser;
+  } catch (error) {
+      console.error("Error saving user to database:", error);
+      throw error; // Rethrow to handle in the controller
+  }
 };

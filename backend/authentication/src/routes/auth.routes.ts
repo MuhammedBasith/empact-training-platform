@@ -1,11 +1,14 @@
 // auth.routes.ts
 
 import { Router } from 'express';
-import { verifyController } from '../controllers/auth.controller';
+import { checkUserStatus, verifyController, confirmNewPasswordController, signUpController } from '../controllers/auth.controller';
 
 const router = Router();
 
 // Verify Token Route
 router.post('/verify', verifyController);
+router.get("/checkUserStatus", checkUserStatus);
+router.post('/confirm-new-password', confirmNewPasswordController)
+router.post('/signup', signUpController);
 
 export default router;

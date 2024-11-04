@@ -14,7 +14,7 @@ const UserSchema: Schema = new Schema({
   cognitoId: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   name: { type: String },
-  role: { type: String, enum: ['manager', 'employee', 'trainer', 'admin'], required: true },
+  role: { type: String, enum: ['Manager', 'Employee', 'Trainer', 'admin'], required: true },
   createdAt: { type: Date, default: Date.now },
 });
 

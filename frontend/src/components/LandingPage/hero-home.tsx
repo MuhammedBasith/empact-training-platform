@@ -1,4 +1,4 @@
-import PageIllustration from "../components/page-illustration";
+import PageIllustration from "./page-illustration";
 import Avatar01 from "../assets/images/avatar-01.jpg";
 import Avatar02 from "../assets/images/avatar-02.jpg";
 import Avatar03 from "../assets/images/avatar-03.jpg";
@@ -9,28 +9,6 @@ import Avatar06 from "../assets/images/avatar-06.jpg";
 
 export default function HeroHome() {
 
-  const words = [
-    {
-      text: "The",
-    },
-    {
-      text: "Training",
-      className: "mb-6 border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl",
-    },
-    {
-      text: "Management",
-      className: "text-blue-500 dark:text-blue-500",
-    },
-    {
-      text: "Platform",
-    },
-    {
-      text: "You",
-    },
-    {
-      text: "Need",
-    },
-  ];
 
   return (
     <section className="relative">
@@ -114,7 +92,7 @@ export default function HeroHome() {
                 >
                   <a
                     className="btn group mb-4 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-0 sm:w-auto"
-                    href="#0"
+                    href="/signin"
                   >
                     <span className="relative inline-flex items-center">
                       Start Free Trial{" "}

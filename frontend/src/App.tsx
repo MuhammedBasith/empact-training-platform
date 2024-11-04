@@ -11,15 +11,18 @@ import AuthLayout from './layouts/AuthLayout';
 import HomeLayout from './layouts/HomeLayout'; // Import HomeLayout
 import Home from './components/Home'; // Import Home
 import { Routes, Route } from 'react-router-dom';
+import SignUp from './components/Auth/signup/SignUp';
+import ResetPassword from './components/Auth/reset-password/ResetPassword';
+
 
 function App() {
   return (
       <RootLayout>
         <Routes>
           <Route path="/" element={<HomeLayout><Home /></HomeLayout>} />
-
           <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
-
+          <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+          <Route path="/reset-password" element={<AuthLayout><ResetPassword /></AuthLayout>} />
         </Routes>
       </RootLayout>
   );

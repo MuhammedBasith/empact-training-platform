@@ -8,7 +8,7 @@ import 'dotenv/config'
 
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet()); // For security headers
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check route
 app.get('/', (req: Request, res: Response) => {
