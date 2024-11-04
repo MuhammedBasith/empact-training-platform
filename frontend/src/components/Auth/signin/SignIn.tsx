@@ -1,67 +1,65 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn, initiatePasswordReset } from "../AuthService"; // Adjust the import path as necessary
+import { signIn, initiatePasswordReset } from "../AuthService";
+import { AuthContext } from "../../../context/AuthContext";
 
 export const metadata = {
-  title: "Sign In - Simple",
+  title: "Sign In - Empact",
   description: "Page description",
 };
 
 export default function SignIn() {
+  const { setUser, setIsAuthenticated } = useContext(AuthContext);
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isVerificationRequired, setIsVerificationRequired] = useState(false);
   const [newPassword, setNewPassword] = useState("");
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const navigate = useNavigate();
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const checkUserStatus = async (username) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/checkUserStatus?username=${username}`);
+      const data = await response.json();
+      return data.isConfirmed;
+    } catch (error) {
+      console.error("Error checking user confirmation status:", error);
+      return false; // Return false on error
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    const checkUserStatus = async (username: string) => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/checkUserStatus?username=${username}`);
-        const data = await response.json();
-        return data.isConfirmed;
-      } catch (error) {
-        console.error("Error checking user confirmation status:", error);
-      }
-    };
+    const isConfirmed = await checkUserStatus(formData.username);
+    if (!isConfirmed) {
+      setError("Account not confirmed. Please verify your email.");
+      setIsVerificationRequired(true);
+      return;
+    }
 
     try {
-      // Check if user is confirmed
-      // const isConfirmed = await isUserConfirmed(formData.username);
-      // const isConfirmed = true
-      const isConfirmed = await checkUserStatus(formData.username)
-      console.log(isConfirmed)
-
-      if (!isConfirmed) {
-        setError("Account not confirmed. Please verify your email.");
-        setIsVerificationRequired(true);
-        return;
-      }
-
-      // Sign in the user
       const result = await signIn(formData.username, formData.password);
       if (result) {
-        // Redirect to the home page or another page
-        navigate("/home");
+        setIsAuthenticated(true);
+        
+        // Navigate to role-specific dashboard
+        const role = result.role.toLowerCase();
+        if(role !== 'nill'){
+          navigate(`/dashboard/${role}`);
+        }
       } else {
         setError("Invalid credentials. Please try again.");
       }
     } catch (err) {
-      if (err.name === "UserNotConfirmedException") {
-        setError("Account not confirmed. Please verify your email.");
-        setIsVerificationRequired(true);
-      } else {
-        setError("Login failed. " + err.message);
-      }
+      setError("Login failed. " + (err.name === "UserNotConfirmedException" ? "Account not confirmed. Please verify your email." : err.message));
+      setIsVerificationRequired(err.name === "UserNotConfirmedException");
     }
   };
 
@@ -69,13 +67,8 @@ export default function SignIn() {
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/confirm-new-password`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          newPassword,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: formData.username, newPassword }),
       });
 
       if (!response.ok) {
@@ -83,7 +76,7 @@ export default function SignIn() {
       }
 
       setSuccessMessage("Password changed successfully. You can now log in.");
-      setError('')
+      setError('');
       setIsVerificationRequired(false);
     } catch (err) {
       setError("Failed to change password: " + err.message);
@@ -104,18 +97,14 @@ export default function SignIn() {
       <div className="mb-10">
         <h1 className="text-4xl font-bold">Sign in to your account</h1>
       </div>
-      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="username"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="username">
               Email
             </label>
             <input
-              id="username" // Changed to username to align with AWS Cognito's expectations
+              id="username"
               className="form-input w-full py-2"
               type="email"
               placeholder="employee@ust.com"
@@ -125,10 +114,7 @@ export default function SignIn() {
             />
           </div>
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-gray-700"
-              htmlFor="password"
-            >
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="password">
               Password
             </label>
             <input
@@ -149,12 +135,11 @@ export default function SignIn() {
           </button>
         </div>
       </form>
-      {/* Bottom link */}
       <div className="mt-6 text-center">
         <Link
           className="text-sm text-gray-700 underline hover:no-underline"
           to="/reset-password"
-          onClick={handleInitiatePasswordReset} // Initiate password reset process
+          onClick={handleInitiatePasswordReset}
         >
           Forgot password
         </Link>
@@ -169,21 +154,17 @@ export default function SignIn() {
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="form-input w-full py-2 mt-2"
+            className="form-input w-full py-2"
           />
-          <button
-            onClick={handleVerifyAccount}
-            className="btn mt-4 w-full bg-gradient-to-t from-green-600 to-green-500 text-white"
-          >
-            Set New Password
+          <button className="btn mt-2" onClick={handleVerifyAccount}>
+            Verify Account
           </button>
         </div>
       )}
 
-      {/* Success message */}
-      {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
-      {/* Error message */}
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {/* Error and success messages */}
+      {error && <p className="text-red-500">{error}</p>}
+      {successMessage && <p className="text-green-500">{successMessage}</p>}
     </>
   );
 }
