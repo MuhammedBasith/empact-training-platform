@@ -1,8 +1,8 @@
-// src/App.js
 import React, { lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baselightTheme } from './theme/DefaultColors';
+import { useUserContext } from './context/UserContext'; // Import the user context
 
 // Import layouts
 import RootLayout from './layouts/RootLayout';
@@ -24,8 +24,13 @@ const EmployeeDashboard = lazy(() => import('./components/Dashboard/EmployeeDash
 const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashboard'));
 
 function App() {
-  const isAuthenticated = !!sessionStorage.getItem('idToken'); // Assuming user data is stored in session storage
-  const role = sessionStorage.getItem('customRole'); // Retrieve role from session storage
+  const { user } = useUserContext(); // Use context to get user data
+  const isAuthenticated = !!user; // Determine authentication status
+  const role = user?.role?.toLowerCase(); // Get role from user object, if available
+
+  console.log("User:", user);
+  console.log("Is Authenticated:", isAuthenticated);
+  console.log("Role:", role);
 
   return (
     <RootLayout>
@@ -37,20 +42,21 @@ function App() {
           <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
           <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
           <Route path="/reset-password" element={<AuthLayout><ResetPassword /></AuthLayout>} />
-
+          
           {/* Protected Routes for Authenticated Users */}
           {isAuthenticated ? (
             <Route path="/dashboard" element={<DashboardLayout />}>
               {/* Role-Based Dashboard Routes */}
-              <Route path="admin" element={<AdminDashboard />} />
-              <Route path="manager" element={<ManagerDashboard />} />
-              <Route path="employee" element={<EmployeeDashboard />} />
-              <Route path="trainer" element={<TrainerDashboard />} />
-              {/* Redirect to role-specific dashboard */}
+              {role === 'admin' && <Route path="admin" element={<AdminDashboard />} />}
+              {role === 'manager' && <Route path="manager" element={<ManagerDashboard />} />}
+              {role === 'employee' && <Route path="employee" element={<EmployeeDashboard />} />}
+              {role === 'trainer' && <Route path="trainer" element={<TrainerDashboard />} />}
+              {/* Redirect to role-specific dashboard if accessing the dashboard route */}
               <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
             </Route>
           ) : (
-            <Route path="*" element={<Navigate to="/signin" />} />
+            // Redirect unauthenticated users to login
+            <Route path="*" element={<Navigate to="/signin" replace />} />
           )}
 
           {/* Fallback Route */}

@@ -1,6 +1,8 @@
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signIn, initiatePasswordReset } from "../AuthService";
+import { useUserContext } from "../../../context/UserContext";
+
 
 export const metadata = {
   title: "Sign In - Empact",
@@ -14,6 +16,8 @@ export default function SignIn() {
   const [isVerificationRequired, setIsVerificationRequired] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const navigate = useNavigate();
+  const { user } = useUserContext(); // Access the setUser function from context
+  const { setUser } = useUserContext();
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -34,24 +38,27 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     const isConfirmed = await checkUserStatus(formData.username);
     if (!isConfirmed) {
       setError("Account not confirmed. Please verify your email.");
       setIsVerificationRequired(true);
       return;
     }
-
+  
     try {
-      const result = await signIn(formData.username, formData.password);
+      const result = await signIn(formData.username, formData.password, setUser);
       if (result) {
-        
         console.log(result);
-        
+  
         // Navigate to role-specific dashboard
-        const role = result.Value?.toLowerCase();
-        if(role !== 'nill'){
+        const role = result.role?.toLowerCase(); // Use the role from the result
+        console.log(result.role, " from sign in");
+  
+        if (role && role !== 'nill') {
           navigate(`/dashboard/${role}`);
+        } else {
+          setError("User role is not defined.");
         }
       } else {
         setError("Invalid credentials. Please try again.");
@@ -61,6 +68,7 @@ export default function SignIn() {
       setIsVerificationRequired(err.name === "UserNotConfirmedException");
     }
   };
+  
 
   const handleVerifyAccount = async () => {
     try {

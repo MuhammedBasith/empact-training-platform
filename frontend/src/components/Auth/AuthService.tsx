@@ -10,8 +10,8 @@ import {
     AdminSetUserPasswordCommand,
     SignUpCommandOutput,
     GetUserCommandOutput,
-    AdminGetUserCommandOutput,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { useUserContext } from "../../context/UserContext";
 import { CognitoUser } from "amazon-cognito-identity-js";
 
 interface AuthResult {
@@ -37,41 +37,51 @@ export const cognitoClient = new CognitoIdentityProviderClient({
     region: import.meta.env.VITE_APP_REGION || "ap-south-1", // Default region
 });
 
-export const signIn = async (username: string, password: string) => {
+export const signIn = async (username: string, password: string, setUser: (user: User) => void) => {
     const params = {
-        AuthFlow: "USER_PASSWORD_AUTH",
-        ClientId: import.meta.env.VITE_APP_CLIENT_ID!,
-        AuthParameters: {
-            USERNAME: username,
-            PASSWORD: password,
-        },
+      AuthFlow: "USER_PASSWORD_AUTH",
+      ClientId: import.meta.env.VITE_APP_CLIENT_ID!,
+      AuthParameters: {
+        USERNAME: username,
+        PASSWORD: password,
+      },
     };
-
+  
     try {
-        const command = new InitiateAuthCommand(params);
-        const response: InitiateAuthCommandOutput = await cognitoClient.send(command);
-
-        if (response.AuthenticationResult) {
-            const { IdToken, AccessToken, RefreshToken } = response.AuthenticationResult;
-            sessionStorage.setItem("idToken", IdToken || "");
-            sessionStorage.setItem("accessToken", AccessToken || "");
-            sessionStorage.setItem("refreshToken", RefreshToken || "");
-
-            const userCommand = new GetUserCommand({ AccessToken: AccessToken! });
-            const userResponse: GetUserCommandOutput = await cognitoClient.send(userCommand);
-
-            const customRole = userResponse.UserAttributes?.find(attr => attr.Name === "custom:role");
-            const customRoleValue = customRole ? customRole.Value : "No custom role found";
-            sessionStorage.setItem("customRole", customRoleValue || 'nill');
-
-            return customRole;
-        }
-        return null;
+      const command = new InitiateAuthCommand(params);
+      const response: InitiateAuthCommandOutput = await cognitoClient.send(command);
+  
+      if (response.AuthenticationResult) {
+        const { IdToken, AccessToken, RefreshToken } = response.AuthenticationResult;
+        sessionStorage.setItem("idToken", IdToken || "");
+        sessionStorage.setItem("accessToken", AccessToken || "");
+        sessionStorage.setItem("refreshToken", RefreshToken || "");
+  
+        const userCommand = new GetUserCommand({ AccessToken: AccessToken! });
+        const userResponse: GetUserCommandOutput = await cognitoClient.send(userCommand);
+  
+        const customRole = userResponse.UserAttributes?.find(attr => attr.Name === "custom:role");
+        const customRoleValue = customRole ? customRole.Value : "nill"; // Use 'nill' instead of default message
+        sessionStorage.setItem("customRole", customRoleValue);
+  
+        // Get additional user attributes
+        const name = userResponse.UserAttributes?.find(attr => attr.Name === "name")?.Value || '';
+        const email = userResponse.UserAttributes?.find(attr => attr.Name === "email")?.Value || '';
+        const cognitoID = userResponse.UserAttributes?.find(attr => attr.Name === "sub")?.Value || '';
+  
+        // Set the user data in context
+        const user = { name, email, role: customRoleValue, cognitoID };
+        setUser(user);
+  
+        return user; // Return the user object
+      }
+      return null;
     } catch (error) {
-        console.error("Error signing in:", error);
-        throw error;
+      console.error("Error signing in:", error);
+      throw error;
     }
-};
+  };
+  
 
 export const signUp = async (email: string, password: string, name: string, role: string): Promise<SignUpResponse> => {
     const params = {
