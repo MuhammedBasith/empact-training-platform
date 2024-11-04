@@ -13,6 +13,7 @@ interface Employee {
 interface Cutoff {
   range: string;
   count: number;
+  duration: number | null;
 }
 
 const EmployeeBatchUploader: React.FC = () => {
@@ -60,11 +61,22 @@ const EmployeeBatchUploader: React.FC = () => {
         return {
           range: `${Math.ceil(upper)} - ${Math.ceil(lower > 0 ? lower : 0)}`,
           count: Math.ceil(employees.length / batchCount),
+          duration: null, // Initialize duration as null
         };
       });
       setCutoffs(newCutoffs);
     }
   };
+
+  // Handle duration input for each batch
+  const handleDurationInput = (index: number, value: number) => {
+    const updatedCutoffs = [...cutoffs];
+    updatedCutoffs[index].duration = value;
+    setCutoffs(updatedCutoffs);
+  };
+
+  // Check if all durations are filled
+  const allDurationsFilled = cutoffs.every((cutoff) => cutoff.duration !== null);
 
   // Confirm creation of batches
   const handleCreateBatches = () => {
@@ -78,6 +90,7 @@ const EmployeeBatchUploader: React.FC = () => {
       batches: cutoffs.map((cutoff, index) => ({
         batchNumber: index + 1,
         range: cutoff.range,
+        duration: cutoff.duration, // Include duration
         employees: employees.slice(index * cutoff.count, (index + 1) * cutoff.count),
       })),
     };
@@ -139,6 +152,7 @@ const EmployeeBatchUploader: React.FC = () => {
                   <TableCell>Batch Number</TableCell>
                   <TableCell>Score Range</TableCell>
                   <TableCell>Employees in Batch</TableCell>
+                  <TableCell>Duration (Weeks)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -147,6 +161,15 @@ const EmployeeBatchUploader: React.FC = () => {
                     <TableCell>Batch {index + 1}</TableCell>
                     <TableCell>{cutoff.range}</TableCell>
                     <TableCell>{cutoff.count}</TableCell>
+                    <TableCell>
+                      <TextField
+                        type="number"
+                        value={cutoff.duration ?? ''}
+                        onChange={(e) => handleDurationInput(index, parseInt(e.target.value, 10))}
+                        placeholder="Duration"
+                        fullWidth
+                      />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -157,7 +180,7 @@ const EmployeeBatchUploader: React.FC = () => {
             color="primary"
             sx={{ mt: 3 }}
             onClick={handleCreateBatches}
-            disabled={cutoffs.length === 0}
+            disabled={cutoffs.length === 0 || !allDurationsFilled} // Disable if any duration is missing
           >
             Create Batches
           </Button>
