@@ -181,3 +181,38 @@ export const confirmRequirement = async (req: Request<{ requirementId: string },
     }
 }
   
+export async function getTrainingRequirements(
+    request: Request<{}, {}, {}>,
+    response: Response<{ trainingRequirements: { cognitoId: string; name: string; trainingCount: number }[] } | { message: string }>
+): Promise<any> {
+    try {
+        // Step 1: Aggregate training requirements by cognitoId
+        const trainingData = await TrainingRequirement.aggregate([
+            {
+                $group: {
+                    _id: '$cognitoId',
+                    trainingCount: { $sum: 1 }
+                }
+            }
+        ]);
+        
+        // Step 2: Fetch user details for each cognitoId
+        const trainingRequirements = await Promise.all(trainingData.map(async item => {
+            const userResponse = await axios.get(`http://localhost:3001/api/auth/${item._id}`);
+            const users = userResponse.data;
+
+            return {
+                cognitoId: item._id,
+                name: users.name || 'Unknown', // Fallback if name is missing
+                trainingCount: item.trainingCount
+            };
+        }));
+
+        // Step 3: Return the response
+        return response.status(200).json({ trainingRequirements });
+
+    } catch (error) {
+        console.error('Error retrieving training requirements:', error);
+        return response.status(500).json({ message: 'Internal server error' });
+    }
+}
