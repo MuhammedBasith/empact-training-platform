@@ -12,7 +12,7 @@ router.put('/:id/empCount', updateEmployeeCount);
 router.put('/:id/batchIds',updateBatchIds)
 router.delete('/:id', deleteTrainingRequirement);
 router.get('/:id',getTrainingRequirementsByManager);
-router.get('/',getTrainingRequirements)
+router.get('/',getTrainingRequirements)   // cognitoId, name & count
 
 
 export default router;
