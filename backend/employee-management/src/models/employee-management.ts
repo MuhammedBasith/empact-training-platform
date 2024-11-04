@@ -8,7 +8,6 @@ export interface IEmployeeManagement extends Document{
     empSkills: string,
     trainingIds: mongoose.Types.ObjectId | null;
     department: string;
-    role: 'employee';
     hiredAt: Date;
 }
 
@@ -20,7 +19,6 @@ const EmployeeManagementSchema: Schema<IEmployeeManagement> = new Schema({
     empSkills: {type: String, required: true},
     trainingIds: { type: Schema.Types.ObjectId, ref: 'trainingRequirements' },
     department: { type: String, required: true },
-    role: { type: String, enum: ['employee'], required: true },
     hiredAt: { type: Date }
   });
 
