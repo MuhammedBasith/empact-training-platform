@@ -3,9 +3,10 @@ import TrainerFeedbackWithProgress, { ITrainerFeedbackWithProgress } from "../mo
 
 export const createTrainerFeedbackWithProgress = async (req: Request, res: Response): Promise<any> => {
     const {
+        batchId,
         trainerId,
         trainingId,  // Updated to match the new schema
-        employeeId,
+        cognitoId,
         feedback, // Added feedback field
         progress = 0, 
         status = 'not started', 
@@ -14,15 +15,16 @@ export const createTrainerFeedbackWithProgress = async (req: Request, res: Respo
     } = req.body;
 
     // Validate required fields
-    if (!trainerId || !trainingId || !employeeId || !feedback) {
+    if (!trainerId || !trainingId || !cognitoId || !feedback) {
         return res.status(400).json({ message: 'Trainer ID, Training ID, Employee ID, and Feedback are required' });
     }
 
     // Create a new training progress document
     const newTrainerFeedbackWithProgress = new TrainerFeedbackWithProgress({
+        batchId,
         trainerId,
         trainingId,
-        employeeId,
+        cognitoId,
         feedback,  // Added feedback field to the document
         progress,
         status,
@@ -53,15 +55,15 @@ export const getAllTrainerFeedbackWithProgress = async (
     }
 };
 
-export const getTrainerFeedbackWithProgressById = async (
-    req: Request<{ id: string }>, // Expecting an ID parameter
+export const getTrainerFeedbackWithProgressBycognitoId = async (
+    req: Request<{ cognitoId: string }>, // Expecting an ID parameter
     res: Response
 ): Promise<any> => {
-    const { id } = req.params; // Get the ID from the request parameters
+    const { cognitoId } = req.params; // Get the ID from the request parameters
 
     try {
         // Fetch the training progress record by ID from the database
-        const trainerFeedbackWithProgressRecord = await TrainerFeedbackWithProgress.findById(id);
+        const trainerFeedbackWithProgressRecord = await TrainerFeedbackWithProgress.findOne({cognitoId});
 
         // Check if the record was found
         if (!trainerFeedbackWithProgressRecord) {

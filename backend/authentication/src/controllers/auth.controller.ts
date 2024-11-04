@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
 import { isUserConfirmed, confirmNewPassword, saveUserToDatabase  } from "../services/auth.service";
-
+import  User , { IUser } from '../models/user.model';
 
 // Verify controller
 export const verifyController: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -76,3 +76,27 @@ export const signUpController: RequestHandler = async (req: Request, res: Respon
       res.status(500).json({ message: error.message || 'Failed to create user.' });
   }
 };
+
+export async function getUserDetails(
+    request: Request<{ cognitoId: string }, {}, {}>,
+    response: Response<{  name: string } | { message: string }>
+): Promise<any> {
+    const { cognitoId } = request.params;
+
+    try {
+        const user = await User.findOne({ cognitoId });
+
+        if (!user) {
+            return response.status(404).json({ message: 'User not found' });
+        }
+
+        return response.status(200).json({
+            
+            name: user.name,
+            // Include other user details as necessary
+        });
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        return response.status(500).json({ message: 'Internal server error' });
+    }
+}
