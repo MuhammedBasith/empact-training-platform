@@ -195,24 +195,53 @@ export async function getTrainingRequirements(
                 }
             }
         ]);
-        
-        // Step 2: Fetch user details for each cognitoId
-        const trainingRequirements = await Promise.all(trainingData.map(async item => {
-            const userResponse = await axios.get(`http://localhost:3001/api/auth/${item._id}`);
-            const users = userResponse.data;
-
+        console.log(trainingData)
+        trainingData.map(async item =>{
+            const userResponse = axios.get(`http://localhost:3001/api/auth/${item._id}`);
+            
+            const users = (await userResponse).data;
+            console.log(users)
             return {
                 cognitoId: item._id,
                 name: users.name || 'Unknown', // Fallback if name is missing
                 trainingCount: item.trainingCount
             };
-        }));
-
-        // Step 3: Return the response
-        return response.status(200).json({ trainingRequirements });
-
-    } catch (error) {
+           
+        })
+        } catch (error) {
         console.error('Error retrieving training requirements:', error);
+        return response.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export async function getEmpCountById(
+    request: Request<{ id: string }, {}, {}>,
+    response: Response<{ empCount: number; trainingName: string } | { message: string }>
+): Promise<any> {
+    try {
+        // Extract the training requirement ID from the request parameters
+        const { id } = request.params;
+
+        // Check if the ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return response.status(400).json({ message: 'Invalid ID format' });
+        }
+
+        // Find the training requirement by ID
+        const trainingRequirement = await TrainingRequirement.findById(id);
+
+        // Check if the training requirement exists
+        if (!trainingRequirement) {
+            return response.status(404).json({ message: 'Training requirement not found' });
+        }
+
+        // Return the employee count and training name
+        return response.status(200).json({ 
+            empCount: trainingRequirement.empCount, 
+            trainingName: trainingRequirement.trainingName 
+        });
+    } catch (error) {
+        console.error('Error retrieving employee count:', error);
         return response.status(500).json({ message: 'Internal server error' });
     }
 }
