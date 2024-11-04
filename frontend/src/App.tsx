@@ -20,7 +20,6 @@ import NotFound from './components/NotFound';
 // Lazy load dashboard components for each role
 const AdminDashboard = lazy(() => import('./components/Dashboard/AdminDashboard'));
 const ManagerDashboard = lazy(() => import('./components/Dashboard/ManagerDashboard'));
-const EmployeeDashboard = lazy(() => import('./components/Dashboard/EmployeeDashboard'));
 const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashboard'));
 
 function App() {
@@ -28,10 +27,6 @@ function App() {
   const isAuthenticated = !!user;
   const role = user?.role?.toLowerCase();
   const location = useLocation();
-
-  console.log("User:", user);
-  console.log("Is Authenticated:", isAuthenticated);
-  console.log("Role:", role);
 
   return (
     <RootLayout>
@@ -66,7 +61,6 @@ function App() {
               {/* Role-Based Dashboard Routes */}
               {role === 'admin' && <Route path="admin" element={<AdminDashboard />} />}
               {role === 'manager' && <Route path="manager" element={<ManagerDashboard />} />}
-              {role === 'employee' && <Route path="employee" element={<EmployeeDashboard />} />}
               {role === 'trainer' && <Route path="trainer" element={<TrainerDashboard />} />}
               {/* Redirect to role-specific dashboard if accessing the dashboard route */}
               <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
