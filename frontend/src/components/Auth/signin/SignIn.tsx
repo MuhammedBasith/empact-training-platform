@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signIn, initiatePasswordReset } from "../AuthService";
-import { AuthContext } from "../../../context/AuthContext";
 
 export const metadata = {
   title: "Sign In - Empact",
@@ -9,7 +8,6 @@ export const metadata = {
 };
 
 export default function SignIn() {
-  const { setUser, setIsAuthenticated } = useContext(AuthContext);
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -47,7 +45,6 @@ export default function SignIn() {
     try {
       const result = await signIn(formData.username, formData.password);
       if (result) {
-        setIsAuthenticated(true);
         
         // Navigate to role-specific dashboard
         const role = result.role.toLowerCase();

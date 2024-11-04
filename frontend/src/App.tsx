@@ -3,7 +3,6 @@ import React, { lazy, useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baselightTheme } from './theme/DefaultColors';
-import { AuthContext, AuthProvider } from './context/AuthContext';
 
 // Import layouts
 import RootLayout from './layouts/RootLayout';
@@ -51,7 +50,6 @@ function App() {
 
 // Extracted AuthRoutes for clarity
 const AuthRoutes = () => {
-  const { isAuthenticated, role } = useContext(AuthContext);
   
   if (!isAuthenticated) {
     return <Route path="*" element={<Navigate to="/signin" />} />;
