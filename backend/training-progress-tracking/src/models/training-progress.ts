@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface ITrainerFeedbackWithProgress extends Document {
     batchId: mongoose.Types.ObjectId;
     trainerId: mongoose.Types.ObjectId;
-    employeeId: mongoose.Types.ObjectId;
+    cognitoId: mongoose.Types.ObjectId;
     feedback: string;
     createdAt: Date;
     trainingId: mongoose.Types.ObjectId;
@@ -16,7 +16,7 @@ export interface ITrainerFeedbackWithProgress extends Document {
 const TrainerFeedbackWithProgressSchema: Schema<ITrainerFeedbackWithProgress> = new Schema({
     batchId: { type: Schema.Types.ObjectId, required: true, ref: 'Batch' },
     trainerId: { type: Schema.Types.ObjectId, required: true, ref: 'Trainer' },
-    employeeId: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
+    cognitoId: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
     feedback: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
 

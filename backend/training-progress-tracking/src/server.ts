@@ -18,4 +18,4 @@ mongoose.connect(config.mongoUri)
     console.log(`server started on ${PORT}`)
    })
 
-   app.use('/api/training-progress',TrainingProgressRoutes);
+   app.use('/api/v1/training-progress',TrainingProgressRoutes);
