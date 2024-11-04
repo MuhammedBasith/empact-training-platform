@@ -6,7 +6,7 @@ import {config} from './config/db';
 import EmployeeManagementRoutes from './routes/employee-management';
 const app = express();
 
-const PORT=process.env.PORT || 3003;
+const PORT=process.env.PORT || 3006;
 
 app.use(bodyParser.json());
 mongoose.connect(config.mongoUri)
