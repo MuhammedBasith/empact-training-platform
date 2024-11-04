@@ -1,4 +1,4 @@
-import TestimonialImg from "../assets/images/large-testimonial.jpg"
+import TestimonialImg from "../../assets/images/large-testimonial.jpg"
 export default function LargeTestimonial() {
   return (
     <section>

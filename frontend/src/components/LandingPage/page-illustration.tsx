@@ -1,4 +1,4 @@
-import Stripes from "../assets/images/stripes.svg";
+import Stripes from "../../assets/images/stripes.svg";
 
 export default function PageIllustration() {
   return (

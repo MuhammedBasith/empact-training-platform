@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow, Typography, Paper, Box, CircularProgress } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow, Typography, Paper, Box, CircularProgress, MenuItem, Select } from '@mui/material';
 import { UploadFile } from '@mui/icons-material';
 import readXlsxFile from 'read-excel-file';
 import axios from 'axios';
@@ -14,6 +14,13 @@ interface Cutoff {
   range: string;
   count: number;
   duration: number | null;
+  trainerId: string | null;
+}
+
+interface Trainer {
+  id: string;
+  name: string;
+  expertise: string;
 }
 
 const EmployeeBatchUploader: React.FC = () => {
@@ -22,10 +29,25 @@ const EmployeeBatchUploader: React.FC = () => {
   const [maxMarks, setMaxMarks] = useState<number | null>(null);
   const [batches, setBatches] = useState<number>(0);
   const [cutoffs, setCutoffs] = useState<Cutoff[]>([]);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Handle file upload and parse Excel
+  const trainingRequirementId = sessionStorage.getItem('trainingRequirementId');
+
+  useEffect(() => {
+    // Fetch trainers from backend
+    const fetchTrainers = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainers`);
+        setTrainers(response.data); // Assume response data is an array of trainers with id and name
+      } catch (error) {
+        console.error('Error fetching trainers:', error);
+      }
+    };
+    fetchTrainers();
+  }, []);
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files ? event.target.files[0] : null;
     if (uploadedFile) {
@@ -43,14 +65,12 @@ const EmployeeBatchUploader: React.FC = () => {
     }
   };
 
-  // Handle maximum marks input
   const handleMaxMarksInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMaxMarks(Number(event.target.value));
     setBatches(0);
     setCutoffs([]);
   };
 
-  // Handle number of batches input and calculate cutoffs
   const handleBatchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const batchCount = parseInt(event.target.value, 10);
     if (batchCount > 0 && maxMarks) {
@@ -61,36 +81,41 @@ const EmployeeBatchUploader: React.FC = () => {
         return {
           range: `${Math.ceil(upper)} - ${Math.ceil(lower > 0 ? lower : 0)}`,
           count: Math.ceil(employees.length / batchCount),
-          duration: null, // Initialize duration as null
+          duration: null,
+          trainerId: null,
         };
       });
       setCutoffs(newCutoffs);
     }
   };
 
-  // Handle duration input for each batch
   const handleDurationInput = (index: number, value: number) => {
     const updatedCutoffs = [...cutoffs];
     updatedCutoffs[index].duration = value;
     setCutoffs(updatedCutoffs);
   };
 
-  // Check if all durations are filled
-  const allDurationsFilled = cutoffs.every((cutoff) => cutoff.duration !== null);
+  const handleTrainerSelection = (index: number, trainerId: string) => {
+    const updatedCutoffs = [...cutoffs];
+    updatedCutoffs[index].trainerId = trainerId;
+    setCutoffs(updatedCutoffs);
+  };
 
-  // Confirm creation of batches
+  const allDurationsAndTrainersFilled = cutoffs.every((cutoff) => cutoff.duration !== null && cutoff.trainerId !== null);
+
   const handleCreateBatches = () => {
     setDialogOpen(true);
   };
 
-  // Send data to backend
   const confirmAndSendData = async () => {
     setDialogOpen(false);
     const dataToSend = {
+      trainingRequirementId,
       batches: cutoffs.map((cutoff, index) => ({
         batchNumber: index + 1,
         range: cutoff.range,
-        duration: cutoff.duration, // Include duration
+        duration: cutoff.duration,
+        trainerId: cutoff.trainerId,
         employees: employees.slice(index * cutoff.count, (index + 1) * cutoff.count),
       })),
     };
@@ -98,10 +123,8 @@ const EmployeeBatchUploader: React.FC = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MICROSERVICES_URL}/api/v1/create-batches`, dataToSend);
       console.log('Batch data sent successfully:', response.data);
-      // Handle success notification or further actions
     } catch (error) {
       console.error('Error sending batch data:', error);
-      // Handle error notification or retries
     }
   };
 
@@ -153,6 +176,8 @@ const EmployeeBatchUploader: React.FC = () => {
                   <TableCell>Score Range</TableCell>
                   <TableCell>Employees in Batch</TableCell>
                   <TableCell>Duration (Weeks)</TableCell>
+                  <TableCell>Trainer</TableCell>
+                  <TableCell>Trainer Expertise</TableCell> {/* New column for expertise */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -170,6 +195,25 @@ const EmployeeBatchUploader: React.FC = () => {
                         fullWidth
                       />
                     </TableCell>
+                    <TableCell>
+                      <Select
+                        value={cutoff.trainerId ?? ''}
+                        onChange={(e) => handleTrainerSelection(index, e.target.value as string)}
+                        displayEmpty
+                        fullWidth
+                      >
+                        <MenuItem value="" disabled>Select Trainer</MenuItem>
+                        {trainers.map((trainer) => (
+                          <MenuItem key={trainer.id} value={trainer.id}>{trainer.name}</MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      {/* Display the selected trainer's expertise */}
+                      {cutoff.trainerId ?
+                        trainers.find(trainer => trainer.id === cutoff.trainerId)?.expertise || 'N/A'
+                        : 'Select Trainer'}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -180,7 +224,7 @@ const EmployeeBatchUploader: React.FC = () => {
             color="primary"
             sx={{ mt: 3 }}
             onClick={handleCreateBatches}
-            disabled={cutoffs.length === 0 || !allDurationsFilled} // Disable if any duration is missing
+            disabled={cutoffs.length === 0 || !allDurationsAndTrainersFilled}
           >
             Create Batches
           </Button>

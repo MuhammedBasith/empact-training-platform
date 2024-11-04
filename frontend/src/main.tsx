@@ -7,11 +7,14 @@ import './css/style.css';
 import './css/additional-styles/custom-fonts.css';
 import './css/additional-styles/theme.css';
 import './css/additional-styles/utility-patterns.css';
+import { AuthProvider } from './context/AuthContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

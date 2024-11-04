@@ -1,4 +1,5 @@
-import path from "path"
+// import path from "path"
+import { resolve } from 'path';
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import svgr from "vite-plugin-svgr";
@@ -8,9 +9,9 @@ export default defineConfig({
   define: {
     global: {},
 },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+resolve: {
+  alias: {
+      src: resolve(__dirname, 'src'),
   },
+},
 })

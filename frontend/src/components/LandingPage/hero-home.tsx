@@ -1,10 +1,10 @@
 import PageIllustration from "./page-illustration";
-import Avatar01 from "../assets/images/avatar-01.jpg";
-import Avatar02 from "../assets/images/avatar-02.jpg";
-import Avatar03 from "../assets/images/avatar-03.jpg";
-import Avatar04 from "../assets/images/avatar-04.jpg";
-import Avatar05 from "../assets/images/avatar-05.jpg";
-import Avatar06 from "../assets/images/avatar-06.jpg";
+import Avatar01 from "../../assets/images/avatar-01.jpg";
+import Avatar02 from "../../assets/images/avatar-02.jpg";
+import Avatar03 from "../../assets/images/avatar-03.jpg";
+import Avatar04 from "../../assets/images/avatar-04.jpg";
+import Avatar05 from "../../assets/images/avatar-05.jpg";
+import Avatar06 from "../../assets/images/avatar-06.jpg";
 // import { BackgroundGradient } from "./ui/background-gradient";
 
 export default function HeroHome() {
@@ -95,7 +95,7 @@ export default function HeroHome() {
                     href="/signin"
                   >
                     <span className="relative inline-flex items-center">
-                      Start Free Trial{" "}
+                      Empact Now{" "}
                       <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
                         -&gt;
                       </span>

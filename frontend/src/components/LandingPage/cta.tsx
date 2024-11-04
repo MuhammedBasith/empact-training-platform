@@ -1,4 +1,4 @@
-import Stripes from "../assets/images/stripes-dark.svg";
+import Stripes from "../../assets/images/stripes-dark.svg";
 
 export default function Cta() {
   return (
@@ -38,7 +38,7 @@ export default function Cta() {
                 href="#0"
               >
                 <span className="relative inline-flex items-center">
-                  Start Free Trial{" "}
+                  Empact Now{" "}
                   <span className="ml-1 tracking-normal text-blue-300 transition-transform group-hover:translate-x-0.5">
                     -&gt;
                   </span>
