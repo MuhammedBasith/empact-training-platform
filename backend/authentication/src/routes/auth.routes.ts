@@ -1,7 +1,7 @@
 // auth.routes.ts
 
 import { Router } from 'express';
-import { checkUserStatus, verifyController, confirmNewPasswordController, signUpController } from '../controllers/auth.controller';
+import { checkUserStatus, verifyController, confirmNewPasswordController, signUpController, getUserDetails } from '../controllers/auth.controller';
 
 const router = Router();
 
@@ -10,5 +10,5 @@ router.post('/verify', verifyController);
 router.get("/checkUserStatus", checkUserStatus);
 router.post('/confirm-new-password', confirmNewPasswordController)
 router.post('/signup', signUpController);
-
+router.get('/:cognitoId',getUserDetails);
 export default router;
