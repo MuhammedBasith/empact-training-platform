@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.682.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
     "@radix-ui/react-label": "^2.1.0",
     "@tabler/icons-react": "^3.20.0",
     "@tailwindcss/forms": "^0.5.9",
@@ -28,6 +30,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
+    "read-excel-file": "^5.8.6",
     "tailwind-merge": "^2.5.4",
     "vite-plugin-svgr": "^4.3.0",
     "webfontloader": "^1.6.28"
