@@ -37,7 +37,7 @@ export const cognitoClient = new CognitoIdentityProviderClient({
     region: import.meta.env.VITE_APP_REGION || "ap-south-1", // Default region
 });
 
-export const signIn = async (username: string, password: string): Promise<AuthResult | null> => {
+export const signIn = async (username: string, password: string) => {
     const params = {
         AuthFlow: "USER_PASSWORD_AUTH",
         ClientId: import.meta.env.VITE_APP_CLIENT_ID!,
@@ -62,9 +62,9 @@ export const signIn = async (username: string, password: string): Promise<AuthRe
 
             const customRole = userResponse.UserAttributes?.find(attr => attr.Name === "custom:role");
             const customRoleValue = customRole ? customRole.Value : "No custom role found";
-            sessionStorage.setItem("customRole", customRoleValue);
+            sessionStorage.setItem("customRole", customRoleValue || 'nill');
 
-            return response.AuthenticationResult;
+            return customRole;
         }
         return null;
     } catch (error) {
