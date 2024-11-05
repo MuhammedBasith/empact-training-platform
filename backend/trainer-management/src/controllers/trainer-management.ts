@@ -44,13 +44,13 @@ export async function getAllTrainers(
 }
 
 export async function getTrainerById(
-    request: Request<{ id: string }>,
+    request: Request<{ trainingId: string }>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { id } = request.params; // Extract the trainer ID from URL parameters
+    const { trainingId } = request.params; // Extract the trainer ID from URL parameters
 
     try {
-        const trainer = await TrainerManagement.findById(id); // Find trainer by ID
+        const trainer = await TrainerManagement.findOne({trainingId}); // Find trainer by ID
         if (!trainer) {
             return response.status(404).json({ message: 'Trainer not found' });
         }
