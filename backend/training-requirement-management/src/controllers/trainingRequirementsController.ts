@@ -216,7 +216,7 @@ export async function getTrainingRequirements(
 
 export async function getEmpCountById(
     request: Request<{ id: string }, {}, {}>,
-    response: Response<{ empCount: number; trainingName: string } | { message: string }>
+    response: Response<{trainingRequirementId: string; empCount: number; trainingName: string; duration: string; skills_to_train?: string; } | { message: string }>
 ): Promise<any> {
     try {
         // Extract the training requirement ID from the request parameters
@@ -237,11 +237,37 @@ export async function getEmpCountById(
 
         // Return the employee count and training name
         return response.status(200).json({ 
+            trainingRequirementId: trainingRequirement._id.toString(),
             empCount: trainingRequirement.empCount, 
-            trainingName: trainingRequirement.trainingName 
+            trainingName: trainingRequirement.trainingName
+            ,duration: trainingRequirement.duration ,
+            skills_to_train: trainingRequirement.skills_to_train
         });
     } catch (error) {
         console.error('Error retrieving employee count:', error);
         return response.status(500).json({ message: 'Internal server error' });
+    }
+}
+export async function getTrainingRequirementUnderAManager(
+    request: Request<{ id: string }, {}, {}>, 
+    response: Response
+): Promise<any> {
+    const { id } = request.params; // Extract the ID from the URL parameters
+    try {
+        // Step 2: Find the training requirement by its ID
+        const trainingRequirement = await TrainingRequirement.findById(id);
+
+        // Step 3: If the training requirement doesn't exist, return a 404 error
+        if (!trainingRequirement) {
+            return response.status(404).json({ message: 'Training requirement not found' });
+        }
+
+        // Step 4: Return the found training requirement
+        return response.status(200).json(trainingRequirement);
+
+    } catch (error) {
+        // Step 5: Handle errors and return a 500 status with the error message
+        console.error('Error retrieving training requirement:', error);
+        return response.status(500).json({ message: 'Internal server error', error: error.message });
     }
 }

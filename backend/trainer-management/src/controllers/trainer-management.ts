@@ -61,14 +61,14 @@ export async function getTrainerById(
 }
 
 export async function updateTrainer(
-    request: Request<{ id: string }, ITrainer, Partial<Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>>,
+    request: Request<{ cognitoId: string }, ITrainer, Partial<Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { id } = request.params; // Extract the trainer ID from URL parameters
+    const { cognitoId } = request.params; // Extract the trainer ID from URL parameters
     const updateData = request.body; // Get the update data from the request body
 
     try {
-        const trainer = await TrainerManagement.findByIdAndUpdate(id, updateData, {
+        const trainer = await TrainerManagement.findOneAndUpdate({cognitoId}, updateData, {
             new: true, // Return the updated document
             runValidators: true // Run schema validations
         });
