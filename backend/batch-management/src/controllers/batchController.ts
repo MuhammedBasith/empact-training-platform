@@ -1,18 +1,21 @@
 import { Request, Response } from 'express';
-import Batch from '../models/batchModel';
+import Batch, { IBatch } from '../models/batchModel';
 // import TrainerFeedback from '../models/trainerFeedbackModel';
 import { CreateBatchDto, GetBatchResponse } from '../dtos/batch.dto';
 import { CreateTrainerFeedbackDto, TrainerFeedbackResponse } from '../dtos/trainerFeedback.dto';
 import mongoose from 'mongoose';
 import axios from 'axios';
 
-export const createBatch = async (req: Request<{}, {}, { trainingRequirementId: string; batches: CreateBatchDto[] }>, res: Response<GetBatchResponse>) => {
+export async function createBatch(
+    request: Request<{}, {}, { trainingRequirementId: string; batches: CreateBatchDto[] }>,
+    response: Response<GetBatchResponse>
+): Promise<any> {
     try {
-        const { trainingRequirementId, batches } = req.body;
+        const { trainingRequirementId, batches } = request.body;
 
         // Ensure batches are provided
         if (!batches || batches.length === 0) {
-            return res.status(400).json({ success: false, message: 'No batches provided' });
+            return response.status(400).json({ success: false, message: 'No batches provided' });
         }
 
         // Array to store created batches
@@ -24,7 +27,7 @@ export const createBatch = async (req: Request<{}, {}, { trainingRequirementId: 
 
             // Ensure batch has employees
             if (!employees || employees.length === 0) {
-                return res.status(400).json({ success: false, message: `Batch ${batchNumber} has no employees` });
+                return response.status(400).json({ success: false, message: `Batch ${batchNumber} has no employees` });
             }
 
             // Step 1: Fetch cognitoIds for each employee
@@ -47,12 +50,12 @@ export const createBatch = async (req: Request<{}, {}, { trainingRequirementId: 
                         employeeCognitoIds.push(cognitoId);
                     } else {
                         console.error(`No cognitoId found for email: ${email}`);
-                        return res.status(500).json({ success: false, message: `Failed to retrieve cognitoId for employee: ${email}` });
+                        return response.status(500).json({ success: false, message: `Failed to retrieve cognitoId for employee: ${email}` });
                     }
                 } catch (error) {
                     // If there's an error fetching cognitoId for an employee, log and return error
                     console.error(`Error fetching cognitoId for ${email}:`, error);
-                    return res.status(500).json({ success: false, message: `Failed to fetch cognitoId for ${email}` });
+                    return response.status(500).json({ success: false, message: `Failed to fetch cognitoId for ${email}` });
                 }
             }
 
@@ -74,24 +77,13 @@ export const createBatch = async (req: Request<{}, {}, { trainingRequirementId: 
         }
 
         // Respond with the created batches
-        return res.status(201).json({ success: true, data: createdBatches });
+        return response.status(201).json({ success: true, data: createdBatches });
     } catch (error) {
         // Catch any unexpected errors
         console.error('Error creating batches:', error);
-        return res.status(500).json({ success: false, data: null, message: 'Internal server error', });
+        return response.status(500).json({ success: false, data: null, message: 'Internal server error' });
     }
-};
-
-export const getAllBatches = async (req: Request, res: Response<GetBatchResponse>) => {
-    try {
-        const batches = await Batch.find();
-        res.status(200).json({ success: true, data: batches });
-    } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        res.status(500).json({ success: false, message, data: null });
-    }
-};
-
+}
 export const addFeedback = async (req: Request<{}, {}, CreateTrainerFeedbackDto>, res: Response<TrainerFeedbackResponse>) => {
     const { batchId, feedback } = req.body;
 
@@ -131,5 +123,29 @@ export async function updateTrainerId(
     } catch (error) {
         console.error(error); // Log error for debugging
         response.status(500).json({ message: 'Error updating trainer ID' });
+    }
+}
+
+
+export async function getBatchById(
+    request: Request<{ batchId: string }>, // batchId will be passed as a URL parameter
+    response: Response<IBatch | { message: string; error?: string }>
+): Promise<any> {
+    const { batchId } = request.params; // Extract the batchId from URL parameters
+
+    try {
+        // Find the batch by ID using `findById`
+        const batch = await Batch.findById(batchId);
+        
+        // If batch is not found, return a 404
+        if (!batch) {
+            return response.status(404).json({ message: 'Batch not found' });
+        }
+
+        // Return the found batch
+        return response.status(200).json(batch);
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({ message: 'Error retrieving batch' });
     }
 }
