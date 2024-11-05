@@ -1,164 +1,208 @@
-Employee Management API Documentation
+# Employee Management API
 
-Base URL
+## Overview
 
-/api/v1/employee-management
+The **Employee Management API** is part of a larger system designed to manage employee data within a company. This API handles employee creation, retrieval, and updates, including linking employees to training sessions by their respective training IDs.
 
-1. Create Employee
+### Key Features:
+- **Create Employee**: Allows for the creation of new employee records.
+- **Get All Employees**: Retrieves a list of all employees in the system.
+- **Get Employee by Cognito ID**: Fetches details of an employee by their Cognito ID.
+- **Update Employee Training IDs**: Updates the training sessions an employee is associated with.
+- **Find Employees by Training ID**: Finds and lists employees who are assigned to a specific training program.
 
-POST /api/v1/employee-management/
+---
+### 2. **Setup & Installation**
 
-This endpoint allows you to create a new employee in the system.
+#### **Prerequisites**
 
-Request Body
+- Node.js (v14 or higher)
+- MongoDB instance (local or cloud)
 
-```json
-{
-  "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",  // The Cognito user ID (ObjectId)
-  "empName": "John Doe",  // Employee's full name
-  "empEmail": "john.doe@example.com",  // Employee's email address
-  "empAccount": "johndoe123",  // Employee's account/username
-  "empSkills": "JavaScript, Node.js, MongoDB",  // Skills of the employee
-  "trainingIds": "60b7d3fd3407b3f1d4f1bb7a",  // Associated training ID (ObjectId)
-  "department": "Engineering",  // Department the employee belongs to
-  "hiredAt": "2024-11-05T00:00:00Z"  // Date of hire (ISO format)
-}
+#### **Steps to Run the Service**
 
-```
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/MuhammedBasith/empact-training-platform/employee-management.git
+   cd employee-management
+   ```
 
-Response
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-```json
-{
-  "_id": "60b7d3fd3407b3f1d4f1bb7a",
-  "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
-  "empName": "John Doe",
-  "empEmail": "john.doe@example.com",
-  "empAccount": "johndoe123",
-  "empSkills": "JavaScript, Node.js, MongoDB",
-  "trainingIds": "60b7d3fd3407b3f1d4f1bb7a",
-  "department": "Engineering",
-  "hiredAt": "2024-11-05T00:00:00Z",
-  "__v": 0
-}
+3. **Run the Application**:
+   ```bash
+   npm run dev
+   ```
 
-```
-2. Get All Employees
+   The application will be available at `http://localhost:3006`.
 
-GET /api/v1/employee-management/
 
-This endpoint retrieves a list of all employees in the system.
+## Endpoints Overview
 
-Response
+### 1. **Create Employee**
 
-```json
-[
-  {
-    "_id": "60b7d3fd3407b3f1d4f1bb7a",
-    "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
-    "empName": "John Doe",
-    "empEmail": "john.doe@example.com",
-    "empAccount": "johndoe123",
-    "empSkills": "JavaScript, Node.js, MongoDB",
-    "trainingIds": "60b7d3fd3407b3f1d4f1bb7a",
-    "department": "Engineering",
-    "hiredAt": "2024-11-05T00:00:00Z"
-  },
-  {
-    "_id": "60b7d3fd3407b3f1d4f1bb7b",
-    "cognitoId": "60b7d3fd3407b3f1d4f1bb7b",
-    "empName": "Jane Smith",
-    "empEmail": "jane.smith@example.com",
-    "empAccount": "janesmith456",
-    "empSkills": "Python, Django, SQL",
-    "trainingIds": "60b7d3fd3407b3f1d4f1bb7b",
-    "department": "Engineering",
-    "hiredAt": "2024-05-10T00:00:00Z"
-  }
-]
+- **Endpoint**: `POST /api/v1/employee-management`
+- **Description**: Creates a new employee record in the system.
+- **Request Body**:
+    ```json
+    {
+        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",  // Cognito user ID
+        "empName": "John Doe",                    // Employee's name
+        "empEmail": "john.doe@example.com",        // Employee's email
+        "empAccount": "jdoe123",                   // Employee account identifier
+        "empSkills": "JavaScript, Node.js",        // Skills of the employee
+        "trainingIds": "60b7d3fd3407b3f1d4f1bb7b", // Linked training IDs (optional)
+        "department": "Engineering",               // Department of the employee
+        "hiredAt": "2024-11-05T12:34:56.789Z"     // Hiring date (ISO string)
+    }
+    ```
+- **Response**:
+    ```json
+    {
+        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
+        "empName": "John Doe",
+        "empEmail": "john.doe@example.com",
+        "empAccount": "jdoe123",
+        "empSkills": "JavaScript, Node.js",
+        "trainingIds": "60b7d3fd3407b3f1d4f1bb7b",
+        "department": "Engineering",
+        "hiredAt": "2024-11-05T12:34:56.789Z"
+    }
+    ```
+- **Errors**:
+    - `500 Internal Server Error`: Error creating the employee.
 
-```
-3. Get Employee by Cognito ID
+---
 
-GET /api/v1/employee-management/:cognitoId
+### 2. **Get All Employees**
 
-This endpoint retrieves an employee by their Cognito user ID.
+- **Endpoint**: `GET /api/v1/employee-management`
+- **Description**: Retrieves a list of all employees in the system.
+- **Response**:
+    ```json
+    [
+        {
+            "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
+            "empName": "John Doe",
+            "empEmail": "john.doe@example.com",
+            "empAccount": "jdoe123",
+            "empSkills": "JavaScript, Node.js",
+            "trainingIds": "60b7d3fd3407b3f1d4f1bb7b",
+            "department": "Engineering",
+            "hiredAt": "2024-11-05T12:34:56.789Z"
+        },
+        {
+            "cognitoId": "60b7d3fd3407b3f1d4f1bb7b",
+            "empName": "Jane Smith",
+            "empEmail": "jane.smith@example.com",
+            "empAccount": "jsmith456",
+            "empSkills": "Python, Django",
+            "trainingIds": "60b7d3fd3407b3f1d4f1bb7c",
+            "department": "Backend Development",
+            "hiredAt": "2024-11-10T10:15:42.123Z"
+        }
+    ]
+    ```
+- **Errors**:
+    - `500 Internal Server Error`: Error retrieving the list of employees.
 
-Parameters
+---
 
--cognitoId (URL Parameter): The Cognito user ID (ObjectId) of the employee.
+### 3. **Get Employee by Cognito ID**
 
-Response
+- **Endpoint**: `GET /api/v1/employee-management/:cognitoId`
+- **Description**: Retrieves the details of a specific employee based on their Cognito ID.
+- **Response**:
+    ```json
+    {
+        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
+        "empName": "John Doe",
+        "empEmail": "john.doe@example.com",
+        "empAccount": "jdoe123",
+        "empSkills": "JavaScript, Node.js",
+        "trainingIds": "60b7d3fd3407b3f1d4f1bb7b",
+        "department": "Engineering",
+        "hiredAt": "2024-11-05T12:34:56.789Z"
+    }
+    ```
+- **Errors**:
+    - `404 Not Found`: Employee with the specified Cognito ID not found.
+    - `500 Internal Server Error`: Error retrieving the employee details.
 
-```json
-{
-  "_id": "60b7d3fd3407b3f1d4f1bb7a",
-  "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
-  "empName": "John Doe",
-  "empEmail": "john.doe@example.com",
-  "empAccount": "johndoe123",
-  "empSkills": "JavaScript, Node.js, MongoDB",
-  "trainingIds": "60b7d3fd3407b3f1d4f1bb7a",
-  "department": "Engineering",
-  "hiredAt": "2024-11-05T00:00:00Z"
-}
+---
 
-```
-4. Update Employee Training IDs
+### 4. **Update Employee Training IDs**
 
-PUT /api/v1/employee-management/:cognitoId
+- **Endpoint**: `PUT /api/v1/employee-management/:cognitoId`
+- **Description**: Updates the training session IDs assigned to a specific employee.
+- **Request Body**:
+    ```json
+    {
+        "trainingIds": "60b7d3fd3407b3f1d4f1bb7b"  // Training ID to be assigned
+    }
+    ```
+- **Response**:
+    ```json
+    {
+        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
+        "empName": "John Doe",
+        "empEmail": "john.doe@example.com",
+        "empAccount": "jdoe123",
+        "empSkills": "JavaScript, Node.js",
+        "trainingIds": "60b7d3fd3407b3f1d4f1bb7b",
+        "department": "Engineering",
+        "hiredAt": "2024-11-05T12:34:56.789Z"
+    }
+    ```
+- **Errors**:
+    - `404 Not Found`: Employee with the specified Cognito ID not found.
+    - `400 Bad Request`: Invalid training ID format.
+    - `500 Internal Server Error`: Error updating the training IDs.
 
-This endpoint updates the training IDs associated with an employee.
+---
 
-Parameters
+### 5. **Find Employees by Training ID**
 
--cognitoId (URL Parameter): The Cognito user ID (ObjectId) of the employee whose training IDs are to be updated.
+- **Endpoint**: `GET /api/v1/employee-management/emp/:trainingId`
+- **Description**: Finds all employees who are assigned to a specific training session by its ID.
+- **Response**:
+    ```json
+    [
+        {
+            "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
+            "empName": "John Doe",
+            "empEmail": "john.doe@example.com",
+            "empAccount": "jdoe123",
+            "empSkills": "JavaScript, Node.js",
+            "trainingIds": "60b7d3fd3407b3f1d4f1bb7b",
+            "department": "Engineering",
+            "hiredAt": "2024-11-05T12:34:56.789Z"
+        }
+    ]
+    ```
+- **Errors**:
+    - `400 Bad Request`: Invalid training ID format.
+    - `404 Not Found`: No employees found with the specified training ID.
+    - `500 Internal Server Error`: Error retrieving employees.
 
-Request Body
-```json
-{
-  "trainingIds": "60b7d3fd3407b3f1d4f1bb7a"  // New training ID (ObjectId)
-}
-```
-Response
-```json
-{
-  "_id": "60b7d3fd3407b3f1d4f1bb7a",
-  "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
-  "empName": "John Doe",
-  "empEmail": "john.doe@example.com",
-  "empAccount": "johndoe123",
-  "empSkills": "JavaScript, Node.js, MongoDB",
-  "trainingIds": "60b7d3fd3407b3f1d4f1bb7a",  // Updated training ID
-  "department": "Engineering",
-  "hiredAt": "2024-11-05T00:00:00Z"
-}
-````
-5. Find Employees by Training ID
+---
 
-GET /api/v1/employee-management/emp/:trainingId
+## Data Models
 
-This endpoint retrieves all employees who are associated with a specific training ID.
+### Employee Model (`IEmployeeManagement`)
 
-Parameters
+Each employee in the system has the following fields:
 
--trainingId (URL Parameter): The training ID (ObjectId) to find employees associated with.
+- **cognitoId**: The unique Cognito ID of the employee.
+- **empName**: The full name of the employee.
+- **empEmail**: The email address of the employee.
+- **empAccount**: The employee’s account identifier (e.g., username).
+- **empSkills**: A comma-separated list of the employee's skills.
+- **trainingIds**: A list of training session IDs the employee is enrolled in.
+- **department**: The department where the employee works.
+- **hiredAt**: The date and time the employee was hired.
 
-Response
-
-```json
-[
-  {
-    "_id": "60b7d3fd3407b3f1d4f1bb7a",
-    "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
-    "empName": "John Doe",
-    "empEmail": "john.doe@example.com",
-    "empAccount": "johndoe123",
-    "empSkills": "JavaScript, Node.js, MongoDB",
-    "trainingIds": "60b7d3fd3407b3f1d4f1bb7a",
-    "department": "Engineering",
-    "hiredAt": "2024-11-05T00:00:00Z"
-  }
-]
-
-```
+---
