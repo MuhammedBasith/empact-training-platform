@@ -248,3 +248,26 @@ export async function getEmpCountById(
         return response.status(500).json({ message: 'Internal server error' });
     }
 }
+export async function getTrainingRequirementUnderAManager(
+    request: Request<{ id: string }, {}, {}>, 
+    response: Response
+): Promise<any> {
+    const { id } = request.params; // Extract the ID from the URL parameters
+    try {
+        // Step 2: Find the training requirement by its ID
+        const trainingRequirement = await TrainingRequirement.findById(id);
+
+        // Step 3: If the training requirement doesn't exist, return a 404 error
+        if (!trainingRequirement) {
+            return response.status(404).json({ message: 'Training requirement not found' });
+        }
+
+        // Step 4: Return the found training requirement
+        return response.status(200).json(trainingRequirement);
+
+    } catch (error) {
+        // Step 5: Handle errors and return a 500 status with the error message
+        console.error('Error retrieving training requirement:', error);
+        return response.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+}
