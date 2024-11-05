@@ -1,4 +1,4 @@
-import Dashboard from "@/views/TrainerView/dashboard/Dashboard";
+import Dashboard from '../../views/TrainerView/dashboard/Dashboard';
 
 const TrainerDashboard = () => {
   return (

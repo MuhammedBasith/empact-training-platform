@@ -1,4 +1,4 @@
-import Dashboard from '@/views/AdminView/dashboard/Dashboard';
+import Dashboard from '../../views/AdminView/dashboard/Dashboard';
 
 const AdminDashboard = () => {
   return (

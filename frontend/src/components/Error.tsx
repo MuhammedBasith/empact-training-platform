@@ -9,10 +9,9 @@ const Error = () => (
     height="100vh"
     textAlign="center"
     justifyContent="center"
-    alignItems="center"  // This centers the content horizontally
+    alignItems="center"
   >
     <Container maxWidth="md">
-      {/* Image centered */}
       <Box display="flex" justifyContent="center">
         <img src={ErrorImg} alt="404" style={{ width: '100%', maxWidth: '500px' }} />
       </Box>

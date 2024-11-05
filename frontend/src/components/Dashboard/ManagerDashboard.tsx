@@ -1,4 +1,4 @@
-import Dashboard from "@/views/ManagerView/dashboard/Dashboard";
+import Dashboard from '../../views/ManagerView/dashboard/Dashboard';
 
 const ManagerDashboard = () => {
   return (
