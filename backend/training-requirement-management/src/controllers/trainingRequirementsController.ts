@@ -298,7 +298,7 @@ export async function getTrainingRequirementsByManager(
                                 if (batchData) {
                                     // Fetch trainer details for the current batch's trainerId
                                     const batchTrainerResponse = await axios.get(
-                                        `http://localhost:3002/api/v1/trainer-management/trainer/${batchData.trainerId}`
+                                        `http://localhost:3002/api/v1/trainer-management/trainers/${batchData.trainerId}`
                                     );
                                     batchData.trainerDetails = batchTrainerResponse.data;
                                 }
