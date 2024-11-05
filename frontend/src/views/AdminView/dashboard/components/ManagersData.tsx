@@ -150,7 +150,7 @@ const ManagersData = () => {
                     </TableHead>
                     <TableBody>
                         {managers.map((manager, index) => (
-                            <TableRow key={manager.cognitoId}>
+                            <TableRow key={manager._id}>
                                 <TableCell>
                                     <Typography sx={{ fontSize: "15px", fontWeight: "500" }}>
                                         {index + 1}
@@ -163,7 +163,7 @@ const ManagersData = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2" fontWeight={600}>
-                                        {manager.trainingsCount}
+                                        {manager.trainingCount}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
