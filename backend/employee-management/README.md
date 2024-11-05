@@ -133,6 +133,7 @@ Response
   "department": "Engineering",
   "hiredAt": "2024-11-05T00:00:00Z"
 }
+````
 5. Find Employees by Training ID
 
 GET /api/v1/employee-management/emp/:trainingId
