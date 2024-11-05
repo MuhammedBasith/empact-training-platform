@@ -100,3 +100,33 @@ export async function getUserDetails(
         return response.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
+export async function getUserCognitoId(
+  request: Request<{ email: string }, {}, {}>, 
+  response: Response<{ cognitoId: string } | { message: string }>
+): Promise<any> {
+  try {
+    // Extract email from request parameters
+    const { email } = request.params;
+
+    // Validate the email format
+    if (!email) {
+      return response.status(400).json({ message: 'Email is required' });
+    }
+
+    // Query the User model to find the user by email
+    const user = await User.findOne({ email });
+
+    // If no user is found, return a 404 response
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' });
+    }
+
+    // Return the cognitoId of the found user
+    return response.status(200).json({ cognitoId: user.cognitoId });
+  } catch (error) {
+    console.error('Error fetching user cognitoId:', error);
+    return response.status(500).json({ message: 'Internal server error' });
+  }
+}
