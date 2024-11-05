@@ -3,6 +3,7 @@ import TrainingRequirement, { ITrainingRequirement } from '../models/trainingReq
 import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto, UpdateTrainingRequirementStatusDto } from '../dtos/trainingRequirements.dto';
 import axios from 'axios';
 import mongoose from 'mongoose';
+import { log } from 'console';
 export async function createTrainingRequirement(
     request: Request<{}, {}, CreateTrainingRequirementDto>,
     response: Response
@@ -156,41 +157,51 @@ export const confirmRequirement = async (req: Request<{ requirementId: string },
     }
   };
   
- 
-export async function getTrainingRequirements(
-    request: Request<{}, {}, {}>,
-    response: Response<{ trainingRequirements: { cognitoId: string; name: string; trainingCount: number }[] } | { message: string }>
-): Promise<any> {
-    try {
-        // Step 1: Aggregate training requirements by cognitoId
-        const trainingData = await TrainingRequirement.aggregate([
-            {
-                $group: {
-                    _id: '$cognitoId',
-                    trainingCount: { $sum: 1 }
-                }
-            }
-        ]);
-        console.log(trainingData)
-        trainingData.map(async item =>{
-            const userResponse = axios.get(`http://localhost:3001/api/auth/${item._id}`);
-            
-            const users = (await userResponse).data;
-            console.log(users)
-            return {
-                cognitoId: item._id,
-                name: users.name , // Fallback if name is missing
-                trainingCount: item.trainingCount
-            };
-           
-        })
 
-        response.status(200).json({ trainingRequirements: trainingData });
-        } catch (error) {
-        console.error('Error retrieving training requirements:', error);
-        return response.status(500).json({ message: 'Internal server error' });
-    }
-}
+  export async function getTrainingRequirements(
+      request: Request<{}, {}, {}>,
+      response: Response<{ trainingRequirements: { cognitoId: string; name: string; trainingCount: number }[] } | { message: string }>
+  ): Promise<any> {
+      try {
+          // Step 1: Aggregate training requirements by cognitoId
+          const trainingData = await TrainingRequirement.aggregate([
+              {
+                  $group: {
+                      _id: '$cognitoId',
+                      trainingCount: { $sum: 1 }
+                  }
+              }
+          ]);
+          
+          // Step 2: Fetch user names concurrently for each cognitoId
+          const enrichedTrainingData = await Promise.all(trainingData.map(async item => {
+              try {
+                  const userResponse = await axios.get(`http://localhost:3001/api/auth/${item._id}`);
+                  const user = userResponse.data; // Assuming user has the name property
+                  
+                  return {
+                      cognitoId: item._id,
+                      name: user.name,  // Assuming the response contains 'name'
+                      trainingCount: item.trainingCount
+                  };
+              } catch (userError) {
+                  console.error('Error fetching user data:', userError);
+                  return {
+                      cognitoId: item._id,
+                      name: 'Unknown',  // Fallback in case of error
+                      trainingCount: item.trainingCount
+                  };
+              }
+          }));
+  
+          // Step 3: Return the enriched training data
+          response.status(200).json({ trainingRequirements: enrichedTrainingData });
+      } catch (error) {
+          console.error('Error retrieving training requirements:', error);
+          return response.status(500).json({ message: 'Internal server error' });
+      }
+  }
+  
 
 export async function getEmpCountById(
     request: Request<{ id: string }, {}, {}>,
