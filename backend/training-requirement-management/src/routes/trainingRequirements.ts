@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirementsByManager, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager } from '../controllers/trainingRequirementsController';
+import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager } from '../controllers/trainingRequirementsController';
 import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../dtos/trainingRequirements.dto';
 
 const router = express.Router();

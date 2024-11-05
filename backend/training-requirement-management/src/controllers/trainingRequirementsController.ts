@@ -156,31 +156,7 @@ export const confirmRequirement = async (req: Request<{ requirementId: string },
     }
   };
   
-  export async function getTrainingRequirementsByManager(
-    request: Request<{ id:string }, {}, {}>,
-    response: Response<{ trainingRequirements: ITrainingRequirement[] } | { message: string }>
-): Promise<any> {
-    const { id } = request.params;
-
-    // Validate managerId (ensure it is a valid ObjectId)
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return response.status(400).json({ message: 'Invalid manager ID. Must be a valid ObjectId.' });
-    }
-
-    try {
-        const trainingRequirements = await TrainingRequirement.find({ cognitoId: id}).exec();
-
-        if (trainingRequirements.length === 0) {
-            return response.status(404).json({ message: 'No training requirements found for this manager' });
-        }
-
-        response.json({ trainingRequirements });
-    } catch (error) {
-        console.error(error); // Log error for debugging
-        response.status(500).json({ message: 'Error fetching training requirements' });
-    }
-}
-  
+ 
 export async function getTrainingRequirements(
     request: Request<{}, {}, {}>,
     response: Response<{ trainingRequirements: { cognitoId: string; name: string; trainingCount: number }[] } | { message: string }>
@@ -269,5 +245,96 @@ export async function getTrainingRequirementUnderAManager(
         // Step 5: Handle errors and return a 500 status with the error message
         console.error('Error retrieving training requirement:', error);
         return response.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+}
+
+export async function getTrainingRequirementsByManager( 
+    request: Request<{ cognitoId: string }, {}, {}>, 
+    response: Response
+): Promise<any> {
+    const { cognitoId } = request.params;  // Extract the cognitoId (manager ID) from URL parameters
+    
+    try {
+        // Step 1: Fetch all training requirements created by the manager (cognitoId)
+        const trainingRequirements = await TrainingRequirement.find({ cognitoId });
+
+        if (!trainingRequirements || trainingRequirements.length === 0) {
+            return response.status(404).json({ message: 'No training requirements found for the given manager.' });
+        }
+
+        // Step 2: Initialize an array to store the aggregated results
+        const result = [];
+
+        // Step 3: Iterate through each training requirement to fetch trainer and batch details
+        for (const training of trainingRequirements) {
+            const { _id, trainingName, batchIds } = training;
+
+            // 1. Fetch trainer details for the current training from the trainer-management microservice
+            let trainerDetails = null;
+
+            if (!batchIds || batchIds.length === 0) {
+                // If no batchIds, get trainer details directly
+                try {
+                    const trainerResponse = await axios.get(`http://localhost:3002/api/v1/trainer-management/trainers/${_id}`);
+                    trainerDetails = trainerResponse.data;
+                } catch (error) {
+                    console.error(`Error fetching trainer details for trainingId: ${_id}`, error);
+                }
+            }
+
+            // 2. If batchIds is not empty, fetch batch details from the batch-management microservice
+            let batchDetails = null;
+            if (batchIds && batchIds.length > 0) {
+                try {
+                    // Fetch batch details using batchIds
+                    const batchResponses = await Promise.all(
+                        batchIds.map(async (batchId) => {
+                            try {
+                                // Fetch batch details for each batchId
+                                const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/${batchId}`);
+                                const batchData = batchResponse.data;
+
+                                // If batch data exists, fetch trainer details for the batch
+                                if (batchData) {
+                                    // Fetch trainer details for the current batch's trainerId
+                                    const batchTrainerResponse = await axios.get(
+                                        `http://localhost:3002/api/v1/trainer-management/trainer/${batchData.trainerId}`
+                                    );
+                                    batchData.trainerDetails = batchTrainerResponse.data;
+                                }
+
+                                return batchData;
+                            } catch (error) {
+                                console.error(`Error fetching batch details for batchId: ${batchId}`, error);
+                                return null;  // If there is an error fetching the batch, return null
+                            }
+                        })
+                    );
+
+                    // Filter out any null responses (in case fetching batch data fails)
+                    batchDetails = batchResponses.filter(batch => batch !== null);
+                } catch (error) {
+                    console.error('Error fetching batch details:', error);
+                }
+            }
+
+            // Step 4: Push the aggregated data for the current training to the result array
+            result.push({
+                _id,
+                trainingName,
+                trainer: trainerDetails,  // Trainer details fetched from the trainer microservice (if no batches)
+                batchDetails,            // Batch details fetched from the batch service (if any)
+            });
+        }
+
+        // Step 5: Return the aggregated result in the response
+        return response.status(200).json({
+            success: true,
+            data: result,
+        });
+
+    } catch (error) {
+        console.error('Error retrieving training details for manager:', error);
+        return response.status(500).json({ message: 'Internal server error' });
     }
 }
