@@ -6,11 +6,12 @@ export async function createTrainer(
     request: Request<{}, ITrainer, Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { name, email, expertise, bio, trainingIds } = request.body;
+    const { cognitoId,name, email, expertise, bio, trainingIds } = request.body;
 
     try {
         // Create a new trainer instance
         const trainer = new TrainerManagement({
+            cognitoId,
             name,
             email,
             expertise,
@@ -135,5 +136,31 @@ export async function assignTrainingToTrainer(
     } catch (error) {
         console.error(error);
         return response.status(500).json({ message: 'Error assigning training to trainer', error: error.message });
+    }
+}
+
+
+export async function getTrainersForDropdown(
+    request: Request, 
+    response: Response
+): Promise<any> {
+    try {
+        // Step 1: Fetch all trainers, only retrieving cognitoId, name, and expertise
+        const trainers = await TrainerManagement.find(
+            {}, // Empty filter to get all trainers
+            { cognitoId: 1, name: 1, expertise: 1 } // Projection: only these fields are returned
+        );
+
+        // Step 2: If no trainers found, return a 404
+        if (trainers.length === 0) {
+            return response.status(404).json({ message: 'No trainers found' });
+        }
+
+        // Step 3: Return the list of trainers
+        return response.status(200).json(trainers);
+    } catch (error) {
+        // Step 4: Error handling
+        console.error('Error fetching trainers:', error);
+        return response.status(500).json({ message: 'Internal server error', error: error.message });
     }
 }
