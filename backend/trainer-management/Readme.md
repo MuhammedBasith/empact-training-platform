@@ -21,7 +21,6 @@ The **Trainer Management API** is part of a training management system designed 
 
 - Node.js (v14 or higher)
 - MongoDB instance (local or cloud)
-- Access to Google Generative AI or a similar generative AI service (configured via API keys)
 
 #### **Steps to Run the Service**
 
