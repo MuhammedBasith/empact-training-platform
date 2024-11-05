@@ -56,4 +56,63 @@ Errors:
 500 Internal Server Error if there’s an issue fetching employee Cognito IDs or creating the batch.
 
 
+2. Update Trainer ID for an Existing Batch
 
+Endpoint: PUT /api/v1/batch-management/:id
+
+Description: Updates the trainer ID for an existing batch.
+
+(JSON)
+
+Request Body 
+
+{
+    "trainerID": "60b7d6f63407b3f1d4f1bb7b"  // New Trainer ID (ObjectId)
+}
+
+Response Body
+{
+    "message": "Trainer ID updated successfully",
+    "updatedBatch": {
+        "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",
+        "batchNumber": 1,
+        "trainerId": "60b7d6f63407b3f1d4f1bb7b",
+        "employeeIds": ["cognitoId1", "cognitoId2"],
+        "duration": "4 weeks",
+        "range": "85 - 80",
+        "count": 2,
+        "createdAt": "2024-11-05T12:34:56.789Z"
+    }
+}
+Errors:
+
+404 Not Found if the batch with the provided ID does not exist.
+
+500 Internal Server Error if there’s an issue updating the batch.
+
+3. Get a Batch by ID
+
+Endpoint: GET /api/v1/batch-management/:id
+
+Description: Retrieves details of a specific batch by its ID.
+
+ (JSON)
+
+Response
+
+{
+    "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",
+    "batchNumber": 1,
+    "trainerId": "60b7d6f63407b3f1d4f1bb7b",
+    "employeeIds": ["cognitoId1", "cognitoId2"],
+    "duration": "4 weeks",
+    "range": "85 - 80",
+    "count": 2,
+    "createdAt": "2024-11-05T12:34:56.789Z"
+}
+
+Errors:
+
+404 Not Found if the batch with the provided ID does not exist.
+
+500 Internal Server Error if there’s an issue fetching the batch
