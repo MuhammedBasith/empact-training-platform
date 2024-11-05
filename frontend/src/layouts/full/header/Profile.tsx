@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Avatar,
@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 
 import { IconListCheck, IconMail, IconUser } from '@tabler/icons-react';
-import { useUserContext } from '../../../context/UserContext';
+import { useUserContext } from '../../../context/UserContext'; // Import your context
 
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
 
@@ -29,8 +29,8 @@ const Profile = () => {
   };
 
   const handleLogout = () => {
-    clearUser(); // Clear the user from the context and localStorage
-    navigate('/signin'); // Redirect to the login page after logout
+    clearUser();
+    navigate('/signin'); 
   };
 
   return (

@@ -2,6 +2,7 @@ import { useMediaQuery, Box, Drawer } from '@mui/material';
 import SidebarItems from './SidebarItems';
 import { Sidebar, Logo } from 'react-mui-sidebar';
 import logo from '../../../assets/images/logo-01.svg'
+import { Upgrade } from './Updrade';
 
 const MSidebar = (props) => {
 
@@ -69,6 +70,7 @@ const MSidebar = (props) => {
                 {/* Sidebar Items */}
                 {/* ------------------------------------------- */}
                 <SidebarItems />
+                <Upgrade />
               </Box>
             </Sidebar >
           </Box>

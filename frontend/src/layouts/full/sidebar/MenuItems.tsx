@@ -1,5 +1,5 @@
 import {
-  IconAperture, IconCopy, IconLayoutDashboard, IconLogin, IconMoodHappy, IconTypography, IconUserPlus
+  IconAperture, IconUser, IconReportAnalytics, IconSettings, IconCalendarClock, IconUsers, IconLogin, IconFileText, IconDashboard
 } from '@tabler/icons-react';
 
 import { uniqueId } from 'lodash';
@@ -9,28 +9,77 @@ const Menuitems = [
     navlabel: true,
     subheader: 'Home',
   },
-
   {
     id: uniqueId(),
-    title: 'Dashboard',
-    icon: IconLayoutDashboard,
+    title: 'Dashboard Overview',
+    icon: IconDashboard,
     href: '/dashboard',
   },
   {
     navlabel: true,
-    subheader: 'Utilities',
+    subheader: 'Admin Tools',
   },
   {
     id: uniqueId(),
-    title: 'Typography',
-    icon: IconTypography,
-    href: '/ui/typography',
+    title: 'User Management',
+    icon: IconUsers,
+    href: '/admin/users',
   },
   {
     id: uniqueId(),
-    title: 'Shadow',
-    icon: IconCopy,
-    href: '/ui/shadow',
+    title: 'Reports & Analytics',
+    icon: IconReportAnalytics,
+    href: '/admin/reports',
+  },
+  {
+    id: uniqueId(),
+    title: 'Settings',
+    icon: IconSettings,
+    href: '/admin/settings',
+  },
+  {
+    navlabel: true,
+    subheader: 'Manager Tools',
+  },
+  {
+    id: uniqueId(),
+    title: 'Team Performance',
+    icon: IconUser,
+    href: '/manager/team-performance',
+  },
+  {
+    id: uniqueId(),
+    title: 'Project Reports',
+    icon: IconFileText,
+    href: '/manager/project-reports',
+  },
+  {
+    id: uniqueId(),
+    title: 'Settings',
+    icon: IconSettings,
+    href: '/manager/settings',
+  },
+  {
+    navlabel: true,
+    subheader: 'Trainer Tools',
+  },
+  {
+    id: uniqueId(),
+    title: 'Training Schedule',
+    icon: IconCalendarClock,
+    href: '/trainer/schedule',
+  },
+  {
+    id: uniqueId(),
+    title: 'Attendance Tracker',
+    icon: IconFileText,
+    href: '/trainer/attendance',
+  },
+  {
+    id: uniqueId(),
+    title: 'Course Materials',
+    icon: IconAperture,
+    href: '/trainer/materials',
   },
   {
     navlabel: true,
@@ -38,31 +87,9 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: 'Login',
+    title: 'Logout',
     icon: IconLogin,
-    href: '/auth/login',
-  },
-  {
-    id: uniqueId(),
-    title: 'Register',
-    icon: IconUserPlus,
-    href: '/auth/register',
-  },
-  {
-    navlabel: true,
-    subheader: 'Extra',
-  },
-  {
-    id: uniqueId(),
-    title: 'Icons',
-    icon: IconMoodHappy,
-    href: '/icons',
-  },
-  {
-    id: uniqueId(),
-    title: 'Sample Page',
-    icon: IconAperture,
-    href: '/sample-page',
+    href: '/logout',
   },
 ];
 

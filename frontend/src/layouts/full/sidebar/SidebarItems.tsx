@@ -4,6 +4,7 @@ import { useLocation } from 'react-router';
 import { Box, List } from '@mui/material';
 import NavItem from './NavItem';
 import NavGroup from './NavGroup/NavGroup';
+import { Upgrade } from './Updrade';
 
 const SidebarItems = () => {
   const { pathname } = useLocation();
