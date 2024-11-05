@@ -1,21 +1,84 @@
 import { Request, Response } from 'express';
 import Batch from '../models/batchModel';
-import TrainerFeedback from '../models/trainerFeedbackModel';
+// import TrainerFeedback from '../models/trainerFeedbackModel';
 import { CreateBatchDto, GetBatchResponse } from '../dtos/batch.dto';
 import { CreateTrainerFeedbackDto, TrainerFeedbackResponse } from '../dtos/trainerFeedback.dto';
 import mongoose from 'mongoose';
+import axios from 'axios';
 
-export const createBatch = async (req: Request<{}, {}, CreateBatchDto>, res: Response<GetBatchResponse>) => {
-    const { trainingRequirementId } = req.body;
-
+export const createBatch = async (req: Request<{}, {}, { trainingRequirementId: string; batches: CreateBatchDto[] }>, res: Response<GetBatchResponse>) => {
     try {
-        const newBatch = new Batch({ trainingRequirementId });
-        await newBatch.save();
+        const { trainingRequirementId, batches } = req.body;
 
-        res.status(201).json({ success: true, data: newBatch });
-    } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        res.status(500).json({ success: false, message, data: null });
+        // Ensure batches are provided
+        if (!batches || batches.length === 0) {
+            return res.status(400).json({ success: false, message: 'No batches provided' });
+        }
+
+        // Array to store created batches
+        const createdBatches = [];
+
+        // Process each batch
+        for (const batch of batches) {
+            const { batchNumber, range, duration, trainerId, employees } = batch;
+
+            // Ensure batch has employees
+            if (!employees || employees.length === 0) {
+                return res.status(400).json({ success: false, message: `Batch ${batchNumber} has no employees` });
+            }
+
+            // Step 1: Fetch cognitoIds for each employee
+            const employeeCognitoIds = [];
+
+            // Loop through each employee to fetch their cognitoId
+            for (const employee of employees) {
+                const { email } = employee;
+
+                try {
+                    // Send request to the user-auth-microservice to get cognitoId by email
+                    const responseFromAuthService = await axios.get(
+                        `http://localhost:3001/api/auth/${email}`  // Assuming the endpoint for user-auth microservice
+                    );
+  
+                    if (responseFromAuthService.data && responseFromAuthService.data.cognitoId) {
+                        const cognitoId = responseFromAuthService.data.cognitoId;
+
+                        // Add the cognitoId to the employeeIds array
+                        employeeCognitoIds.push(cognitoId);
+                    } else {
+                        console.error(`No cognitoId found for email: ${email}`);
+                        return res.status(500).json({ success: false, message: `Failed to retrieve cognitoId for employee: ${email}` });
+                    }
+                } catch (error) {
+                    // If there's an error fetching cognitoId for an employee, log and return error
+                    console.error(`Error fetching cognitoId for ${email}:`, error);
+                    return res.status(500).json({ success: false, message: `Failed to fetch cognitoId for ${email}` });
+                }
+            }
+
+            // Step 2: Create a new batch document
+            const batchData = {
+                trainingRequirementId,
+                batchNumber,
+                trainerId,  // Assuming trainerId is passed as an ObjectId
+                employeeIds: employeeCognitoIds,  // List of employee cognitoIds
+                duration,  // The batch duration (string)
+                range,     // The batch range (e.g., "85 - 80")
+                count: employees.length,  // Number of employees in the batch
+                createdAt: new Date()  // Store the date the batch is created
+            };
+
+            // Create batch in the database
+            const createdBatch = await Batch.create(batchData);
+            createdBatches.push(createdBatch);
+        }
+
+        // Respond with the created batches
+        return res.status(201).json({ success: true, data: createdBatches });
+    } catch (error) {
+        // Catch any unexpected errors
+        console.error('Error creating batches:', error);
+        return res.status(500).json({ success: false, data: null, message: 'Internal server error', });
     }
 };
 

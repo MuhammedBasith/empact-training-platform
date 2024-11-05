@@ -2,6 +2,7 @@ export interface CreateBatchDto {
     trainingRequirementId: string;
     batchNumber: string;
     trainerId: string;
+    employees:string[]
     employeeIds: string[];
     duration: string; // Assuming duration is a string, adjust if necessary
     range: string;
