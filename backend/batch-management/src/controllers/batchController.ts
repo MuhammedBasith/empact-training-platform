@@ -48,10 +48,7 @@ export async function updateTrainerId(
 ): Promise<any> {
     const { trainerID } = request.body;
 
-    // Validate trainerID
-    if (!mongoose.Types.ObjectId.isValid(trainerID)) {
-        return response.status(400).json({ message: 'Invalid trainer ID. Must be a valid ObjectId.' });
-    }
+
 
     try {
         const updatedBatch = await Batch.findByIdAndUpdate(

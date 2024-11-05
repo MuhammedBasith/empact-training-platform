@@ -12,6 +12,6 @@ router.get('/', getAllBatches);
 // Add feedback
 router.post('/feedback', addFeedback);
 
-router.put('/:id/trainerId',updateTrainerId);
+router.put('/:id/',updateTrainerId);
 
 export default router;
