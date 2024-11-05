@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baselightTheme } from './theme/DefaultColors';
@@ -15,12 +15,12 @@ import SignIn from './components/Auth/signin/SignIn';
 import SignUp from './components/Auth/signup/SignUp';
 import ResetPassword from './components/Auth/reset-password/ResetPassword';
 import Home from './components/Home';
-import NotFound from './components/NotFound';
+import NotFound from './components/Error';
 
-// Lazy load dashboard components for each role
-const AdminDashboard = lazy(() => import('./components/Dashboard/AdminDashboard'));
-const ManagerDashboard = lazy(() => import('./components/Dashboard/ManagerDashboard'));
-const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashboard'));
+
+import AdminDashboard from './components/Dashboard/AdminDashboard';
+import ManagerDashboard from './components/Dashboard/ManagerDashboard';
+import TrainerDashboard from './components/Dashboard/TrainerDashboard'
 
 function App() {
   const { user } = useUserContext();
