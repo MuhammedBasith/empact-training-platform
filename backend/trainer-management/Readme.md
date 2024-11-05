@@ -37,7 +37,7 @@ The **Trainer Management API** is part of a training management system designed 
 
 3. **Run the Application**:
    ```bash
-   npm run start
+   npm run dev
    ```
 
    The application will be available at `http://localhost:3002`.
@@ -56,11 +56,11 @@ The **Trainer Management API** is part of a training management system designed 
 
     ```json
     {
-        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",  // Cognito ID (ObjectId)
-        "name": "John Doe",                      // Trainer's full name
-        "email": "john.doe@example.com",         // Trainer's email (unique)
-        "expertise": ["JavaScript", "Node.js"],  // List of trainer's expertise
-        "bio": "Experienced software developer"  // Optional: Bio of the trainer
+        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",  
+        "name": "John Doe",                      
+        "email": "john.doe@example.com",        
+        "expertise": ["JavaScript", "Node.js"], 
+        "bio": "Experienced software developer" 
     }
     ```
 
@@ -150,10 +150,10 @@ The **Trainer Management API** is part of a training management system designed 
 
     ```json
     {
-        "name": "John Updated Doe",          // Optional: Update trainer's name
-        "email": "john.updated@example.com", // Optional: Update trainer's email
-        "expertise": ["React", "Node.js"],   // Optional: Update list of expertise
-        "bio": "Updated bio of the trainer"   // Optional: Update bio
+        "name": "John Updated Doe",          
+        "email": "john.updated@example.com", 
+        "expertise": ["React", "Node.js"],   
+        "bio": "Updated bio of the trainer"  
     }
     ```
 
@@ -205,7 +205,7 @@ The **Trainer Management API** is part of a training management system designed 
 
     ```json
     {
-        "trainingId": "60b7d3fd3407b3f1d4f1bb7c"  // Training ID to be assigned (ObjectId)
+        "trainingId": "60b7d3fd3407b3f1d4f1bb7c"  
     }
     ```
 
@@ -252,37 +252,3 @@ The **Trainer Management API** is part of a training management system designed 
 
 ---
 
-## Sample `curl` Commands
-
-Here are a few sample `curl` commands for interacting with the API:
-
-1. **Create a New Trainer:**
-
-    ```bash
-    curl -X POST http://localhost:3000/api/v1/trainer-management/trainer \
-    -H "Content-Type: application/json" \
-    -d '{
-        "cognitoId": "60b7d3fd3407b3f1d4f1bb7a",
-        "name": "John Doe",
-        "email": "john.doe@example.com",
-        "expertise": ["JavaScript", "Node.js"],
-        "bio": "Experienced software developer"
-    }'
-    ```
-
-2. **Update Trainer:**
-
-    ```bash
-    curl -X PUT http://localhost:3000/api/v1/trainer-management/trainer/60b7d3fd3407b3f1d4f1bb7a \
-    -H "Content-Type: application/json" \
-    -d '{
-        "name": "John Updated Doe",
-        "email": "john.updated@example.com",
-        "expertise": ["React", "Node.js"]
-    }'
-    ```
-
-3. **Assign Training to Trainer:**
-
-    ```bash
-    curl -
