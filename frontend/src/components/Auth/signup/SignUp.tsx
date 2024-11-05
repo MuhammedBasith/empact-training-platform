@@ -12,12 +12,12 @@ export default function SignUp() {
     email: "",
     password: "",
     repeatPassword: "",
-    role: "Employee", 
-    expertise: "", 
-    bio: "", 
+    role: "Employee",
+    expertise: "",
+    bio: "",
     account: "",
     skills: "",
-    department: "", 
+    department: "",
   });
   const [error, setError] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -241,8 +241,8 @@ export default function SignUp() {
 
         {formData.role === "Trainer" && (
           <>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="expertise">
+            <div className="mb-4">
+              <label className="mb-1 mt-3 block text-sm font-medium text-gray-700" htmlFor="expertise">
                 Expertise
               </label>
               <input
@@ -255,7 +255,7 @@ export default function SignUp() {
                 required
               />
             </div>
-            <div>
+            <div className="mb-4">
               <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="bio">
                 Bio
               </label>
@@ -273,21 +273,21 @@ export default function SignUp() {
 
         {formData.role === "Employee" && (
           <>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="account">
-                Account Number
+            <div className="mb-4">
+              <label className="mb-1 mt-3 block text-sm font-medium text-gray-700" htmlFor="account">
+                Account
               </label>
               <input
                 id="account"
                 className="form-input w-full py-2"
                 type="text"
-                placeholder="Your account number"
+                placeholder="Your account Name"
                 value={formData.account}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div>
+            <div className="mb-4">
               <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="skills">
                 Skills
               </label>
@@ -301,7 +301,7 @@ export default function SignUp() {
                 required
               />
             </div>
-            <div>
+            <div className="mb-4">
               <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="department">
                 Department
               </label>
@@ -317,6 +317,7 @@ export default function SignUp() {
             </div>
           </>
         )}
+
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="mt-6 space-y-3">
