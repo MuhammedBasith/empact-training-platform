@@ -13,6 +13,7 @@ const TrainerDashboard = Loadable(lazy(() => import('../components/Dashboard/Tra
 // Manager Details page
 const ManagerDetailsPage = Loadable(lazy(() => import('../views/AdminView/dashboard/components/ManagerDetails')));
 const ManagersData = Loadable(lazy(() => import('../views/AdminView/dashboard/components/ManagersData')));
+const TrainersData = Loadable(lazy(() => import('../views/AdminView/dashboard/components/TrainersData')));
 
 const DashboardRoutes = (role: string | undefined) => [
   {
@@ -25,9 +26,11 @@ const DashboardRoutes = (role: string | undefined) => [
       { path: 'manager', element: role === 'manager' ? <ManagerDashboard /> : <Navigate to="/404" /> },
       { path: 'trainer', element: role === 'trainer' ? <TrainerDashboard /> : <Navigate to="/404" /> },
       
-      // Manager Details route
+      // Admin route
       { path: 'admin/managers/', element: role === 'admin' ? <ManagersData /> : <Navigate to="/404" /> },
       { path: 'admin/managers/:id', element: role === 'admin' ? <ManagerDetailsPage /> : <Navigate to="/404" /> },
+      { path: 'admin/trainers/', element: role === 'admin' ? <TrainersData /> : <Navigate to="/404" /> },
+
       
       // catch all routes
       { path: '*', element: <Navigate to="/404" /> },
