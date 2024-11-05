@@ -14,10 +14,35 @@ The **Trainer Management API** is part of a training management system designed 
 - **Assign Training**: Assign specific training programs to trainers.
 - **Get Trainers for Dropdown**: Fetch a simplified list of trainers for use in dropdown menus or selection lists.
 
-### Technology Stack:
-- **Backend Framework**: Express.js (Node.js)
-- **Database**: MongoDB with Mongoose ORM
-- **Other Libraries**: Axios (for making HTTP requests), Node.js
+---
+### 2. **Setup & Installation**
+
+#### **Prerequisites**
+
+- Node.js (v14 or higher)
+- MongoDB instance (local or cloud)
+- Access to Google Generative AI or a similar generative AI service (configured via API keys)
+
+#### **Steps to Run the Service**
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/MuhammedBasith/empact-training-platform/trainer-management.git
+   cd trainer-management
+   ```
+
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Run the Application**:
+   ```bash
+   npm run start
+   ```
+
+   The application will be available at `http://localhost:3002`.
+
 
 ---
 
