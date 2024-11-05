@@ -91,7 +91,7 @@ const ManagersData = () => {
         fetchManagersData();
     }, []);
 
-    const handleActionClick = (cognitoId) => {
+    const handleActionClick = (cognitoId: any) => {
         setSelectedManagerId(cognitoId); // Set the selected manager ID
     };
 
@@ -174,7 +174,7 @@ const ManagersData = () => {
                                                 transform: 'scale(1.05)',
                                             },
                                         }}
-                                        onClick={() => handleActionClick(manager.cognitoId)}
+                                        onClick={() => handleActionClick(manager._id)}
                                     >
                                         View Details
                                     </Button>
