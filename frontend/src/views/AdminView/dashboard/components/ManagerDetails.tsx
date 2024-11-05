@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse } from '@mui/material';
 
 interface Trainer {
@@ -37,6 +37,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set()); // Set to track expanded rows
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
+  const navigate = useNavigate();  // Hook for programmatic navigation
 
   useEffect(() => {
     const fetchTrainingRequirements = async () => {
@@ -44,7 +45,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
         const response = await axios.get<ManagerDetailsResponse>(
           `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${id}`
         );
-        
+
         if (response.data.success) {
           setTrainingRequirements(response.data.data);
         } else {
@@ -70,12 +71,13 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
     setExpandedRows(newExpandedRows);
   };
 
-  const handleShowEmployees = (trainingId: string) => {
-    console.log(`Show employees for training ID: ${trainingId}`);
-  };
-
-  const handleAddResults = (trainingId: string) => {
-    console.log(`Add results for training ID: ${trainingId}`);
+  const handleShowEmployees = (trainingId: string, batchId?: string) => {
+    // Navigate to the employee details page with the trainingId and optional batchId
+    if (batchId) {
+      navigate(`/admin/managers/${id}/${trainingId}/${batchId}`);
+    } else {
+      navigate(`/admin/managers/${id}/${trainingId}`);
+    }
   };
 
   if (loading) {
@@ -136,11 +138,22 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                         Show Employees
                       </Button>
                     )}
+                    {hasBatchDetails && training.batchDetails?.map((batch) => (
+                      <Button
+                        key={batch.batchId}
+                        variant="outlined"
+                        color="primary"
+                        sx={{ ml: 1 }}
+                        onClick={() => handleShowEmployees(training.trainingId, batch.batchId)} // Pass batchId when available
+                      >
+                        Show Employees (Batch {batch.batchNumber})
+                      </Button>
+                    ))}
                     <Button
                       variant="contained"
                       color="primary"
                       sx={{ ml: 1 }}
-                      onClick={() => handleAddResults(training.trainingId)}
+                      onClick={() => console.log(`Add results for training ID: ${training.trainingId}`)}
                     >
                       Add Results
                     </Button>
