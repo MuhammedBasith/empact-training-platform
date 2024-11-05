@@ -89,7 +89,8 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Logout',
     icon: IconLogin,
-    href: '/logout',
+    href: '#',
+    action: 'logout',
   },
 ];
 
