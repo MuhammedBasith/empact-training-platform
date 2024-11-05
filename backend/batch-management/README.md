@@ -49,18 +49,18 @@ The **Batch Management API** is designed to manage the creation and management o
 - **Request Body**:
     ```json
     {
-        "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",  // ID of the training requirement
+        "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",  
         "batches": [
             {
-                "batchNumber": 1,                     // Batch number
-                "trainerId": "60b7d3fd3407b3f1d4f1bb8b", // ID of the trainer
-                "employees": [                        // List of employees to be included in this batch
+                "batchNumber": 1,                    
+                "trainerId": "60b7d3fd3407b3f1d4f1bb8b", 
+                "employees": [                        
                     { "email": "employee1@example.com" },
                     { "email": "employee2@example.com" }
                 ],
-                "duration": "2 weeks",               // Duration of the batch
-                "range": "85-90",                    // Performance range of the batch
-                "count": 2                           // Number of employees in the batch
+                "duration": "2 weeks",              
+                "range": "85-90",                  
+                "count": 2                          
             }
         ]
     }
@@ -98,7 +98,7 @@ The **Batch Management API** is designed to manage the creation and management o
 - **Request Body**:
     ```json
     {
-        "trainerID": "60b7d3fd3407b3f1d4f1bb8b"  // New trainer's ID
+        "trainerID": "60b7d3fd3407b3f1d4f1bb8b"  
     }
     ```
 - **Response**:
@@ -166,47 +166,3 @@ A batch in the system consists of the following fields:
 - **createdAt**: Timestamp indicating when the batch was created.
 
 ---
-
-## Example Requests
-
-### 1. **Create a Batch**
-
-```bash
-POST /api/v1/batch-management
-
-Request
-```json
-{
-  "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",
-  "batches": [
-    {
-      "batchNumber": 1,
-      "trainerId": "60b7d3fd3407b3f1d4f1bb8b",
-      "employees": [
-        { "email": "employee1@example.com" },
-        { "email": "employee2@example.com" }
-      ],
-      "duration": "2 weeks",
-      "range": "85-90",
-      "count": 2
-    }
-  ]
-}
-
-```
-
-
-2. Update Trainer for a Batch
-
-PUT /api/v1/batch-management/:id
-
-Request Body:
-
-```json
-{
-  "trainerID": "60b7d3fd3407b3f1d4f1bb8b"
-}
-```
-3. Get Batch Details by ID
-
-GET /api/v1/batch-management/:id
