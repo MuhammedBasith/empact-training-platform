@@ -3,11 +3,11 @@ export const metadata = {
     description: "Page description",
   };
   
-  import Hero from "./LandingPage/hero-home";
-  import BusinessCategories from "./LandingPage/business-categories";
-  import FeaturesPlanet from "./LandingPage/features-planet";
-  import LargeTestimonial from "./LandingPage/large-testimonial";
-  import Cta from "./LandingPage/cta";
+  import Hero from "./hero-home";
+  import BusinessCategories from "./business-categories";
+  import FeaturesPlanet from "./features-planet";
+  import LargeTestimonial from "./large-testimonial";
+  import Cta from "./cta";
   
   export default function Home() {
     return (
