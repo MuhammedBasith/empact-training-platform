@@ -3,12 +3,12 @@ import { Grid, Box } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 
 // components
-import SalesOverview from './components/SalesOverview';
-import YearlyBreakup from './components/YearlyBreakup';
-import RecentTransactions from './components/RecentTransactions';
-import ProductPerformance from './components/ProductPerformance';
-import Blog from './components/Blog';
-import MonthlyEarnings from './components/MonthlyEarnings';
+import SalesOverview from './components/UserStatistics';
+import YearlyBreakup from './components/RevenueBreakdown';
+import RecentTransactions from './components/RecentActivities';
+import ProductPerformance from './components/PerformanceOverview';
+import Blog from './components/AdminNotifications';
+import MonthlyEarnings from './components/MonthlyExpenses';
 
 
 const Dashboard = () => {

@@ -12,17 +12,16 @@ const TrainerDashboard = Loadable(lazy(() => import('../components/Dashboard/Tra
 
 const DashboardRoutes = (role: string | undefined) => [
   {
-    path: '/dashboard', // This is the base path for the dashboard
+    path: '/dashboard', // base path
     element: <FullLayout />,
     children: [
-      // Redirecting to `/dashboard` if accessing `/dashboard` directly
-      { path: '', element: <Navigate to="/dashboard" /> }, // No `/dashboard` URL directly; empty path for base
+      { path: '', element: <Navigate to="/dashboard" /> },
       // Role-based routes for dashboard pages:
       { path: 'admin', element: role === 'admin' ? <AdminDashboard /> : <Navigate to="/404" /> },
       { path: 'manager', element: role === 'manager' ? <ManagerDashboard /> : <Navigate to="/404" /> },
       { path: 'trainer', element: role === 'trainer' ? <TrainerDashboard /> : <Navigate to="/404" /> },
       
-      // This is the "catch-all" route for any invalid dashboard URLs
+      // catch all routes
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },

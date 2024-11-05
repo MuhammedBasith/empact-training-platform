@@ -1,41 +1,40 @@
 import { Grid, Box } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 
-// components
-import SalesOverview from '../../views/dashboard/components/SalesOverview';
-import YearlyBreakup from '../../views/dashboard/components//YearlyBreakup';
-import RecentTransactions from '../../views/dashboard/components//RecentTransactions';
-import ProductPerformance from '../../views/dashboard/components/ProductPerformance';
-import Blog from '../../views/dashboard/components/Blog';
-import MonthlyEarnings from '../../views/dashboard/components/MonthlyEarnings';
-
+// Renamed components specific to Admin Dashboard
+import UserStatistics from '../../views/AdminView/dashboard/components/UserStatistics';
+import RevenueBreakdown from '../../views/AdminView/dashboard/components/RevenueBreakdown';
+import MonthlyExpenses from '../../views/AdminView/dashboard/components/MonthlyExpenses';
+import RecentActivities from '../../views/AdminView/dashboard/components/RecentActivities';
+import PerformanceOverview from '../../views/AdminView/dashboard/components/PerformanceOverview';
+import AdminNotifications from '../../views/AdminView/dashboard/components/AdminNotifications';
 
 const AdminDashboard = () => {
   return (
-    <PageContainer title="Dashboard" description="this is Dashboard">
+    <PageContainer title="Admin Dashboard" description="Admin-specific dashboard with user and financial insights">
       <Box>
         <Grid container spacing={3}>
           <Grid item xs={12} lg={8}>
-            <SalesOverview />
+            <UserStatistics />
           </Grid>
           <Grid item xs={12} lg={4}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <YearlyBreakup />
+                <RevenueBreakdown />
               </Grid>
               <Grid item xs={12}>
-                <MonthlyEarnings />
+                <MonthlyExpenses />
               </Grid>
             </Grid>
           </Grid>
           <Grid item xs={12} lg={4}>
-            <RecentTransactions />
+            <RecentActivities />
           </Grid>
           <Grid item xs={12} lg={8}>
-            <ProductPerformance />
+            <PerformanceOverview />
           </Grid>
           <Grid item xs={12}>
-            <Blog />
+            <AdminNotifications />
           </Grid>
         </Grid>
       </Box>

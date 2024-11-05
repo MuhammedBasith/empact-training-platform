@@ -12,7 +12,7 @@ import HomeLayout from './layouts/HomeLayout';
 import SignIn from './components/Auth/signin/SignIn';
 import SignUp from './components/Auth/signup/SignUp';
 import ResetPassword from './components/Auth/reset-password/ResetPassword';
-import Home from './components/Home';
+import Home from './components/LandingPage/Home';
 import NotFound from './components/Error';
 
 // Import Dashboard Routes
