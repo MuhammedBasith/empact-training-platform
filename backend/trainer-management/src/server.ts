@@ -17,7 +17,7 @@ mongoose.connect(config.mongoUri)
   console.error('Error connecting to MongoDB', err);
 });
 
-app.use('/api/trainer-management',TrainerManagementRoutes);
+app.use('/api/v1/trainer-management',TrainerManagementRoutes);
 app.listen(PORT,()=>{
     console.log(`Server started on ${PORT}`)
 })
