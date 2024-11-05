@@ -9,11 +9,9 @@ Endpoint: POST /api/v1/batch-management
 
 Description: Creates one or more batches of employees for a given training requirement.
 
-
 JSON Example
 
-Request Body :
-
+Request Body:
 
 ```json
 {
@@ -31,8 +29,9 @@ Request Body :
         }
     ]
 }
-
+```
 Response (JSON):
+```json
 {
     "success": true,
     "data": [
