@@ -3,6 +3,9 @@ export interface CreateBatchDto {
     batchNumber: string;
     trainerId: string;
     employeeIds: string[];
+    duration: string; // Assuming duration is a string, adjust if necessary
+    range: string;
+    count: number;
 }
 
 export interface GetBatchResponse {
