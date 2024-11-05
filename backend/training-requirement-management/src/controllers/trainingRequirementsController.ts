@@ -179,11 +179,13 @@ export async function getTrainingRequirements(
             console.log(users)
             return {
                 cognitoId: item._id,
-                name: users.name || 'Unknown', // Fallback if name is missing
+                name: users.name , // Fallback if name is missing
                 trainingCount: item.trainingCount
             };
            
         })
+
+        response.status(200).json({ trainingRequirements: trainingData });
         } catch (error) {
         console.error('Error retrieving training requirements:', error);
         return response.status(500).json({ message: 'Internal server error' });
