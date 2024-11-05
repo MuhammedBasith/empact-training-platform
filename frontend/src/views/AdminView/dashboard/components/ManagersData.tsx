@@ -13,53 +13,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 import DashboardCard from '../../../../components/shared/DashboardCard';
-
-const ManagerDetails = ({ cognitoId }) => {
-    const [managerDetails, setManagerDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchManagerDetails = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/${cognitoId}`
-                );
-                setManagerDetails(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching manager details:", error);
-                setLoading(false);
-            }
-        };
-
-        fetchManagerDetails();
-    }, [cognitoId]);
-
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    if (!managerDetails) {
-        return (
-            <Typography variant="h6" color="textSecondary">
-                No details available.
-            </Typography>
-        );
-    }
-
-    return (
-        <Box sx={{ mt: 2 }}>
-            <Typography variant="h6">Manager Details</Typography>
-            <Typography variant="subtitle1">Name: {managerDetails.name}</Typography>
-            <Typography variant="subtitle1">Email: {managerDetails.email}</Typography>
-            <Typography variant="subtitle1">Total Trainings Created: {managerDetails.trainingsCount}</Typography>
-        </Box>
-    );
-};
+import ManagerDetails from './ManagerDetails';
 
 const ManagersData = () => {
     const [managers, setManagers] = useState([]); // Default to an empty array
@@ -92,6 +46,8 @@ const ManagersData = () => {
     }, []);
 
     const handleActionClick = (cognitoId: any) => {
+        console.log(cognitoId);
+        
         setSelectedManagerId(cognitoId); // Set the selected manager ID
     };
 
@@ -148,7 +104,7 @@ const ManagersData = () => {
                     </TableHead>
                     <TableBody>
                         {managers.map((manager, index) => (
-                            <TableRow key={manager._id}>
+                            <TableRow key={manager.cognitoId}>
                                 <TableCell>
                                     <Typography sx={{ fontSize: "15px", fontWeight: "500" }}>
                                         {index + 1}
@@ -174,7 +130,7 @@ const ManagersData = () => {
                                                 transform: 'scale(1.05)',
                                             },
                                         }}
-                                        onClick={() => handleActionClick(manager._id)}
+                                        onClick={() => handleActionClick(manager.cognitoId)}
                                     >
                                         View Details
                                     </Button>

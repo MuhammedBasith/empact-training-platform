@@ -42,6 +42,8 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
         const response = await axios.get<ManagerDetailsResponse>(
           `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${cognitoId}`
         );
+        console.log('kjsdnfjk');
+        
 
         if (response.data.success) {
           setTrainingRequirements(response.data.data);
