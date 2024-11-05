@@ -40,14 +40,93 @@ Response
 
 GET /api/v1/summaries/:trainingRequirementId
 
+Retrieve the summary for a specific training requirement by its ID.
+
+Parameters
+
+-trainingRequirementId (URL Parameter): The unique identifier for the training requirement.
+
+Response
+
+```json
+{
+  "_id": "60b7d3fd3407b3f1d4f1bb7a",
+  "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",
+  "summary": "The training will focus on improving negotiation skills...",
+  "editedSummary": "Edited negotiation training summary text.",
+  "confirmed": false,
+  "generatedAt": "2024-11-05T00:00:00.000Z"
+}
+
+```
+
+
 3. Edit a Training Summary
 
 PUT /api/v1/summaries/:requirementId/edit
+
+Edit an existing training summary.
+
+Parameters
+
+-requirementId (URL Parameter): The unique identifier of the training requirement whose summary is to be edited.
+
+Request Body
+
+```json
+
+{
+  "editedSummary": "Updated summary with additional details and new objectives."
+}
+
+```
+Response
+
+```json
+{
+  "_id": "60b7d3fd3407b3f1d4f1bb7a",
+  "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",
+  "summary": "The training will focus on improving negotiation skills...",
+  "editedSummary": "Updated summary with additional details and new objectives.",
+  "confirmed": false,
+  "generatedAt": "2024-11-05T00:00:00.000Z"
+}
+
+```
 
 4. Confirm a Training Summary
 
 POST /api/v1/summaries/:requirementId/confirm
 
+Confirm the final version of the training summary.
+
+Parameters
+
+-requirementId (URL Parameter): The unique identifier for the training requirement whose summary is to be confirmed.
+
+Request
+
+```json
+
+{
+  "confirmed": true  // Mark the summary as confirmed
+}
+
+```
+
+Response
+
+```json
+{
+  "_id": "60b7d3fd3407b3f1d4f1bb7a",
+  "trainingRequirementId": "60b7d3fd3407b3f1d4f1bb7a",
+  "summary": "The training will focus on improving negotiation skills...",
+  "editedSummary": "Updated summary with additional details and new objectives.",
+  "confirmed": true,
+  "generatedAt": "2024-11-05T00:00:00.000Z"
+}
+
+```
 
 
 
