@@ -13,12 +13,10 @@ import {
     CircularProgress,
 } from '@mui/material';
 import DashboardCard from '../../../../components/shared/DashboardCard';
-import ManagerDetails from './ManagerDetails';
 
 const ManagersData = () => {
     const [managers, setManagers] = useState([]); // Default to an empty array
     const [loading, setLoading] = useState(true);
-    const [selectedManagerId, setSelectedManagerId] = useState(null);
     const history = useNavigate();
 
     useEffect(() => {
@@ -28,12 +26,8 @@ const ManagersData = () => {
                     `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements`
                 );
                 console.log(response.data);
-
-            
-                console.log(response.data);
                 
                 setManagers(response.data.trainingRequirements);
-                
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching managers data:", error);
@@ -46,9 +40,8 @@ const ManagersData = () => {
     }, []);
 
     const handleActionClick = (cognitoId: any) => {
-        console.log(cognitoId);
-        
-        setSelectedManagerId(cognitoId); // Set the selected manager ID
+        // Navigate to the manager details page with the cognitoId
+        history(`/dashboard/admin/managers/${cognitoId}`);
     };
 
     if (loading) {
@@ -140,9 +133,6 @@ const ManagersData = () => {
                     </TableBody>
                 </Table>
             </Box>
-
-            {/* Conditionally render the manager details component if a manager is selected */}
-            {selectedManagerId && <ManagerDetails cognitoId={selectedManagerId} />}
         </DashboardCard>
     );
 };

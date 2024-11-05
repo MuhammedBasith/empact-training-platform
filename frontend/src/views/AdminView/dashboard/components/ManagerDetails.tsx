@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse } from '@mui/material';
 
 interface Trainer {
@@ -35,16 +36,15 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
   const [loading, setLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set()); // Set to track expanded rows
   const [error, setError] = useState<string | null>(null);
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchTrainingRequirements = async () => {
       try {
         const response = await axios.get<ManagerDetailsResponse>(
-          `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${cognitoId}`
+          `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${id}`
         );
-        console.log('kjsdnfjk');
         
-
         if (response.data.success) {
           setTrainingRequirements(response.data.data);
         } else {
@@ -71,12 +71,10 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
   };
 
   const handleShowEmployees = (trainingId: string) => {
-    // Logic for showing employees (you can create a modal or a separate component)
     console.log(`Show employees for training ID: ${trainingId}`);
   };
 
   const handleAddResults = (trainingId: string) => {
-    // Logic for adding results (you can create a modal or a separate component)
     console.log(`Add results for training ID: ${trainingId}`);
   };
 
@@ -118,13 +116,13 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
 
             return (
               <React.Fragment key={training.trainingId}>
-                <TableRow>
-                  <TableCell>
-                    {training.trainingName}
-                  </TableCell>
-                  <TableCell>
-                    {totalEmployees}
-                  </TableCell>
+                <TableRow
+                  hover
+                  onClick={() => handleRowToggle(training.trainingId)} // Toggle on row click
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <TableCell>{training.trainingName}</TableCell>
+                  <TableCell>{totalEmployees}</TableCell>
                   <TableCell>
                     {hasBatchDetails ? 'Trainer not specified (Batch-specific)' : training.trainer ? training.trainer.name : 'Trainer not assigned'}
                   </TableCell>
@@ -169,9 +167,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                                 <TableCell>{batch.batchNumber}</TableCell>
                                 <TableCell>{batch.duration}</TableCell>
                                 <TableCell>{batch.employeeCount}</TableCell>
-                                <TableCell>
-                                  {batch.trainer ? batch.trainer.name : 'Trainer not assigned'}
-                                </TableCell>
+                                <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
