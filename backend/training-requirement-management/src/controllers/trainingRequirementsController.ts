@@ -216,7 +216,7 @@ export async function getTrainingRequirements(
 
 export async function getEmpCountById(
     request: Request<{ id: string }, {}, {}>,
-    response: Response<{ empCount: number; trainingName: string } | { message: string }>
+    response: Response<{trainingRequirementId: string; empCount: number; trainingName: string; duration: string; skills_to_train?: string; } | { message: string }>
 ): Promise<any> {
     try {
         // Extract the training requirement ID from the request parameters
@@ -237,8 +237,11 @@ export async function getEmpCountById(
 
         // Return the employee count and training name
         return response.status(200).json({ 
+            trainingRequirementId: trainingRequirement._id.toString(),
             empCount: trainingRequirement.empCount, 
-            trainingName: trainingRequirement.trainingName 
+            trainingName: trainingRequirement.trainingName
+            ,duration: trainingRequirement.duration ,
+            skills_to_train: trainingRequirement.skills_to_train
         });
     } catch (error) {
         console.error('Error retrieving employee count:', error);
