@@ -10,6 +10,7 @@ export interface ITrainer extends Document {
     trainingIds: mongoose.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
+    batchIDs:mongoose.Types.ObjectId[]
 }
 
 // Create the Trainer schema
@@ -21,7 +22,8 @@ const TrainerSchema: Schema<ITrainer> = new Schema({
     bio: { type: String },
     trainingIds: [{ type: mongoose.Types.ObjectId, ref: 'trainingRequirements' }],
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    updatedAt: { type: Date, default: Date.now },
+    batchIDs:[{ type: Schema.Types.ObjectId}]             
 }, {
     timestamps: true // Automatically create createdAt and updatedAt fields
 });
