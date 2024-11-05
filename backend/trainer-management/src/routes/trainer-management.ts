@@ -6,7 +6,7 @@ const router=Router();
 router.post('/trainer',createTrainer);
 router.get('/trainers', getAllTrainers);
 router.get('/trainer/:id',getTrainerById);
-router.put('/trainer/:id', updateTrainer);
+router.put('/trainer/:cognitoId', updateTrainer);
 router.delete('/trainer/:id', deleteTrainer);
 router.post('/trainer/:id', assignTrainingToTrainer);
 
