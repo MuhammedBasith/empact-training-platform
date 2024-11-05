@@ -1,14 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import cors from './middleware/cors';
+import middlewareCors from './middleware/cors';
 import connectDB from './config/db';
 import summaryRoutes from './routes/summaryRoutes';
-
+import cors from 'cors' 
 const app = express();
 const PORT = process.env.PORT || 3004
 
 // Middleware
-app.use(cors);
+app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to MongoDB

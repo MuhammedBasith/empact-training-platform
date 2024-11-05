@@ -4,10 +4,12 @@ import trainingRequirementsRouter from './routes/trainingRequirements';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
 import { config } from './config/db';
+import cors from 'cors'
 
 
 
 const app = express();
+app.use(cors());
 const PORT = process.env.PORT || 3003;
 
 app.use(bodyParser.json());

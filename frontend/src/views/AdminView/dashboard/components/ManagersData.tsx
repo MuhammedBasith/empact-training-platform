@@ -71,16 +71,14 @@ const ManagersData = () => {
         const fetchManagersData = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/`
+                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements`
                 );
+                console.log(response.data);
+
+            
+                console.log(response.data);
                 
-                // Ensure that the response is an array
-                if (Array.isArray(response.data)) {
-                    setManagers(response.data);
-                } else {
-                    console.error("Expected an array but got:", response.data);
-                    setManagers([]);
-                }
+                setManagers(response.data.trainingRequirements);
                 
                 setLoading(false);
             } catch (error) {
