@@ -71,7 +71,7 @@ const ManagersData = () => {
         const fetchManagersData = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements`
+                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/`
                 );
                 
                 // Ensure that the response is an array

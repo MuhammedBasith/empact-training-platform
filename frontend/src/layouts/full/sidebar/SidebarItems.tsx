@@ -1,4 +1,3 @@
-import React from 'react';
 import Menuitems from './MenuItems';
 import { useLocation } from 'react-router';
 import { Box, List } from '@mui/material';

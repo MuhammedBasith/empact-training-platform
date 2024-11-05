@@ -5,7 +5,7 @@ import connectDB from './config/db';
 import summaryRoutes from './routes/summaryRoutes';
 
 const app = express();
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3004
 
 // Middleware
 app.use(cors);

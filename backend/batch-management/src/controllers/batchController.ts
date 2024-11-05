@@ -1,15 +1,11 @@
 import { Request, Response } from 'express';
 import Batch, { IBatch } from '../models/batchModel';
-// import TrainerFeedback from '../models/trainerFeedbackModel';
 import { CreateBatchDto, GetBatchResponse } from '../dtos/batch.dto';
 import { CreateTrainerFeedbackDto, TrainerFeedbackResponse } from '../dtos/trainerFeedback.dto';
 import mongoose from 'mongoose';
 import axios from 'axios';
 
-export async function createBatch(
-    request: Request<{}, {}, { trainingRequirementId: string; batches: CreateBatchDto[] }>,
-    response: Response<GetBatchResponse>
-): Promise<any> {
+export async function createBatch(request: Request, response: Response) {
     try {
         const { trainingRequirementId, batches } = request.body;
 
@@ -84,19 +80,8 @@ export async function createBatch(
         return response.status(500).json({ success: false, data: null, message: 'Internal server error' });
     }
 }
-export const addFeedback = async (req: Request<{}, {}, CreateTrainerFeedbackDto>, res: Response<TrainerFeedbackResponse>) => {
-    const { batchId, feedback } = req.body;
 
-    try {
-        const newFeedback = new TrainerFeedback({ batchId, feedback });
-        await newFeedback.save();
 
-        res.status(201).json({ success: true, data: newFeedback });
-    } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        res.status(500).json({ success: false, message, data: null });
-    }
-};
 export async function updateTrainerId(
     request: Request<{ id: string }, {}, { trainerID: mongoose.Types.ObjectId }>,
     response: Response<{ message?: string; updatedBatch?: any } | { message: string }>
