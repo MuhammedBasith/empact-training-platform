@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import DashboardCard from '../../../components/shared/DashboardCard';
+import DashboardCard from '../../../../components/shared/DashboardCard';
 import Chart from 'react-apexcharts';
 
 

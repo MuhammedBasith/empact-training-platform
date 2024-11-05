@@ -7,7 +7,7 @@ import TrainerManagementRoutes from './routes/trainer-management'
 const app=express()
 
 app.use(bodyParser.json())
-const PORT=process.env.PORT || 3001;
+const PORT=process.env.PORT || 3002;
 
 mongoose.connect(config.mongoUri)
 .then(() => {

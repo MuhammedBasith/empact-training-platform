@@ -1,11 +1,9 @@
-import React from 'react';
+import Dashboard from '../../views/ManagerView/dashboard/Dashboard';
 
 const ManagerDashboard = () => {
-    return (
-        <div>
-            <h1>ManagerDashboard</h1>
-        </div>
-    );
+  return (
+      <Dashboard />
+  );
 };
 
-export default ManagerDashboard; 
+export default ManagerDashboard;
