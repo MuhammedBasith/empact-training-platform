@@ -74,10 +74,16 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
   const handleShowEmployees = (trainingId: string, batchId?: string) => {
     // Navigate to the employee details page with the trainingId and optional batchId
     if (batchId) {
-      navigate(`/admin/managers/${id}/${trainingId}/${batchId}`);
+      navigate(`/dashboard/admin/managers/${id}/${trainingId}/${batchId}`);
     } else {
-      navigate(`/admin/managers/${id}/${trainingId}`);
+      navigate(`/dashboard/admin/managers/${id}/${trainingId}`);
     }
+  };
+
+  // Add the handleAddResults function to navigate to the "Add Results" page
+  const handleAddResults = (trainingId: string) => {
+    // Navigate to the add results page with trainingId
+    navigate(`/dashboard/admin/managers/${id}/${trainingId}/results`);
   };
 
   if (loading) {
@@ -153,7 +159,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                       variant="contained"
                       color="primary"
                       sx={{ ml: 1 }}
-                      onClick={() => console.log(`Add results for training ID: ${training.trainingId}`)}
+                      onClick={() => handleAddResults(training.trainingId)} // Now uses handleAddResults to route to the Add Results page
                     >
                       Add Results
                     </Button>
