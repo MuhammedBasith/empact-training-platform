@@ -1,11 +1,9 @@
-import React from 'react';
+import Dashboard from "@/views/TrainerView/dashboard/Dashboard";
 
 const TrainerDashboard = () => {
-    return (
-        <div>
-            <h1>TrainerDashboard</h1>
-        </div>
-    );
+  return (
+      <Dashboard />
+  );
 };
 
-export default TrainerDashboard; 
+export default TrainerDashboard;
