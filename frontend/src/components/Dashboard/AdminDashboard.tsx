@@ -2,12 +2,12 @@ import { Grid, Box } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 
 // Renamed components specific to Admin Dashboard
-import UserStatistics from '../../views/dashboard/components/UserStatistics';
-import RevenueBreakdown from '../../views/dashboard/components/RevenueBreakdown';
-import MonthlyExpenses from '../../views/dashboard/components/MonthlyExpenses';
-import RecentActivities from '../../views/dashboard/components/RecentActivities';
-import PerformanceOverview from '../../views/dashboard/components/PerformanceOverview';
-import AdminNotifications from '../../views/dashboard/components/AdminNotifications';
+import UserStatistics from '../../views/AdminView/dashboard/components/UserStatistics';
+import RevenueBreakdown from '../../views/AdminView/dashboard/components/RevenueBreakdown';
+import MonthlyExpenses from '../../views/AdminView/dashboard/components/MonthlyExpenses';
+import RecentActivities from '../../views/AdminView/dashboard/components/RecentActivities';
+import PerformanceOverview from '../../views/AdminView/dashboard/components/PerformanceOverview';
+import AdminNotifications from '../../views/AdminView/dashboard/components/AdminNotifications';
 
 const AdminDashboard = () => {
   return (
