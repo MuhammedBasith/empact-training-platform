@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import Loadable from '../layouts/full/shared/loadable/Loadable';
 
@@ -6,22 +6,24 @@ import Loadable from '../layouts/full/shared/loadable/Loadable';
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 
 /* ****Pages***** */
-const Dashboard = Loadable(lazy(() => import('../components/Dashboard/Dashboard')));
 const AdminDashboard = Loadable(lazy(() => import('../components/Dashboard/AdminDashboard')));
 const ManagerDashboard = Loadable(lazy(() => import('../components/Dashboard/ManagerDashboard')));
 const TrainerDashboard = Loadable(lazy(() => import('../components/Dashboard/TrainerDashboard')));
 
 const DashboardRoutes = (role: string | undefined) => [
   {
-    path: '/',
+    path: '/dashboard', // This is the base path for the dashboard
     element: <FullLayout />,
     children: [
-      { path: '/', element: <Navigate to="/dashboard" /> },
-      { path: '/dashboard', exact: true, element: <Dashboard /> },
-      { path: '/dashboard/admin', exact: true, element: role === 'admin' ? <AdminDashboard /> : <Navigate to="/dashboard" /> },
-      { path: '/dashboard/manager', exact: true, element: role === 'manager' ? <ManagerDashboard /> : <Navigate to="/dashboard" /> },
-      { path: '/dashboard/trainer', exact: true, element: role === 'trainer' ? <TrainerDashboard /> : <Navigate to="/dashboard" /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
+      // Redirecting to `/dashboard` if accessing `/dashboard` directly
+      { path: '', element: <Navigate to="/dashboard" /> }, // No `/dashboard` URL directly; empty path for base
+      // Role-based routes for dashboard pages:
+      { path: 'admin', element: role === 'admin' ? <AdminDashboard /> : <Navigate to="/404" /> },
+      { path: 'manager', element: role === 'manager' ? <ManagerDashboard /> : <Navigate to="/404" /> },
+      { path: 'trainer', element: role === 'trainer' ? <TrainerDashboard /> : <Navigate to="/404" /> },
+      
+      // This is the "catch-all" route for any invalid dashboard URLs
+      { path: '*', element: <Navigate to="/404" /> },
     ],
   },
 ];

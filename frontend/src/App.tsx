@@ -15,6 +15,9 @@ import ResetPassword from './components/Auth/reset-password/ResetPassword';
 import Home from './components/Home';
 import NotFound from './components/Error';
 
+// Import Dashboard Routes
+import DashboardRoutes from './routes/DashboardRoutes';
+
 function App() {
   const { user } = useUserContext();
   const isAuthenticated = !!user;
@@ -41,6 +44,15 @@ function App() {
             element={isAuthenticated ? <Navigate to={`/dashboard/${role}`} replace state={{ from: location }} /> : <AuthLayout><SignUp /></AuthLayout>} 
           />
           <Route path="/reset-password" element={<AuthLayout><ResetPassword /></AuthLayout>} />
+
+          {/* Protected Dashboard Routes */}
+          {isAuthenticated && DashboardRoutes(role).map((route, idx) => (
+            <Route key={idx} path={route.path} element={route.element}>
+              {route.children && route.children.map((childRoute, childIdx) => (
+                <Route key={childIdx} path={childRoute.path} element={childRoute.element} />
+              ))}
+            </Route>
+          ))}
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
