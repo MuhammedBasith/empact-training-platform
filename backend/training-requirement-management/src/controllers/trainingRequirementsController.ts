@@ -262,14 +262,16 @@ export async function getTrainingRequirementUnderAManager(
 }
 
 export async function getTrainingRequirementsByManager( 
-    request: Request<{ cognitoId: string }, {}, {}>, 
+    request: Request<{ id: string }, {}, {}>, 
     response: Response
 ): Promise<any> {
-    const { cognitoId } = request.params;  // Extract the cognitoId (manager ID) from URL parameters
+    const { id } = request.params;  // Extract the cognitoId (manager ID) from URL parameters
+    console.log(id);
+    
     
     try {
         // Step 1: Fetch all training requirements created by the manager (cognitoId)
-        const trainingRequirements = await TrainingRequirement.find({ cognitoId });
+        const trainingRequirements = await TrainingRequirement.find({ cognitoId:id });
 
         if (!trainingRequirements || trainingRequirements.length === 0) {
             return response.status(404).json({ message: 'No training requirements found for the given manager.' });
