@@ -10,7 +10,7 @@ Endpoint: POST /api/v1/batch-management
 Description: Creates one or more batches of employees for a given training requirement.
 
 
-## JSON Example
+JSON Example
 
 Request Body :
 
