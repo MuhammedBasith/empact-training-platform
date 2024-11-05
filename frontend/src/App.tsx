@@ -1,8 +1,8 @@
-// src/App.js
-import React, { lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baselightTheme } from './theme/DefaultColors';
+import { useUserContext } from './context/UserContext';
 
 // Import layouts
 import RootLayout from './layouts/RootLayout';
@@ -15,17 +15,18 @@ import SignIn from './components/Auth/signin/SignIn';
 import SignUp from './components/Auth/signup/SignUp';
 import ResetPassword from './components/Auth/reset-password/ResetPassword';
 import Home from './components/Home';
-import NotFound from './components/NotFound';
+import NotFound from './components/Error';
 
-// Lazy load dashboard components for each role
-const AdminDashboard = lazy(() => import('./components/Dashboard/AdminDashboard'));
-const ManagerDashboard = lazy(() => import('./components/Dashboard/ManagerDashboard'));
-const EmployeeDashboard = lazy(() => import('./components/Dashboard/EmployeeDashboard'));
-const TrainerDashboard = lazy(() => import('./components/Dashboard/TrainerDashboard'));
+
+import AdminDashboard from './components/Dashboard/AdminDashboard';
+import ManagerDashboard from './components/Dashboard/ManagerDashboard';
+import TrainerDashboard from './components/Dashboard/TrainerDashboard'
 
 function App() {
-  const isAuthenticated = !!sessionStorage.getItem('idToken'); // Assuming user data is stored in session storage
-  const role = sessionStorage.getItem('customRole'); // Retrieve role from session storage
+  const { user } = useUserContext();
+  const isAuthenticated = !!user;
+  const role = user?.role?.toLowerCase();
+  const location = useLocation();
 
   return (
     <RootLayout>
@@ -34,23 +35,39 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomeLayout><Home /></HomeLayout>} />
-          <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
-          <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+
+          {/* Redirect if authenticated */}
+          <Route path="/signin" element={
+            isAuthenticated ? (
+              <Navigate to={`/dashboard/${role}`} replace state={{ from: location }} />
+            ) : (
+              <AuthLayout><SignIn /></AuthLayout>
+            )
+          } />
+
+          <Route path="/signup" element={
+            isAuthenticated ? (
+              <Navigate to={`/dashboard/${role}`} replace state={{ from: location }} />
+            ) : (
+              <AuthLayout><SignUp /></AuthLayout>
+            )
+          } />
+
           <Route path="/reset-password" element={<AuthLayout><ResetPassword /></AuthLayout>} />
 
           {/* Protected Routes for Authenticated Users */}
           {isAuthenticated ? (
             <Route path="/dashboard" element={<DashboardLayout />}>
               {/* Role-Based Dashboard Routes */}
-              <Route path="admin" element={<AdminDashboard />} />
-              <Route path="manager" element={<ManagerDashboard />} />
-              <Route path="employee" element={<EmployeeDashboard />} />
-              <Route path="trainer" element={<TrainerDashboard />} />
-              {/* Redirect to role-specific dashboard */}
+              {role === 'admin' && <Route path="admin" element={<AdminDashboard />} />}
+              {role === 'manager' && <Route path="manager" element={<ManagerDashboard />} />}
+              {role === 'trainer' && <Route path="trainer" element={<TrainerDashboard />} />}
+              {/* Redirect to role-specific dashboard if accessing the dashboard route */}
               <Route path="*" element={<Navigate to={`/dashboard/${role}`} />} />
             </Route>
           ) : (
-            <Route path="*" element={<Navigate to="/signin" />} />
+            // Redirect unauthenticated users to login
+            <Route path="*" element={<Navigate to="/signin" replace />} />
           )}
 
           {/* Fallback Route */}
