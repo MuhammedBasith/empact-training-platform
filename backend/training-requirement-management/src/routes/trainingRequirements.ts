@@ -5,11 +5,11 @@ import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../d
 const router = express.Router();
 
 router.post('/', createTrainingRequirement);
-router.post('/:requirementId/confirm', confirmRequirement);
+router.post('/confirmRequirement/:requirementId', confirmRequirement);
  router.get('/getTrainingRequirement/:cognitoId/:id', getTrainingRequirement);
 // router.get('/', getAllTrainingRequirements);
 router.put('/:id/empCount', updateEmployeeCount);
-router.put('/:id/batchIds',updateBatchIds)
+router.put('/updateBatchIds/:id/',updateBatchIds)
 router.delete('/:id', deleteTrainingRequirement);
 router.get('/getTrainingRequirementsByManager/:id',getTrainingRequirementsByManager);
 router.get('/',getTrainingRequirements)   // cognitoId, name & count
