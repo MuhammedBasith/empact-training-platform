@@ -5,7 +5,7 @@ import DashboardCard from '../../../../components/shared/DashboardCard';
 import Chart from 'react-apexcharts';
 
 
-const SalesOverview = () => {
+const TrainingProgressOverview = () => {
 
     // select
     const [month, setMonth] = React.useState('1');
@@ -79,18 +79,18 @@ const SalesOverview = () => {
     };
     const seriescolumnchart = [
         {
-            name: 'Eanings this month',
+            name: 'Progress this month',
             data: [355, 390, 300, 350, 390, 180, 355, 390],
         },
         {
-            name: 'Expense this month',
+            name: 'L&D Expenses this month',
             data: [280, 250, 325, 215, 250, 310, 280, 250],
         },
     ];
 
     return (
 
-        <DashboardCard title="Sales Overview" action={
+        <DashboardCard title="Training Progress Overview" action={
             <Select
                 labelId="month-dd"
                 id="month-dd"
@@ -98,9 +98,9 @@ const SalesOverview = () => {
                 size="small"
                 onChange={handleChange}
             >
-                <MenuItem value={1}>March 2023</MenuItem>
-                <MenuItem value={2}>April 2023</MenuItem>
-                <MenuItem value={3}>May 2023</MenuItem>
+                <MenuItem value={1}>August 2024</MenuItem>
+                <MenuItem value={2}>September 2024</MenuItem>
+                <MenuItem value={3}>October 2024</MenuItem>
             </Select>
         }>
             <Chart
@@ -113,4 +113,4 @@ const SalesOverview = () => {
     );
 };
 
-export default SalesOverview;
+export default TrainingProgressOverview;

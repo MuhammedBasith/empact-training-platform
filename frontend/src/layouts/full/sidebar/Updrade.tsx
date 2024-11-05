@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import img1 from 'src/assets/images/backgrounds/rocket.png';
 
@@ -12,9 +11,9 @@ export const Upgrade = () => {
         >
             <>
                 <Box>
-                    <Typography variant="h6" mb={1}>Unlimited Access</Typography>
-                    <Button color="primary" target="_blank" href="https://adminmart.com/product/Empact-react-mui-dashboard-template/" variant="contained" aria-label="logout" size="small">
-                        Upgrade
+                    <Typography variant="h6" mb={1}>Empact</Typography>
+                    <Button color="primary" target="_blank"variant="contained" aria-label="logout" size="small">
+                        Dummy
                     </Button>
                 </Box>
                 <Box mt="-35px">

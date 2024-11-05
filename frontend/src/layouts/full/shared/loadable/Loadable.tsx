@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 
 
@@ -12,8 +12,8 @@ const Loadable = (Component) => (props) =>
 
 
 const loadingContainer = {
-  width: "4rem",
-  height: "4rem",
+  width: "6rem",  // Increased size of the container for bigger balls
+  height: "6rem", 
   display: "flex",
   justifyContent: "space-around",
   alignItems: "center",
@@ -21,16 +21,18 @@ const loadingContainer = {
 
 const loadingCircle = {
   display: "block",
-  width: "1rem",
-  height: "1rem",
-  backgroundColor: "#00C4B4", // Modern teal color
+  width: "1.5rem",  // Increased size of the loading circle
+  height: "1.5rem",
+  backgroundColor: "black", // Modern teal color
   borderRadius: "50%", // Perfectly round circles
 };
 
 const loadingContainerVariants = {
   start: {
     transition: {
-      staggerChildren: 0.2,
+      staggerChildren: 0.2, // Stagger the animation for each circle
+      repeat: Infinity,      // Ensure animation repeats infinitely
+      repeatType: "loop",    // The animation will loop until interrupted
     },
   },
   end: {
@@ -42,26 +44,27 @@ const loadingContainerVariants = {
 
 const loadingCircleVariants = {
   start: {
-    y: "0%",
-    opacity: 0.7, // Initial opacity for a smoother effect
+    y: "0%",      // Start position
+    opacity: 0.7, // Initial opacity
   },
   end: {
-    y: "60%",
-    opacity: 1, // Full opacity when the animation is at its peak
+    y: "60%",     // Move circles vertically
+    opacity: 1,   // Full opacity when the animation is at its peak
   },
 };
 
 const loadingCircleTransition = {
   duration: 0.4,
-  yoyo: Infinity,
-  ease: "easeInOut",
+  yoyo: Infinity,      // The circles will animate back and forth
+  ease: "easeInOut",   // Smooth easing for the motion
+  repeat: Infinity,    // Ensures infinite repeat
 };
 
 const Loader = () => {
   return (
     <div>
-      {/* Background overlay */}
-      <div className="fixed w-full min-h-screen z-50 bg-black opacity-20" />
+      {/* Background overlay with white color */}
+      <div className="fixed w-full min-h-screen z-50 bg-white opacity-90" />
       
       {/* Loader container */}
       <div className="flex fixed w-full justify-center items-center h-screen">
