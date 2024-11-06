@@ -8,6 +8,7 @@ import axios from 'axios';
 export async function createBatch(request: Request, response: Response) {
     try {
         const { trainingRequirementId, batches } = request.body;
+        console.log(request.body)
 
         // Ensure batches are provided
         if (!batches || batches.length === 0) {
@@ -19,7 +20,7 @@ export async function createBatch(request: Request, response: Response) {
 
         // Process each batch
         for (const batch of batches) {
-            const { batchNumber, range, duration, trainerId, employees } = batch;
+            const { batchNumber, range, duration, cognitoId, employees } = batch;
 
             // Ensure batch has employees
             if (!employees || employees.length === 0) {
@@ -59,7 +60,7 @@ export async function createBatch(request: Request, response: Response) {
             const batchData = {
                 trainingRequirementId,
                 batchNumber,
-                trainerId,  // Assuming trainerId is passed as an ObjectId
+                cognitoId,  // Assuming trainerId is passed as an ObjectId
                 employeeIds: employeeCognitoIds,  // List of employee cognitoIds
                 duration,  // The batch duration (string)
                 range,     // The batch range (e.g., "85 - 80")

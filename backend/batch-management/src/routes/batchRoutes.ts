@@ -10,4 +10,5 @@ router.post('/', createBatch);
 router.put('/:id/',updateTrainerId);
 
 router.get('/:id',getBatchById);
+
 export default router;
