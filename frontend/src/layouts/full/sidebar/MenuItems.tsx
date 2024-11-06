@@ -65,7 +65,7 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Team Performance',
     icon: IconUser,
-    href: '/manager/team-performance',
+    href: '/dashboard/manager/team-performance',
     roles: ['manager']
   },
   {

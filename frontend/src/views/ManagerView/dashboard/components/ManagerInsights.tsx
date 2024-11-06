@@ -1,128 +1,158 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button } from '@mui/material';
-import DashboardCard from '../../../../components/shared/DashboardCard';
-import { useUserContext } from '../../../../context/UserContext'; // Import the UserContext
+import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+
+interface Trainer {
+  trainerId: string;
+  name: string;
+  email: string;
+  expertise: string[];
+}
+
+interface BatchDetail {
+  batchId: string;
+  batchNumber: number;
+  duration: string;
+  employeeCount: number;
+  range: string;
+  trainer: Trainer | null;
+}
+
+interface TrainingRequirement {
+  _id: string;
+  trainingName: string;
+  trainer: Trainer | null;
+  batchDetails: BatchDetail[] | null;
+}
 
 const ManagerInsights = () => {
-  const { user } = useUserContext(); // Access the logged-in user's context
-  const [trainingRequirements, setTrainingRequirements] = useState([]);
+  const { cognitoId } = useParams(); // Get the cognitoId from the URL params
+  const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      return; // Exit if no user is found in context
-    }
-
-    const fetchTrainingData = async () => {
+    const fetchTrainingDetails = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${user.cognitoID}`
+          `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${cognitoId}`
         );
-        
+
         if (response.data.success) {
           setTrainingRequirements(response.data.data);
-        } else {
-          console.error('Failed to fetch training requirements');
         }
       } catch (error) {
-        console.error("Error fetching manager's training data:", error);
+        console.error('Error fetching training details:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTrainingData();
-  }, [user]); // Re-fetch when the user context changes
+    fetchTrainingDetails();
+  }, [cognitoId]);
+
+  const handleRowToggle = (trainingId: string) => {
+    const newExpandedRows = new Set(expandedRows);
+    if (newExpandedRows.has(trainingId)) {
+      newExpandedRows.delete(trainingId);
+    } else {
+      newExpandedRows.add(trainingId);
+    }
+    setExpandedRows(newExpandedRows);
+  };
+
+  const handleShowEmployees = (trainingId: string, batchId?: string) => {
+    navigate(`/dashboard/admin/managers/${cognitoId}/${trainingId}${batchId ? `/${batchId}` : ''}`);
+  };
+
+  const handleAddResults = (trainingId: string) => {
+    navigate(`/dashboard/admin/managers/${cognitoId}/${trainingId}/results`);
+  };
 
   if (loading) {
     return (
-      <DashboardCard title="Manager's Training Data">
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-          <CircularProgress />
-        </Box>
-      </DashboardCard>
-    );
-  }
-
-  if (trainingRequirements.length === 0) {
-    return (
-      <DashboardCard title="Manager's Training Data">
-        <Box sx={{ textAlign: 'center', py: 5 }}>
-          <Typography variant="h6" color="textSecondary">
-            No training data available for this manager.
-          </Typography>
-        </Box>
-      </DashboardCard>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
   return (
-    <DashboardCard title="Manager's Training Data">
-      <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
-        <Table aria-label="training requirements table" sx={{ whiteSpace: 'nowrap', mt: 2 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Training Name
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  No. of Employees
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Trainer
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Action
-                </Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {trainingRequirements.map((training) => (
-              <TableRow key={training._id}>
-                <TableCell>
-                  <Typography sx={{ fontSize: '15px', fontWeight: '500' }}>
-                    {training.trainingName}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    {training.employeeCount}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    {training.trainer ? training.trainer.name : 'Not Assigned'}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ transition: 'all 0.3s ease', '&:hover': { transform: 'scale(1.05)' } }}
-                    onClick={() => {
-                      // Navigate to the details page for this training
-                      // Replace `/dashboard/admin/managers/details/${training._id}` with your details route
-                      window.location.href = `/dashboard/admin/managers/details/${training._id}`;
-                    }}
-                  >
-                    View Details
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-    </DashboardCard>
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="h6">Training Requirements</Typography>
+      <Table sx={{ marginTop: 2 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Training Name</TableCell>
+            <TableCell>No. of Employees</TableCell>
+            <TableCell>Trainer Name</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {trainingRequirements.map((training) => {
+            const hasBatchDetails = training.batchDetails && training.batchDetails.length > 0;
+            const totalEmployees = hasBatchDetails
+              ? training.batchDetails.reduce((sum, batch) => sum + batch.employeeCount, 0)
+              : training.batchDetails?.[0]?.employeeCount || 0;
+
+            return (
+              <React.Fragment key={training._id}>
+                <TableRow hover onClick={() => handleRowToggle(training._id)} sx={{ cursor: 'pointer' }}>
+                  <TableCell>{training.trainingName}</TableCell>
+                  <TableCell>{totalEmployees}</TableCell>
+                  <TableCell>{training.trainer ? training.trainer.name : 'Trainer not assigned'}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined" color="primary" onClick={() => handleShowEmployees(training._id)}>
+                      Show Employees
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ ml: 1 }}
+                      onClick={() => handleAddResults(training._id)}
+                    >
+                      Add Results
+                    </Button>
+                  </TableCell>
+                </TableRow>
+
+                {hasBatchDetails && (
+                  <TableRow>
+                    <TableCell colSpan={4}>
+                      <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
+                        <Table sx={{ marginTop: 2 }}>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Batch Number</TableCell>
+                              <TableCell>Duration</TableCell>
+                              <TableCell>Employee Count</TableCell>
+                              <TableCell>Trainer</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {training.batchDetails?.map((batch) => (
+                              <TableRow key={batch.batchId}>
+                                <TableCell>{batch.batchNumber}</TableCell>
+                                <TableCell>{batch.duration}</TableCell>
+                                <TableCell>{batch.employeeCount}</TableCell>
+                                <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </Box>
   );
 };
 
