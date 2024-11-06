@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import readXlsxFile from "read-excel-file";
+import { useNavigate } from 'react-router-dom';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Box, Typography, Paper } from "@mui/material";
 import { MultiStepLoader as Loader } from "../../../../../src/components/ui/multi-step-loader"; 
 
@@ -13,6 +14,8 @@ interface Employee {
 }
 
 const AddEmployeesPage: React.FC = () => {
+  const navigate = useNavigate()
+
   const [file, setFile] = useState<File | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -105,6 +108,8 @@ const AddEmployeesPage: React.FC = () => {
       }
 
       setLoading(false);
+      navigate(`/dashboard/manager/trainings/`);
+
     } catch (err) {
       setLoading(false);
       setError("An error occurred while processing employees.");
