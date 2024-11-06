@@ -4,10 +4,12 @@ import bodyParser from 'body-parser';
 import 'dotenv/config'
 import {config} from './config/db';
 import EmployeeManagementRoutes from './routes/employee-management';
+import cors from 'cors';
 const app = express();
 
 const PORT=process.env.PORT || 3006;
 
+app.use(cors());
 app.use(bodyParser.json());
 mongoose.connect(config.mongoUri)
 .then(() => {
