@@ -4,6 +4,7 @@ import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentT
 import { UploadFile } from '@mui/icons-material';
 import readXlsxFile from 'read-excel-file';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Employee {
   name: string;
@@ -29,7 +30,7 @@ interface Trainer {
 }
 
 const AddResultsPage: React.FC = () => {
-  const { trainingId } = useParams<{ trainingId: string }>(); // Extract trainingId from the URL
+  const { trainingId, id } = useParams<{ trainingId: string, id: string }>(); // Extract trainingId from the URL
   const [file, setFile] = useState<File | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [maxMarks, setMaxMarks] = useState<number | null>(null);
@@ -38,6 +39,7 @@ const AddResultsPage: React.FC = () => {
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate()
 
   // Ensure that trainingId exists, if not, navigate to 404 or another fallback route
   if (!trainingId) {
@@ -142,6 +144,7 @@ const AddResultsPage: React.FC = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`, dataToSend);
       console.log('Batch data sent successfully:', response.data);
+      navigate(`/admin/managers/${id}/${trainingId}`);
     } catch (error) {
       console.error('Error sending batch data:', error);
     }
