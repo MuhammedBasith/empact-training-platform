@@ -27,7 +27,7 @@ export async function createTrainingRequirement(
             skills_to_train: newRequirement.skills_to_train
             
         };
-        const responsedata = await axios.post('http://localhost:5000/api/v1/summaries/generate', summaryData);
+        const responsedata = await axios.post('http://localhost:3004/api/v1/summaries/generate', summaryData);
         const data = responsedata.data.summary
 
         response.status(201).json({...summaryData, summary: data});
