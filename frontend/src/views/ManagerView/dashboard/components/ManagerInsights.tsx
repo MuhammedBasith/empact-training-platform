@@ -30,6 +30,7 @@ const ManagerInsights = () => {
   const { cognitoId } = useParams(); // Get the cognitoId from the URL params
   const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // Track error message
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
@@ -41,10 +42,17 @@ const ManagerInsights = () => {
         );
 
         if (response.data.success) {
-          setTrainingRequirements(response.data.data);
+          if (response.data.data.length === 0) {
+            setError('No data found'); // Set "no data" message if empty
+          } else {
+            setTrainingRequirements(response.data.data);
+          }
+        } else {
+          setError('Error fetching data'); // Set error message if response indicates failure
         }
       } catch (error) {
         console.error('Error fetching training details:', error);
+        setError('Error fetching data'); // Set error message for fetch failure
       } finally {
         setLoading(false);
       }
@@ -67,14 +75,18 @@ const ManagerInsights = () => {
     navigate(`/dashboard/admin/managers/${cognitoId}/${trainingId}${batchId ? `/${batchId}` : ''}`);
   };
 
-  const handleAddResults = (trainingId: string) => {
-    navigate(`/dashboard/admin/managers/${cognitoId}/${trainingId}/results`);
-  };
-
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <Typography variant="h6" color="error">{error}</Typography>
       </Box>
     );
   }
@@ -92,64 +104,64 @@ const ManagerInsights = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {trainingRequirements.map((training) => {
-            const hasBatchDetails = training.batchDetails && training.batchDetails.length > 0;
-            const totalEmployees = hasBatchDetails
-              ? training.batchDetails.reduce((sum, batch) => sum + batch.employeeCount, 0)
-              : training.batchDetails?.[0]?.employeeCount || 0;
+          {trainingRequirements.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={4} align="center">
+                <Typography variant="h6" color="textSecondary">No training requirements found.</Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            trainingRequirements.map((training) => {
+              const hasBatchDetails = training.batchDetails && training.batchDetails.length > 0;
+              const totalEmployees = hasBatchDetails
+                ? training.batchDetails.reduce((sum, batch) => sum + batch.employeeCount, 0)
+                : training.batchDetails?.[0]?.employeeCount || 0;
 
-            return (
-              <React.Fragment key={training._id}>
-                <TableRow hover onClick={() => handleRowToggle(training._id)} sx={{ cursor: 'pointer' }}>
-                  <TableCell>{training.trainingName}</TableCell>
-                  <TableCell>{totalEmployees}</TableCell>
-                  <TableCell>{training.trainer ? training.trainer.name : 'Trainer not assigned'}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined" color="primary" onClick={() => handleShowEmployees(training._id)}>
-                      Show Employees
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ ml: 1 }}
-                      onClick={() => handleAddResults(training._id)}
-                    >
-                      Add Results
-                    </Button>
-                  </TableCell>
-                </TableRow>
-
-                {hasBatchDetails && (
-                  <TableRow>
-                    <TableCell colSpan={4}>
-                      <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
-                        <Table sx={{ marginTop: 2 }}>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>Batch Number</TableCell>
-                              <TableCell>Duration</TableCell>
-                              <TableCell>Employee Count</TableCell>
-                              <TableCell>Trainer</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {training.batchDetails?.map((batch) => (
-                              <TableRow key={batch.batchId}>
-                                <TableCell>{batch.batchNumber}</TableCell>
-                                <TableCell>{batch.duration}</TableCell>
-                                <TableCell>{batch.employeeCount}</TableCell>
-                                <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </Collapse>
+              return (
+                <React.Fragment key={training._id}>
+                  <TableRow hover onClick={() => handleRowToggle(training._id)} sx={{ cursor: 'pointer' }}>
+                    <TableCell>{training.trainingName}</TableCell>
+                    <TableCell>{totalEmployees}</TableCell>
+                    <TableCell>{training.trainer ? training.trainer.name : 'Trainer not assigned'}</TableCell>
+                    <TableCell>
+                      <Button variant="outlined" color="primary" onClick={() => handleShowEmployees(training._id)}>
+                        Show Employees
+                      </Button>
                     </TableCell>
                   </TableRow>
-                )}
-              </React.Fragment>
-            );
-          })}
+
+                  {hasBatchDetails && (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
+                          <Table sx={{ marginTop: 2 }}>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Batch Number</TableCell>
+                                <TableCell>Duration</TableCell>
+                                <TableCell>Employee Count</TableCell>
+                                <TableCell>Trainer</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {training.batchDetails?.map((batch) => (
+                                <TableRow key={batch.batchId}>
+                                  <TableCell>{batch.batchNumber}</TableCell>
+                                  <TableCell>{batch.duration}</TableCell>
+                                  <TableCell>{batch.employeeCount}</TableCell>
+                                  <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              );
+            })
+          )}
         </TableBody>
       </Table>
     </Box>
