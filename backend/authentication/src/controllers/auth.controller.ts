@@ -4,6 +4,13 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
 import { isUserConfirmed, confirmNewPassword, saveUserToDatabase  } from "../services/auth.service";
 import  User , { IUser } from '../models/user.model';
+import AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
+
+
+const cognito = new AWS.CognitoIdentityServiceProvider({
+  region: process.env.AWS_REGION,
+});
 
 // Verify controller
 export const verifyController: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -134,3 +141,49 @@ export async function getUserCognitoId(
     return response.status(500).json({ message: 'Internal server error' });
   }
 }
+
+
+export const createAccountByAdmin = async (req: Request, res: Response) => {
+  const { name, email, account, skills, department } = req.body;
+
+  // Validate required fields
+  if (!name || !email) {
+    return res.status(400).json({ message: 'Name and email are required.' });
+  }
+
+  // Generate a temporary password (You can customize this as needed)
+  const temporaryPassword = uuidv4().replace(/-/g, '').slice(0, 12); // 12-character password
+
+  try {
+    // Prepare parameters to create a user in Cognito
+    const createUserParams = {
+      UserPoolId: process.env.USER_POOL_ID!, // Your Cognito User Pool ID
+      Username: email, // Use email as the username
+      TemporaryPassword: temporaryPassword, // Assign dummy temporary password
+      UserAttributes: [
+        { Name: 'email', Value: email },
+        { Name: 'name', Value: name },
+        { Name: 'custom:role', Value: 'employee' }, 
+      ],
+      MessageAction: 'SUPPRESS', // Prevent Cognito from sending a default email
+    };
+
+    // Create the user in Cognito
+    const cognitoResponse = await cognito.adminCreateUser(createUserParams).promise();
+
+    // Send invitation email (Cognito will send it automatically)
+    // Cognito will automatically send an invitation with the temporary password
+    console.log(`Cognito invitation email sent to ${email} with temporary password: ${temporaryPassword}`);
+
+    // Respond with the Cognito user details
+    return res.status(201).json({
+      message: 'Account created successfully in Cognito. An invitation email has been sent.',
+      cognitoId: cognitoResponse.User?.Username,
+      email,
+    });
+
+  } catch (error) {
+    console.error('Error creating user in Cognito:', error);
+    return res.status(500).json({ message: 'Error creating user account in Cognito.' });
+  }
+};
