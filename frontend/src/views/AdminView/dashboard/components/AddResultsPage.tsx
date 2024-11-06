@@ -139,6 +139,7 @@ const AddResultsPage: React.FC = () => {
         employees: employees.slice(index * cutoff.count, (index + 1) * cutoff.count),
       })),
     };
+    console.log(dataToSend);
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`, dataToSend);

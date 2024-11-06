@@ -28,14 +28,15 @@ const EmployeeDetails = () => {
           url = `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management/getEmployeesForBatch/${batchId}`;
         }
         
-
-        const response = await axios.get<EmployeeDetailsResponse>(url);
+        console.log(url);
         
+       
+        const response = await axios.get<EmployeeDetailsResponse>(url);
 
-        if (response.data.success) {
+        if (response.data) {
           console.log(response.data);
           
-          setEmployees(response.data.data);
+          setEmployees(response.data);
         } else {
           setError('Failed to fetch employee data.');
         }
@@ -66,12 +67,12 @@ const EmployeeDetails = () => {
   }
 
   const handleShowProgress = (cognitoId: string) => {
-    navigate(`/admin/managers/${id}/${trainingId}/progress/${cognitoId}`);
+    navigate(`/dashboard/admin/managers/${id}/${trainingId}/progress/${cognitoId}`);
   };
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="h6">Employee Details for Training {trainingId}</Typography>
+      <Typography variant="h6">Employee Details</Typography>
 
       <Table sx={{ marginTop: 2 }}>
         <TableHead>
@@ -86,7 +87,7 @@ const EmployeeDetails = () => {
             <TableRow key={employee.cognitoId}>
               {/* Add the index as the first column */}
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{employee.name}</TableCell>
+              <TableCell>{employee.empName}</TableCell>
               <TableCell>
                 <Button
                   variant="outlined"
