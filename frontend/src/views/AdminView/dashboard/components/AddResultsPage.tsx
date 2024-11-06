@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, Navigate } from 'react-router-dom'; // Import useParams
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow, Typography, Paper, Box, CircularProgress, MenuItem, Select } from '@mui/material';
 import { UploadFile } from '@mui/icons-material';
 import readXlsxFile from 'read-excel-file';
@@ -20,9 +21,11 @@ interface Cutoff {
 interface Trainer {
   id: string;
   name: string;
+  expertise: string; // Add expertise property
 }
 
 const AddResultsPage: React.FC = () => {
+  const { trainingId } = useParams<{ trainingId: string }>(); // Extract trainingId from the URL
   const [file, setFile] = useState<File | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [maxMarks, setMaxMarks] = useState<number | null>(null);
@@ -32,14 +35,17 @@ const AddResultsPage: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const trainingRequirementId = sessionStorage.getItem('trainingRequirementId');
+  // Ensure that trainingId exists, if not, navigate to 404 or another fallback route
+  if (!trainingId) {
+    return <Navigate to="/404" />;
+  }
 
   useEffect(() => {
-    // Fetch trainers from backend
+    // Fetch trainers from the backend
     const fetchTrainers = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
-        setTrainers(response.data); // Assume response data is an array of trainers with id and name
+        const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainers`);
+        setTrainers(response.data); // Assuming response contains id, name, and expertise
       } catch (error) {
         console.error('Error fetching trainers:', error);
       }
@@ -109,7 +115,7 @@ const AddResultsPage: React.FC = () => {
   const confirmAndSendData = async () => {
     setDialogOpen(false);
     const dataToSend = {
-      trainingRequirementId,
+      trainingRequirementId: trainingId, // Use the trainingId from the URL
       batches: cutoffs.map((cutoff, index) => ({
         batchNumber: index + 1,
         range: cutoff.range,
@@ -176,6 +182,7 @@ const AddResultsPage: React.FC = () => {
                   <TableCell>Employees in Batch</TableCell>
                   <TableCell>Duration (Weeks)</TableCell>
                   <TableCell>Trainer</TableCell>
+                  <TableCell>Trainer Expertise</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -205,6 +212,12 @@ const AddResultsPage: React.FC = () => {
                           <MenuItem key={trainer.id} value={trainer.id}>{trainer.name}</MenuItem>
                         ))}
                       </Select>
+                    </TableCell>
+                    <TableCell>
+                      {/* Display the selected trainer's expertise */}
+                      {cutoff.trainerId ? 
+                        trainers.find(trainer => trainer.id === cutoff.trainerId)?.expertise || 'N/A' 
+                        : 'Select Trainer'}
                     </TableCell>
                   </TableRow>
                 ))}
