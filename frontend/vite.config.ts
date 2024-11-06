@@ -14,4 +14,4 @@ resolve: {
       src: resolve(__dirname, 'src'),
   },
 },
-})
+});
