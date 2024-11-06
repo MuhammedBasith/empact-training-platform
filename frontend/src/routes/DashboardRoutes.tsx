@@ -17,6 +17,8 @@ const TrainersData = Loadable(lazy(() => import('../views/AdminView/dashboard/co
 const EmployeeDetails = Loadable(lazy(() => import('../views/AdminView/dashboard/components/EmployeeDetails')));
 const ProgressDetails = Loadable(lazy(() => import('../views/AdminView/dashboard/components/ProgressDetails')));
 const AddResultsPage = Loadable(lazy(() => import('../views/AdminView/dashboard/components/AddResultsPage')));
+const ManagerInsights = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/ManagerInsights')));
+
 
 
 const DashboardRoutes = (role: string | undefined) => [
@@ -38,12 +40,15 @@ const DashboardRoutes = (role: string | undefined) => [
       { path: 'admin/managers/:id/:trainingId/progress/:cognitoId', element: role === 'admin' ? <ProgressDetails /> : <Navigate to="/404" /> },
       { path: 'admin/managers/:id/:trainingId/results', element: role === 'admin' ? <AddResultsPage /> : <Navigate to="/404" /> },
 
+      // Managers route
+      { path: 'manager/trainings', element: role === 'manager' ? <ManagerInsights /> : <Navigate to="/404" /> },
+
+
 
 
       { path: 'admin/trainers/', element: role === 'admin' ? <TrainersData /> : <Navigate to="/404" /> },
 
 
-      // catch all routes
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },

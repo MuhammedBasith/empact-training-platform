@@ -56,6 +56,13 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: 'Manager Insights',
+    icon: IconUser,
+    href: '/dashboard/manager/trainings',
+    roles: ['manager']
+  },
+  {
+    id: uniqueId(),
     title: 'Team Performance',
     icon: IconUser,
     href: '/manager/team-performance',
