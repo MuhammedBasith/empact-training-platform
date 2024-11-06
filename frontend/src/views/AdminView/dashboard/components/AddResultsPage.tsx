@@ -49,11 +49,7 @@ const AddResultsPage: React.FC = () => {
     const fetchTrainers = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
-        
-        // Assuming response.data is an array of trainers
         setTrainers(response.data);
-        console.log(response.data);
-        
       } catch (error) {
         console.error('Error fetching trainers:', error);
       }
@@ -88,26 +84,25 @@ const AddResultsPage: React.FC = () => {
     const batchCount = parseInt(event.target.value, 10);
     if (batchCount > 0 && maxMarks) {
       setBatches(batchCount);
-  
+
       const newCutoffs = Array.from({ length: batchCount }, (_, i) => {
         const upper = maxMarks - (i * (maxMarks / batchCount));
         const lower = upper - (maxMarks / batchCount);
         const range = `${Math.ceil(upper)} - ${Math.ceil(lower > 0 ? lower : 0)}`;
-        
-        // Filter employees based on the calculated range
+
         const batchEmployees = employees.filter((employee) => {
           return employee.marks <= upper && employee.marks > lower;
         });
-  
+
         return {
           range: range,
-          count: batchEmployees.length,  // Dynamically set the employee count
+          count: batchEmployees.length,
           duration: null,
           cognitoId: null,
-          employees: batchEmployees,  // Store the actual employees in the batch
+          employees: batchEmployees,
         };
       });
-  
+
       setCutoffs(newCutoffs);
     }
   };
@@ -120,7 +115,7 @@ const AddResultsPage: React.FC = () => {
 
   const handleTrainerSelection = (index: number, trainerId: string) => {
     const updatedCutoffs = [...cutoffs];
-    updatedCutoffs[index].cognitoId = trainerId; // Use the trainer's cognitoId
+    updatedCutoffs[index].cognitoId = trainerId;
     setCutoffs(updatedCutoffs);
   };
 
@@ -133,7 +128,7 @@ const AddResultsPage: React.FC = () => {
   const confirmAndSendData = async () => {
     setDialogOpen(false);
     const dataToSend = {
-      trainingRequirementId: trainingId, // Use the trainingId from the URL
+      trainingRequirementId: trainingId,
       batches: cutoffs.map((cutoff, index) => ({
         batchNumber: index + 1,
         range: cutoff.range,
@@ -152,7 +147,7 @@ const AddResultsPage: React.FC = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3, maxWidth: 600, margin: '20px auto', textAlign: 'center' }}>
+    <Paper elevation={3} sx={{ p: 3, maxWidth: 900, margin: '20px auto', textAlign: 'center' }}>
       {!file ? (
         <Box>
           <Typography variant="h6">Upload Employee Data</Typography>
@@ -171,7 +166,7 @@ const AddResultsPage: React.FC = () => {
       ) : (
         <Box>
           <TextField
-            type="number"
+            type="text"
             label="Maximum Marks"
             variant="outlined"
             value={maxMarks ?? ''}
@@ -179,9 +174,13 @@ const AddResultsPage: React.FC = () => {
             placeholder="Enter maximum marks"
             fullWidth
             sx={{ mt: 2, mb: 3 }}
+            inputProps={{
+              inputMode: 'numeric',
+              pattern: '[0-9]*',
+            }}
           />
           <TextField
-            type="number"
+            type="text"
             label="Number of Batches"
             variant="outlined"
             value={batches}
@@ -190,32 +189,40 @@ const AddResultsPage: React.FC = () => {
             disabled={!maxMarks}
             fullWidth
             sx={{ mb: 3 }}
+            inputProps={{
+              inputMode: 'numeric',
+              pattern: '[0-9]*',
+            }}
           />
           {cutoffs.length > 0 && (
-            <Table>
+            <Table sx={{ mt: 3, minWidth: 700 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Batch Number</TableCell>
-                  <TableCell>Score Range</TableCell>
-                  <TableCell>Employees in Batch</TableCell>
-                  <TableCell>Duration (Weeks)</TableCell>
-                  <TableCell>Trainer</TableCell>
-                  <TableCell>Trainer Expertise</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Batch Number</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Score Range</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Employees in Batch</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Duration (Weeks)</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Trainer</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Trainer Expertise</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {cutoffs.map((cutoff, index) => (
-                  <TableRow key={index}>
-                    <TableCell>Batch {index + 1}</TableCell>
+                  <TableRow key={index} sx={{ height: '60px' }}>
+                    <TableCell>{index + 1}</TableCell>
                     <TableCell>{cutoff.range}</TableCell>
                     <TableCell>{cutoff.count}</TableCell>
                     <TableCell>
                       <TextField
-                        type="number"
+                        type="text"
                         value={cutoff.duration ?? ''}
                         onChange={(e) => handleDurationInput(index, parseInt(e.target.value, 10))}
                         placeholder="Duration"
                         fullWidth
+                        inputProps={{
+                          inputMode: 'numeric',
+                          pattern: '[0-9]*',
+                        }}
                       />
                     </TableCell>
                     <TableCell>
@@ -232,7 +239,6 @@ const AddResultsPage: React.FC = () => {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      {/* Display the selected trainer's expertise */}
                       {cutoff.cognitoId ? 
                         trainers.find(trainer => trainer.cognitoId === cutoff.cognitoId)?.expertise.join(', ') || 'N/A' 
                         : 'Select Trainer'}
