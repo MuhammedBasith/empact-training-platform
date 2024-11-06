@@ -37,7 +37,7 @@ const ProgressDetails = () => {
     const fetchData = async () => {
       try {
         // Fetch employee details from Employee Management Microservice
-        const employeeResponse = await axios.get(`${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/employee-management/emp/${cognitoId}`);
+        const employeeResponse = await axios.get(`${import.meta.env.VITE_APP_TRAINING_PROGRESS_MICROSERVICE}/api/v1/training-progress/${trainingId}/${cognitoId}`);
         if (employeeResponse.data.success) {
           setEmployee(employeeResponse.data.data);
         } else {
