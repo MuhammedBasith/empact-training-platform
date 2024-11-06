@@ -43,7 +43,6 @@ const ManagerInsights = () => {
         if (response.data.success) {
           setTrainingRequirements(response.data.data);
         } else {
-          // No data scenario
           setTrainingRequirements([]); // Empty array to trigger "No data found"
         }
       } catch (error) {
@@ -71,6 +70,11 @@ const ManagerInsights = () => {
     navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}`);
   };
 
+  const handleAddTraining = () => {
+    // Navigate to the "Add Training" page
+    navigate(`dashboard/manager/trainings/add`);
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
@@ -90,6 +94,17 @@ const ManagerInsights = () => {
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6">Training Requirements</Typography>
+
+      {/* Add Training Button */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddTraining}
+        sx={{ mb: 2, alignSelf: 'flex-start' }}
+      >
+        Add Training
+      </Button>
+
       <Table sx={{ marginTop: 2 }}>
         <TableHead>
           <TableRow>
@@ -135,9 +150,9 @@ const ManagerInsights = () => {
                                 <TableCell>{batch.employeeCount}</TableCell>
                                 <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
                                 <TableCell>
-                                  <Button 
-                                    variant="outlined" 
-                                    color="primary" 
+                                  <Button
+                                    variant="outlined"
+                                    color="primary"
                                     onClick={() => handleShowEmployees(training._id, batch.batchId)}
                                   >
                                     Show Employees

@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import Loadable from '../layouts/full/shared/loadable/Loadable';
+import RequirementsForm from '../../src/components/RequirementsForm';
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
@@ -45,6 +46,7 @@ const DashboardRoutes = (role: string | undefined) => [
 
       // Managers route
       { path: 'manager/trainings', element: role === 'manager' ? <ManagerInsights /> : <Navigate to="/404" /> },
+      { path: 'manager/trainings/add', element: role === 'manager' ? <RequirementsForm /> : <Navigate to="/404" /> },
       { path: 'manager/trainings/:cognitoId/:trainingId/:batchId', element: role === 'manager' ? <EmployeeDetailsForManagers /> : <Navigate to="/404" /> },
       { path: 'manager/trainings/:cognitoId/:trainingId/:batchId/progress', element: role === 'manager' ? <ProgressDetails /> : <Navigate to="/404" /> },
       { path: 'manager/trainings/:cognitoId/:trainingId/:batchId/add-employees', element: role === 'manager' ? <AddEmployees /> : <Navigate to="/404" /> },
