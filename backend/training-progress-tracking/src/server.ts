@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 import "dotenv/config";
 import { config } from "./config/db";
 import TrainingProgressRoutes from "./routes/training-progress";
+import cors from "cors";
 const app=express();
 app.use(express.json());
-
+app.use(cors());
 const PORT=process.env.PORT || 3005;
 
 mongoose.connect(config.mongoUri)
