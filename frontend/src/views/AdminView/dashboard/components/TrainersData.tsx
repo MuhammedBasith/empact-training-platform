@@ -26,9 +26,11 @@ const TrainersData = () => {
         const fetchTrainersData = async () => {
             try {
                 const response = await axios.get(
+
                     `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`
-                );
-                
+
+            );
+        
                 console.log(response.data);
                 setTrainers(response.data); // Assuming the response contains the 'trainers' field
                 setLoading(false);
