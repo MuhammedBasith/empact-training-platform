@@ -47,7 +47,7 @@ const TrainingDetails = () => {
       try {
         // Fetch the training details by trainingId and trainer's cognitoId
         const response = await axios.get<ManagerDetailsResponse>(
-          `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingDetails/${trainingId}/${user.cognitoID}`
+          `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/training-requirements/getTrainingDetails/${trainingId}/${user.cognitoID}`
         );
 
         if (response.data.success && response.data.data) {
