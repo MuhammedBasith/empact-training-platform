@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager } from '../controllers/trainingRequirementsController';
+import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager, getTrainingDetailsByIds } from '../controllers/trainingRequirementsController';
 import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../dtos/trainingRequirements.dto';
 
 const router = express.Router();
@@ -15,6 +15,8 @@ router.get('/getTrainingRequirementsByManager/:id',getTrainingRequirementsByMana
 router.get('/',getTrainingRequirements)   // cognitoId, name & count
 router.get('/getEmpCountById/:id',getEmpCountById);  
 router.get('/getTrainingRequirementUnderAManager/:id',getTrainingRequirementUnderAManager);
+// @ts-ignore
+router.post('/getTrainingDetailsByIds', getTrainingDetailsByIds);
 
 
 export default router;

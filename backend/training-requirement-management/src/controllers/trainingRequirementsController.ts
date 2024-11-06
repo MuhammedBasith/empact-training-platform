@@ -353,3 +353,28 @@ export async function getTrainingRequirementsByManager(
         return response.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
+
+export const getTrainingDetailsByIds = async (req: Request, res: Response) => {
+    try {
+        // Step 1: Get the list of trainingIds from the request body
+        const { trainingIds } = req.body;
+
+        // Step 2: Fetch the training details from the Training Requirements database using the trainingIds
+        const trainings = await TrainingRequirement.find({
+            '_id': { $in: trainingIds }
+        }).exec();
+
+        // Step 3: If no trainings found
+        if (!trainings || trainings.length === 0) {
+            return res.status(404).json({ message: 'No training details found for the provided trainingIds' });
+        }
+
+        // Step 4: Return the training details
+        return res.status(200).json({ trainings });
+    } catch (error) {
+        console.error("Error fetching training details:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
