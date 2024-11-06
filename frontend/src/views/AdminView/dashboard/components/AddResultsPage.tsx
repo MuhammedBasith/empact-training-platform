@@ -144,7 +144,7 @@ const AddResultsPage: React.FC = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`, dataToSend);
       console.log('Batch data sent successfully:', response.data);
-      navigate(`dashboard/admin/managers/${id}/${trainingId}`);
+      navigate(`/dashboard/admin/managers/`);
     } catch (error) {
       console.error('Error sending batch data:', error);
     }
