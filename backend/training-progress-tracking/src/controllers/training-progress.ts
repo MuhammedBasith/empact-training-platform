@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import TrainerFeedbackWithProgress, { ITrainerFeedbackWithProgress } from "../models/training-progress";
+import mongoose from "mongoose";
 
 export const createTrainerFeedbackWithProgress = async (req: Request, res: Response): Promise<any> => {
     const {
@@ -56,14 +57,16 @@ export const getAllTrainerFeedbackWithProgress = async (
 };
 
 export const getTrainerFeedbackWithProgressBycognitoId = async (
-    req: Request<{ cognitoId: string }>, // Expecting an ID parameter
+    req: Request<{ trainingId: string,cognitoId: string }>, // Expecting an ID parameter
     res: Response
 ): Promise<any> => {
-    const { cognitoId } = req.params; // Get the ID from the request parameters
+    const { cognitoId, trainingId } = req.params; // Get the ID from the request parameters
 
     try {
         // Fetch the training progress record by ID from the database
-        const trainerFeedbackWithProgressRecord = await TrainerFeedbackWithProgress.findOne({cognitoId});
+        const trainerFeedbackWithProgressRecord = await TrainerFeedbackWithProgress.find({
+            trainingId: new mongoose.Types.ObjectId(trainingId),
+            cognitoId: new mongoose.Types.ObjectId(cognitoId)});
 
         // Check if the record was found
         if (!trainerFeedbackWithProgressRecord) {

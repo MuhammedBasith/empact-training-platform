@@ -11,7 +11,7 @@ const routes=Router();
 
 routes.post('/',createTrainerFeedbackWithProgress);
 routes.get('/',getAllTrainerFeedbackWithProgress);
-routes.get('/:cognitoId', getTrainerFeedbackWithProgressBycognitoId);
+routes.get('/:trainingId/:cognitoId', getTrainerFeedbackWithProgressBycognitoId);
 routes.put('/:id', updateTrainerFeedbackWithProgress );
 
 export default routes;
