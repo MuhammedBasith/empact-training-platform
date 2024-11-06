@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom'; // Import useParams
+import { useParams, Navigate } from 'react-router-dom';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow, Typography, Paper, Box, CircularProgress, MenuItem, Select } from '@mui/material';
 import { UploadFile } from '@mui/icons-material';
 import readXlsxFile from 'read-excel-file';
@@ -15,13 +15,17 @@ interface Cutoff {
   range: string;
   count: number;
   duration: number | null;
-  trainerId: string | null;
+  cognitoId: string | null;
+  employees: Employee[]; // Employees in the batch
 }
 
 interface Trainer {
-  id: string;
+  _id: string;
   name: string;
-  expertise: string; // Add expertise property
+  email: string;
+  bio: string;
+  expertise: string[]; // List of expertise areas
+  cognitoId: string; // Unique identifier
 }
 
 const AddResultsPage: React.FC = () => {
@@ -46,7 +50,8 @@ const AddResultsPage: React.FC = () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
         
-        setTrainers(response.data); // Assuming response contains id, name, and expertise
+        // Assuming response.data is an array of trainers
+        setTrainers(response.data);
         console.log(response.data);
         
       } catch (error) {
@@ -98,7 +103,7 @@ const AddResultsPage: React.FC = () => {
           range: range,
           count: batchEmployees.length,  // Dynamically set the employee count
           duration: null,
-          trainerId: null,
+          cognitoId: null,
           employees: batchEmployees,  // Store the actual employees in the batch
         };
       });
@@ -115,11 +120,11 @@ const AddResultsPage: React.FC = () => {
 
   const handleTrainerSelection = (index: number, trainerId: string) => {
     const updatedCutoffs = [...cutoffs];
-    updatedCutoffs[index].trainerId = trainerId;
+    updatedCutoffs[index].cognitoId = trainerId; // Use the trainer's cognitoId
     setCutoffs(updatedCutoffs);
   };
 
-  const allDurationsAndTrainersFilled = cutoffs.every((cutoff) => cutoff.duration !== null && cutoff.trainerId !== null);
+  const allDurationsAndTrainersFilled = cutoffs.every((cutoff) => cutoff.duration !== null && cutoff.cognitoId !== null);
 
   const handleCreateBatches = () => {
     setDialogOpen(true);
@@ -133,7 +138,7 @@ const AddResultsPage: React.FC = () => {
         batchNumber: index + 1,
         range: cutoff.range,
         duration: cutoff.duration,
-        trainerId: cutoff.trainerId,
+        cognitoId: cutoff.cognitoId,
         employees: employees.slice(index * cutoff.count, (index + 1) * cutoff.count),
       })),
     };
@@ -215,21 +220,21 @@ const AddResultsPage: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Select
-                        value={cutoff.trainerId ?? ''}
+                        value={cutoff.cognitoId ?? ''}
                         onChange={(e) => handleTrainerSelection(index, e.target.value as string)}
                         displayEmpty
                         fullWidth
                       >
                         <MenuItem value="" disabled>Select Trainer</MenuItem>
                         {trainers.map((trainer) => (
-                          <MenuItem key={trainer.id} value={trainer.id}>{trainer.name}</MenuItem>
+                          <MenuItem key={trainer.cognitoId} value={trainer.cognitoId}>{trainer.name}</MenuItem>
                         ))}
                       </Select>
                     </TableCell>
                     <TableCell>
                       {/* Display the selected trainer's expertise */}
-                      {cutoff.trainerId ? 
-                        trainers.find(trainer => trainer.id === cutoff.trainerId)?.expertise || 'N/A' 
+                      {cutoff.cognitoId ? 
+                        trainers.find(trainer => trainer.cognitoId === cutoff.cognitoId)?.expertise.join(', ') || 'N/A' 
                         : 'Select Trainer'}
                     </TableCell>
                   </TableRow>

@@ -121,7 +121,7 @@ const EmployeeBatchUploader: React.FC = () => {
     };
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MICROSERVICES_URL}/api/v1/create-batches`, dataToSend);
+      const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/create-batches`, dataToSend);
       console.log('Batch data sent successfully:', response.data);
     } catch (error) {
       console.error('Error sending batch data:', error);
