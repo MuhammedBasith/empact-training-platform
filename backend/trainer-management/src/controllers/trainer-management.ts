@@ -47,19 +47,29 @@ export async function getTrainerById(
     request: Request<{ trainingId: string }>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { trainingId } = request.params; // Extract the trainer ID from URL parameters
+    const { trainingId } = request.params; // Extract the trainingId from URL parameters
 
     try {
-        const trainer = await TrainerManagement.findOne({trainingId}); // Find trainer by ID
+        // Convert the trainingId to ObjectId using the `new` keyword
+        const trainingIdObjectId = new mongoose.Types.ObjectId(trainingId);
+
+        // Find the trainer where the trainingId is in the trainingIds array
+        const trainer = await TrainerManagement.findOne({
+            trainingIds: { $in: [trainingIdObjectId] }
+        });
+
         if (!trainer) {
             return response.status(404).json({ message: 'Trainer not found' });
         }
+
         return response.status(200).json(trainer); // Respond with the found trainer
     } catch (error) {
         console.error(error);
         return response.status(500).json({ message: 'Error retrieving trainer', error });
     }
 }
+
+
 
 export async function updateTrainer(
     request: Request<{ cognitoId: string }, ITrainer, Partial<Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>>,

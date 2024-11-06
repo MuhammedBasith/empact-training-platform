@@ -42,9 +42,13 @@ const ManagerInsights = () => {
 
         if (response.data.success) {
           setTrainingRequirements(response.data.data);
+        } else {
+          // No data scenario
+          setTrainingRequirements([]); // Empty array to trigger "No data found"
         }
       } catch (error) {
         console.error('Error fetching training details:', error);
+        setTrainingRequirements([]); // Empty array to trigger "No data found"
       } finally {
         setLoading(false);
       }
@@ -63,18 +67,22 @@ const ManagerInsights = () => {
     setExpandedRows(newExpandedRows);
   };
 
-  const handleShowEmployees = (trainingId: string, batchId?: string) => {
-    navigate(`/dashboard/admin/managers/${cognitoId}/${trainingId}${batchId ? `/${batchId}` : ''}`);
-  };
-
-  const handleAddResults = (trainingId: string) => {
-    navigate(`/dashboard/admin/managers/${cognitoId}/${trainingId}/results`);
+  const handleShowEmployees = (trainingId: string, batchId: string) => {
+    navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}`);
   };
 
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (trainingRequirements.length === 0) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <Typography variant="h6" color="textSecondary">No data found</Typography>
       </Box>
     );
   }
@@ -88,7 +96,6 @@ const ManagerInsights = () => {
             <TableCell>Training Name</TableCell>
             <TableCell>No. of Employees</TableCell>
             <TableCell>Trainer Name</TableCell>
-            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -104,24 +111,11 @@ const ManagerInsights = () => {
                   <TableCell>{training.trainingName}</TableCell>
                   <TableCell>{totalEmployees}</TableCell>
                   <TableCell>{training.trainer ? training.trainer.name : 'Trainer not assigned'}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined" color="primary" onClick={() => handleShowEmployees(training._id)}>
-                      Show Employees
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ ml: 1 }}
-                      onClick={() => handleAddResults(training._id)}
-                    >
-                      Add Results
-                    </Button>
-                  </TableCell>
                 </TableRow>
 
                 {hasBatchDetails && (
                   <TableRow>
-                    <TableCell colSpan={4}>
+                    <TableCell colSpan={3}>
                       <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
                         <Table sx={{ marginTop: 2 }}>
                           <TableHead>
@@ -130,6 +124,7 @@ const ManagerInsights = () => {
                               <TableCell>Duration</TableCell>
                               <TableCell>Employee Count</TableCell>
                               <TableCell>Trainer</TableCell>
+                              <TableCell>Actions</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -139,6 +134,15 @@ const ManagerInsights = () => {
                                 <TableCell>{batch.duration}</TableCell>
                                 <TableCell>{batch.employeeCount}</TableCell>
                                 <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
+                                <TableCell>
+                                  <Button 
+                                    variant="outlined" 
+                                    color="primary" 
+                                    onClick={() => handleShowEmployees(training._id, batch.batchId)}
+                                  >
+                                    Show Employees
+                                  </Button>
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
