@@ -26,11 +26,11 @@ const TrainersData = () => {
         const fetchTrainersData = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_APP_TRAINERS_MICROSERVICE_BACKEND}/api/v1/trainers`
+                    `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`
                 );
+                
                 console.log(response.data);
-
-                setTrainers(response.data.trainers); // Assuming the response contains the 'trainers' field
+                setTrainers(response.data); // Assuming the response contains the 'trainers' field
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching trainers data:", error);
@@ -58,7 +58,7 @@ const TrainersData = () => {
     }
 
     // Show message if no trainers are available
-    if (trainers.length === 0) {
+    if (!trainers || trainers.length === 0) {
         return (
             <DashboardCard title="Trainers Data">
                 <Box sx={{ textAlign: 'center', py: 5 }}>
