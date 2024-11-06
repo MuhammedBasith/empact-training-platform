@@ -11,5 +11,5 @@ router.get("/checkUserStatus", checkUserStatus);
 router.post('/confirm-new-password', confirmNewPasswordController)
 router.post('/signup', signUpController);
 router.get('/:cognitoId',getUserDetails);
-router.get('getUserCognitoId/:email',getUserCognitoId)
+router.get('/getUserCognitoId/:email',getUserCognitoId)
 export default router;

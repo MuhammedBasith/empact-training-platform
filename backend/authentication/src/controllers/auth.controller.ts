@@ -107,16 +107,20 @@ export async function getUserCognitoId(
   response: Response<{ cognitoId: string } | { message: string }>
 ): Promise<any> {
   try {
-    // Extract email from request parameters
     const { email } = request.params;
 
-    // Validate the email format
+    // Check if email is provided
     if (!email) {
       return response.status(400).json({ message: 'Email is required' });
     }
 
+    console.log('Email received:', email); // Debugging log
+
     // Query the User model to find the user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+
+    // Log the user object to check if it's found
+    console.log('User found:', user);
 
     // If no user is found, return a 404 response
     if (!user) {
