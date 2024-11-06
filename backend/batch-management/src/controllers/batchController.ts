@@ -9,6 +9,7 @@ export async function createBatch(request: Request, response: Response) {
     try {
         const { trainingRequirementId, batches } = request.body;
         console.log(request.body)
+        console.log(request.body.batches)
 
         // Ensure batches are provided
         if (!batches || batches.length === 0) {
@@ -32,12 +33,14 @@ export async function createBatch(request: Request, response: Response) {
 
             // Loop through each employee to fetch their cognitoId
             for (const employee of employees) {
+                console.log(employee);
+                
                 const { email } = employee;
 
                 try {
                     // Send request to the user-auth-microservice to get cognitoId by email
                     const responseFromAuthService = await axios.get(
-                        `http://localhost:3001/api/auth/${email}`  // Assuming the endpoint for user-auth microservice
+                        `http://localhost:3001/api/auth/getUserCognitoId/${email}`  // Assuming the endpoint for user-auth microservice
                     );
   
                     if (responseFromAuthService.data && responseFromAuthService.data.cognitoId) {
