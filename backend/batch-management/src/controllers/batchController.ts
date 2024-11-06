@@ -138,3 +138,32 @@ export async function getBatchById(
         return response.status(500).json({ message: 'Error retrieving batch' });
     }
 }
+
+export const getBatchesByTrainingId = async (req: Request, res: Response) => {
+    try {
+        const { trainingId } = req.params;
+
+        // Validate the trainingId
+        if (!mongoose.Types.ObjectId.isValid(trainingId)) {
+            return res.status(400).json({ success: false, message: 'Invalid trainingId provided' });
+        }
+
+        // Fetch batches from the Batch model using the trainingId
+        const batches = await Batch.find({ trainingRequirementId: trainingId })
+            .populate('trainerId', 'name email expertise')  // Populate trainer information for each batch
+            .exec();
+
+        if (!batches.length) {
+            return res.status(404).json({ success: false, message: 'No batches found for this training' });
+        }
+
+        // Return the batches as response
+        return res.json({
+            success: true,
+            data: batches
+        });
+    } catch (error) {
+        console.error('Error fetching batches:', error);
+        return res.status(500).json({ success: false, message: 'An error occurred while fetching batches' });
+    }
+};
