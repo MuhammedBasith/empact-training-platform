@@ -36,33 +36,45 @@ const ProgressDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch employee details from Employee Management Microservice
-        const employeeResponse = await axios.get(`${import.meta.env.VITE_APP_TRAINING_PROGRESS_MICROSERVICE}/api/v1/training-progress/${trainingId}/${cognitoId}`);
-        if (employeeResponse.data.success) {
-          setEmployee(employeeResponse.data.data);
-        } else {
-          setError('Failed to fetch employee details.');
-        }
+        console.log('Fetching data for trainingId:', trainingId, 'and cognitoId:', cognitoId);
 
         // Fetch employee progress from Training Progress Microservice
         const progressResponse = await axios.get<ProgressDetailsResponse>(
           `${import.meta.env.VITE_APP_TRAINING_PROGRESS_MICROSERVICE}/api/v1/training-progress/${trainingId}/${cognitoId}`
         );
-        if (progressResponse.data.success) {
-          setProgress(progressResponse.data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())); // Sort by date
+        
+        console.log('Fetched progress data:', progressResponse.data);
+        
+        if (Array.isArray(progressResponse.data)) {
+          // Filter out items with null or invalid createdAt, and sort by createdAt
+          const sortedProgress = progressResponse.data
+            .filter((item) => item.createdAt)  // Filter out items with null createdAt
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+          setProgress(sortedProgress); // Set sorted progress
         } else {
-          setError('Failed to fetch progress data.');
+          setError('Invalid response data format');
         }
 
         setLoading(false);
       } catch (error) {
+        console.error('Error fetching data:', error);  // Log full error details for debugging
         setError('An error occurred while fetching data.');
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [trainingId, cognitoId]);
+    // Ensure we only fetch data if both trainingId and cognitoId are available
+    if (trainingId && cognitoId) {
+      fetchData();
+    } else {
+      setError('Missing trainingId or cognitoId.');
+      setLoading(false);
+    }
+  }, [trainingId, cognitoId]); 
+
+
+
 
   if (loading) {
     return (
