@@ -44,8 +44,11 @@ const AddResultsPage: React.FC = () => {
     // Fetch trainers from the backend
     const fetchTrainers = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainers`);
+        const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
+        
         setTrainers(response.data); // Assuming response contains id, name, and expertise
+        console.log(response.data);
+        
       } catch (error) {
         console.error('Error fetching trainers:', error);
       }

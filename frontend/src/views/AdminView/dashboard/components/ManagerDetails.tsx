@@ -20,7 +20,7 @@ interface BatchDetail {
 }
 
 interface TrainingRequirement {
-  trainingId: string;
+  _id: string;
   trainingName: string;
   trainer: Trainer | null;
   batchDetails: BatchDetail[] | null;
@@ -47,6 +47,8 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
         );
 
         if (response.data.success) {
+          console.log(response.data.data);
+          
           setTrainingRequirements(response.data.data);
         } else {
           setError('Failed to fetch training requirements.');
@@ -123,10 +125,10 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
               : training.batchDetails?.[0]?.employeeCount || 0;
 
             return (
-              <React.Fragment key={training.trainingId}>
+              <React.Fragment key={training._id}>
                 <TableRow
                   hover
-                  onClick={() => handleRowToggle(training.trainingId)} // Toggle on row click
+                  onClick={() => handleRowToggle(training._id)} // Toggle on row click
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell>{training.trainingName}</TableCell>
@@ -139,7 +141,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                       <Button
                         variant="outlined"
                         color="primary"
-                        onClick={() => handleShowEmployees(training.trainingId)}
+                        onClick={() => handleShowEmployees(training._id)}
                       >
                         Show Employees
                       </Button>
@@ -150,7 +152,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                         variant="outlined"
                         color="primary"
                         sx={{ ml: 1 }}
-                        onClick={() => handleShowEmployees(training.trainingId, batch.batchId)} // Pass batchId when available
+                        onClick={() => handleShowEmployees(training._id, batch.batchId)} // Pass batchId when available
                       >
                         Show Employees (Batch {batch.batchNumber})
                       </Button>
@@ -159,7 +161,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                       variant="contained"
                       color="primary"
                       sx={{ ml: 1 }}
-                      onClick={() => handleAddResults(training.trainingId)} // Now uses handleAddResults to route to the Add Results page
+                      onClick={() => handleAddResults(training._id)} // Now uses handleAddResults to route to the Add Results page
                     >
                       Add Results
                     </Button>
@@ -170,7 +172,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                 {hasBatchDetails && (
                   <TableRow>
                     <TableCell colSpan={4}>
-                      <Collapse in={expandedRows.has(training.trainingId)} timeout="auto" unmountOnExit>
+                      <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
                         <Table sx={{ marginTop: 2 }}>
                           <TableHead>
                             <TableRow>

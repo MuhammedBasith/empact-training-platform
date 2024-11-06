@@ -27,8 +27,12 @@ const EmployeeDetails = () => {
         if (batchId) {
           url = `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management/getEmployeesForBatch/${batchId}`;
         }
+        console.log('sdf');
+        
 
         const response = await axios.get<EmployeeDetailsResponse>(url);
+        console.log('df');
+        
 
         if (response.data.success) {
           setEmployees(response.data.data);
