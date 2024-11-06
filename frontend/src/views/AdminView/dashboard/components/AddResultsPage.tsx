@@ -80,16 +80,26 @@ const AddResultsPage: React.FC = () => {
     const batchCount = parseInt(event.target.value, 10);
     if (batchCount > 0 && maxMarks) {
       setBatches(batchCount);
+  
       const newCutoffs = Array.from({ length: batchCount }, (_, i) => {
         const upper = maxMarks - (i * (maxMarks / batchCount));
         const lower = upper - (maxMarks / batchCount);
+        const range = `${Math.ceil(upper)} - ${Math.ceil(lower > 0 ? lower : 0)}`;
+        
+        // Filter employees based on the calculated range
+        const batchEmployees = employees.filter((employee) => {
+          return employee.marks <= upper && employee.marks > lower;
+        });
+  
         return {
-          range: `${Math.ceil(upper)} - ${Math.ceil(lower > 0 ? lower : 0)}`,
-          count: Math.ceil(employees.length / batchCount),
+          range: range,
+          count: batchEmployees.length,  // Dynamically set the employee count
           duration: null,
           trainerId: null,
+          employees: batchEmployees,  // Store the actual employees in the batch
         };
       });
+  
       setCutoffs(newCutoffs);
     }
   };
