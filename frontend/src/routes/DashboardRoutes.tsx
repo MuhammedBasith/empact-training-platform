@@ -19,6 +19,7 @@ const ProgressDetails = Loadable(lazy(() => import('../views/AdminView/dashboard
 const AddResultsPage = Loadable(lazy(() => import('../views/AdminView/dashboard/components/AddResultsPage')));
 const ManagerInsights = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/ManagerInsights')));
 const EmployeeDetailsForManagers = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/EmployeeDetailsForManagers')));
+const AddEmployees = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/AddEmployees')));
 
 
 
@@ -46,6 +47,8 @@ const DashboardRoutes = (role: string | undefined) => [
       { path: 'manager/trainings', element: role === 'manager' ? <ManagerInsights /> : <Navigate to="/404" /> },
       { path: 'manager/trainings/:cognitoId/:trainingId/:batchId', element: role === 'manager' ? <EmployeeDetailsForManagers /> : <Navigate to="/404" /> },
       { path: 'manager/trainings/:cognitoId/:trainingId/:batchId/progress', element: role === 'manager' ? <ProgressDetails /> : <Navigate to="/404" /> },
+      { path: 'manager/trainings/:cognitoId/:trainingId/:batchId//add-employees', element: role === 'manager' ? <AddEmployees /> : <Navigate to="/404" /> },
+      
 
 
 

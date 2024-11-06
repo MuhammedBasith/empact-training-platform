@@ -66,12 +66,28 @@ const EmployeeDetailsForManagers = () => {
 
   // Handle progress button click to navigate to the progress page
   const handleShowProgress = (cognitoId: string) => {
-    navigate(`/dashboard/manager/${cognitoId}/${trainingId}/${batchId}/progress`);
+    navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}/progress`);
+  };
+
+  // Navigate to the Add Employees page
+  const handleAddEmployees = () => {
+    navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}/add-employees`);
   };
 
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6">Employee Details for Training {trainingId} - Batch {batchId}</Typography>
+
+      {/* Global "Add Employees" button */}
+      <Box sx={{ mt: 2, mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddEmployees}
+        >
+          Add Employees to This Training
+        </Button>
+      </Box>
 
       <Table sx={{ marginTop: 2 }}>
         <TableHead>
