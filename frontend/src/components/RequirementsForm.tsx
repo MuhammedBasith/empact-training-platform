@@ -1,80 +1,277 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "../lib/utils";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { TextArea } from "./ui/textArea";
+import { useUserContext } from "../context/UserContext";  // Import user context
+import axios from "axios";
+import { useNavigate } from "react-router-dom";  // for redirection
 
 const RequirementsForm: React.FC = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { user } = useUserContext(); // Get user context
+  const [formData, setFormData] = useState({
+    trainingName: "",
+    targetAudience: "",
+    outcomes: "",
+    durationPreference: "",
+    preferredTimeFrame: "",
+    deliveryMode: "",
+    prerequisites: "",
+    skillsToTrain: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [showSummary, setShowSummary] = useState(false); // To show the summary once it's received
+  const [responseData, setResponseData] = useState<any>(null);
+  const [editable, setEditable] = useState(false);  // To toggle between edit and view modes
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+    if (!user) {
+      console.error("User not found");
+      return;
+    }
+
+    setLoading(true);
+
+    // Prepare the data to send to backend
+    const requestData = {
+      ...formData,
+      managerCognitoID: user.cognitoID,
+    };
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_REQUIREMTN_MICROSERVICE}/api/v1/training-requirements/`,
+        requestData
+      );
+      setResponseData(response.data); // Store the response
+      setLoading(false);
+      setShowSummary(true); // Show the summary after the data is returned
+    } catch (error) {
+      console.error("Error submitting data", error);
+      setLoading(false);
+    }
   };
+
+  const handleEdit = () => {
+    setEditable(true);
+  };
+
+  const handleConfirm = async () => {
+    setConfirmationDialogOpen(true);
+  };
+
+  const handleConfirmYes = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_REQUIREMTN_MICROSERVICE}/api/v1/training-requirements/${responseData.trainingRequirementId}`,
+        {
+          ...responseData,
+          status: "confirmed", // or true based on the backend logic
+        }
+      );
+
+      // If success, redirect to the dashboard
+      if (response.status === 200) {
+        navigate("/dashboard/manager");
+      }
+    } catch (error) {
+      console.error("Error updating the status", error);
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmNo = () => {
+    setConfirmationDialogOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <p>Submitting data...</p>
+        {/* Replace with a real spinner or animation */}
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to Empact!
-      </h2>
-      <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aut mollitia dolorem temporibus qui delectus distincti
-      </p>
+      {!showSummary ? (
+        <>
+          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+            Welcome to Empact!
+          </h2>
+          <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+            Please fill out the following form with your training requirements.
+          </p>
 
-      <form className="my-8" onSubmit={handleSubmit}>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="trainingname">Training Name</Label>
-          <Input id="trainingname" placeholder="Technical/Soft Skills" type="text" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="targetaudience">Target Audience</Label>
-          <Input id="targetaudience" placeholder="Department/Role" type="text" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="outcomes">Desired Outcomes</Label>
-          <TextArea id="outcomes" placeholder="Outcomes" type="text" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="durationpreference">Duration Preference</Label>
-          <Input id="durationpreference" placeholder="Weeks" type="number" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="Preferredtimeframe">Preferred Time Frame</Label>
-          <Input id="Preferredtimeframe" placeholder="Date" type="date" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="deliverymode">Delivery Mode</Label>
-          <GlowSelect id="deliverymode">
-            <option value="" disabled>Select</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="online">Online</option>
-            <option value="remote">Remote</option>
-          </GlowSelect>
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="Prerequisites">Prerequisites</Label>
-          <Input id="Prerequisites" placeholder="Any Skills" type="text" />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="trained">Skills to be trained</Label>
-          <Input id="trained" placeholder="Skills" type="text" />
-        </LabelInputContainer>
+          <form className="my-8" onSubmit={handleSubmit}>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="trainingname">Training Name</Label>
+              <Input
+                id="trainingname"
+                value={formData.trainingName}
+                onChange={(e) => setFormData({ ...formData, trainingName: e.target.value })}
+                placeholder="Technical/Soft Skills"
+                type="text"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="targetaudience">Target Audience</Label>
+              <Input
+                id="targetaudience"
+                value={formData.targetAudience}
+                onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
+                placeholder="Department/Role"
+                type="text"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="outcomes">Desired Outcomes</Label>
+              <TextArea
+                id="outcomes"
+                value={formData.outcomes}
+                onChange={(e) => setFormData({ ...formData, outcomes: e.target.value })}
+                placeholder="Outcomes"
+                type="text"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="durationpreference">Duration Preference</Label>
+              <Input
+                id="durationpreference"
+                value={formData.durationPreference}
+                onChange={(e) => setFormData({ ...formData, durationPreference: e.target.value })}
+                placeholder="Weeks"
+                type="number"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="Preferredtimeframe">Preferred Time Frame</Label>
+              <Input
+                id="Preferredtimeframe"
+                value={formData.preferredTimeFrame}
+                onChange={(e) => setFormData({ ...formData, preferredTimeFrame: e.target.value })}
+                placeholder="Date"
+                type="date"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="deliverymode">Delivery Mode</Label>
+              <GlowSelect
+                id="deliverymode"
+                value={formData.deliveryMode}
+                onChange={(e) => setFormData({ ...formData, deliveryMode: e.target.value })}
+              >
+                <option value="" disabled>Select</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="online">Online</option>
+                <option value="remote">Remote</option>
+              </GlowSelect>
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="Prerequisites">Prerequisites</Label>
+              <Input
+                id="Prerequisites"
+                value={formData.prerequisites}
+                onChange={(e) => setFormData({ ...formData, prerequisites: e.target.value })}
+                placeholder="Any Skills"
+                type="text"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="trained">Skills to be trained</Label>
+              <Input
+                id="trained"
+                value={formData.skillsToTrain}
+                onChange={(e) => setFormData({ ...formData, skillsToTrain: e.target.value })}
+                placeholder="Skills"
+                type="text"
+              />
+            </LabelInputContainer>
 
-        <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-transform duration-200 ease-in-out transform hover:scale-105"
-          type="submit"
-        >
-          Submit &rarr;
-          <BottomGradient />
-        </button>
+            <button
+              className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-transform duration-200 ease-in-out transform hover:scale-105"
+              type="submit"
+            >
+              Submit &rarr;
+              <BottomGradient />
+            </button>
+          </form>
+        </>
+      ) : (
+        <div>
+          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+            Training Requirement Summary
+          </h2>
+          <div className="mt-4">
+            <p><strong>Training Name:</strong> {responseData.trainingName}</p>
+            <p><strong>Training Type:</strong> {responseData.trainingType}</p>
+            <p><strong>Department:</strong> {responseData.department}</p>
+            <p><strong>Duration (Weeks):</strong> {responseData.duration}</p>
 
-      </form>
+            <TextArea
+              className="mt-4"
+              value={responseData.summary}
+              disabled={!editable}
+              onChange={(e) => setResponseData({ ...responseData, summary: e.target.value })}
+            />
+          </div>
+
+          <div className="flex mt-4 space-x-4">
+            <button
+              className="bg-blue-500 text-white p-2 rounded-md"
+              onClick={editable ? handleConfirm : handleEdit}
+            >
+              {editable ? "OK" : "Edit"}
+            </button>
+            <button
+              className="bg-green-500 text-white p-2 rounded-md"
+              onClick={handleConfirm}
+            >
+              Confirm
+            </button>
+          </div>
+
+          {confirmationDialogOpen && (
+            <div className="mt-4">
+              <p>Are you sure you want to submit the requirement for {responseData.trainingName}?</p>
+              <div className="flex space-x-4">
+                <button className="bg-red-500 text-white p-2 rounded-md" onClick={handleConfirmYes}>Yes</button>
+                <button className="bg-gray-500 text-white p-2 rounded-md" onClick={handleConfirmNo}>No</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const BottomGradient = () => {
+  return (
+    <>
+      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
+    </>
+  );
+};
+
+const LabelInputContainer = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  return (
+    <div className={cn("flex flex-col space-y-2 w-full", className)}>
+      {children}
     </div>
   );
 };
 
 const GlowSelect = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
   ({ className, children, ...props }, ref) => {
-    const radius = 100; // Change this to increase the radius of the hover effect
+    const radius = 100;
     const [visible, setVisible] = React.useState(false);
     let mouseX = useMotionValue(0);
     let mouseY = useMotionValue(0);
@@ -89,12 +286,12 @@ const GlowSelect = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttribute
       <motion.div
         style={{
           background: useMotionTemplate`
-          radial-gradient(
-            ${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px,
-            var(--blue-500),
-            transparent 80%
-          )
-        `,
+            radial-gradient(
+              ${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px,
+              var(--blue-500),
+              transparent 80%
+            )
+          `,
         }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setVisible(true)}
@@ -119,28 +316,5 @@ const GlowSelect = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttribute
   }
 );
 GlowSelect.displayName = "GlowSelect";
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
 
 export default RequirementsForm;
