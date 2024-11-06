@@ -72,7 +72,7 @@ const ManagerInsights = () => {
 
     const handleAddTraining = () => {
         // Navigate to the "Add Training" page
-        navigate(`dashboard/manager/trainings/add`);
+        navigate('/dashboard/manager/trainings/add');
     };
 
     if (loading) {
@@ -85,7 +85,7 @@ const ManagerInsights = () => {
 
     if (trainingRequirements.length === 0) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+            <Box sx={{ display: 'flex', marginTop: '10px', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
 
                 {/* Add Training Button */}
                 <Button

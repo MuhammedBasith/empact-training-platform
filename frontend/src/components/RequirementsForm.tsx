@@ -44,7 +44,7 @@ const RequirementsForm: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_REQUIREMTN_MICROSERVICE}/api/v1/training-requirements/`,
+        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/`,
         requestData
       );
       setResponseData(response.data); // Store the response
@@ -68,7 +68,7 @@ const RequirementsForm: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_REQUIREMTN_MICROSERVICE}/api/v1/training-requirements/${responseData.trainingRequirementId}`,
+        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/${responseData.trainingRequirementId}`,
         {
           ...responseData,
           status: "confirmed", // or true based on the backend logic
