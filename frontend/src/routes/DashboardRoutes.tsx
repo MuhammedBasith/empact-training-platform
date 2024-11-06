@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import Loadable from '../layouts/full/shared/loadable/Loadable';
-import RequirementsForm from '../../src/components/RequirementsForm';
+const RequirementsForm = Loadable(lazy(() => import('../../src/components/RequirementsForm')));
 
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));

@@ -93,7 +93,7 @@ const ManagerInsights = () => {
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="h6">Training Requirements</Typography>
+      <Typography variant="h6">Add Training Requirements</Typography>
 
       {/* Add Training Button */}
       <Button
