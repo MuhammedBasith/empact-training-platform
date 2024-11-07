@@ -10,6 +10,8 @@ export async function createTrainingRequirement(
 ) {
     try {
         const newRequirement = new TrainingRequirement(request.body);
+        console.log(request.body);
+        console.log(newRequirement);
         await newRequirement.save();
         const trainingRequirementId = newRequirement._id;
         console.log(trainingRequirementId);
@@ -27,6 +29,7 @@ export async function createTrainingRequirement(
             skills_to_train: newRequirement.skills_to_train
             
         };
+        console.log(summaryData);
         const responsedata = await axios.post('http://localhost:3004/api/v1/summaries/generate', summaryData);
         const data = responsedata.data.summary
 
@@ -110,8 +113,8 @@ export async function updateBatchIds(
     try {
         const updatedRequirement = await TrainingRequirement.findByIdAndUpdate(
             request.params.id,
-            { batchIds }, // Update the batchIds field
-            { new: true, runValidators: true } // Return the updated document and run validation
+            { batchIds },
+            { new: true, runValidators: true }
         ).exec();
 
         if (!updatedRequirement) {
@@ -307,6 +310,7 @@ export async function getTrainingRequirementsByManager(
                             try {
                                 // Fetch batch details for each batchId
                                 const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/${batchId}`);
+                                
                                 const batchData = batchResponse.data;
 
                                 // If batch data exists, fetch trainer details for the batch

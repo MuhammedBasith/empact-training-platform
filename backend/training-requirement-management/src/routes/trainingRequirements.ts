@@ -5,7 +5,7 @@ import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../d
 const router = express.Router();
 
 router.post('/', createTrainingRequirement);
-router.post('/confirmRequirement/:requirementId', confirmRequirement);
+router.put('/confirmRequirement/:requirementId', confirmRequirement);
  router.get('/getTrainingRequirement/:cognitoId/:id', getTrainingRequirement);
 // router.get('/', getAllTrainingRequirements);
 router.put('/:id/empCount', updateEmployeeCount);
