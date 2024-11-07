@@ -129,6 +129,8 @@ const AddResultsPage: React.FC = () => {
 
   const confirmAndSendData = async () => {
     setDialogOpen(false);
+
+    // Prepare the data to send to the batch management service
     const dataToSend = {
       trainingRequirementId: trainingId,
       batches: cutoffs.map((cutoff, index) => ({
@@ -139,16 +141,40 @@ const AddResultsPage: React.FC = () => {
         employees: employees.slice(index * cutoff.count, (index + 1) * cutoff.count),
       })),
     };
+
     console.log(dataToSend);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`, dataToSend);
-      console.log('Batch data sent successfully:', response.data);
+      // Send the batch creation request to the batch management service
+      const batchManagementResponse = await axios.post(
+        `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`,
+        dataToSend
+      );
+      console.log('Batch data sent successfully:', batchManagementResponse.data);
+
+      // Extract batch IDs from the response (assuming response.data contains a list of batches with _id)
+      const batchIds = batchManagementResponse.data.data.map((batch: { _id: string }) => batch._id);
+
+
+      // Prepare the data to send to the training requirements service (only batch IDs)
+      const updateData = {
+        batchIds: batchIds, // Just send the batch IDs
+      };
+
+      // Send the batch IDs to the training requirements service to update the training requirement
+      const updateTrainingRequirementResponse = await axios.put(
+        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/updateBatchIds/${trainingId}`,
+        updateData
+      );
+      console.log('Training requirement updated with batch IDs:', updateTrainingRequirementResponse.data);
+
+      // Navigate to the next page after successful update
       navigate(`/dashboard/admin/managers/`);
     } catch (error) {
-      console.error('Error sending batch data:', error);
+      console.error('Error sending batch data or updating training requirement:', error);
     }
   };
+
 
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 900, margin: '20px auto', textAlign: 'center' }}>
@@ -243,8 +269,8 @@ const AddResultsPage: React.FC = () => {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      {cutoff.cognitoId ? 
-                        trainers.find(trainer => trainer.cognitoId === cutoff.cognitoId)?.expertise.join(', ') || 'N/A' 
+                      {cutoff.cognitoId ?
+                        trainers.find(trainer => trainer.cognitoId === cutoff.cognitoId)?.expertise.join(', ') || 'N/A'
                         : 'Select Trainer'}
                     </TableCell>
                   </TableRow>

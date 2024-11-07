@@ -11,14 +11,17 @@ import { useNavigate } from "react-router-dom";  // for redirection
 const RequirementsForm: React.FC = () => {
   const { user } = useUserContext(); // Get user context
   const [formData, setFormData] = useState({
+    // targetAudience: "",
+    trainingType: "",
+    department: "",
     trainingName: "",
-    targetAudience: "",
-    outcomes: "",
-    durationPreference: "",
+    // outcomes: "",
+    duration: "",
+    objectives: "",
+    prerequisite: "",
     preferredTimeFrame: "",
-    deliveryMode: "",
-    prerequisites: "",
-    skillsToTrain: "",
+    // deliveryMode: "",
+    skills_to_train: "",
   });
   const [loading, setLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false); // To show the summary once it's received
@@ -38,15 +41,18 @@ const RequirementsForm: React.FC = () => {
 
     // Prepare the data to send to backend
     const requestData = {
-      ...formData,
-      managerCognitoID: user.cognitoID,
-    };
+      cognitoId: user.cognitoID,
+      ...formData
 
+      // managerCognitoID: user.cognitoID,
+    };
+    console.log(requestData)
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/`,
         requestData
       );
+      console.log(response.data)
       setResponseData(response.data); // Store the response
       setLoading(false);
       setShowSummary(true); // Show the summary after the data is returned
@@ -68,10 +74,10 @@ const RequirementsForm: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/${responseData.trainingRequirementId}`,
+        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/confirmRequirement/${responseData.trainingRequirementId}`,
         {
           ...responseData,
-          status: "confirmed", // or true based on the backend logic
+          status: true, // or true based on the backend logic
         }
       );
 
@@ -124,8 +130,8 @@ const RequirementsForm: React.FC = () => {
               <Label htmlFor="targetaudience">Target Audience</Label>
               <Input
                 id="targetaudience"
-                value={formData.targetAudience}
-                onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 placeholder="Department/Role"
                 type="text"
               />
@@ -134,8 +140,8 @@ const RequirementsForm: React.FC = () => {
               <Label htmlFor="outcomes">Desired Outcomes</Label>
               <TextArea
                 id="outcomes"
-                value={formData.outcomes}
-                onChange={(e) => setFormData({ ...formData, outcomes: e.target.value })}
+                value={formData.objectives}
+                onChange={(e) => setFormData({ ...formData, objectives: e.target.value })}
                 placeholder="Outcomes"
                 type="text"
               />
@@ -144,8 +150,8 @@ const RequirementsForm: React.FC = () => {
               <Label htmlFor="durationpreference">Duration Preference</Label>
               <Input
                 id="durationpreference"
-                value={formData.durationPreference}
-                onChange={(e) => setFormData({ ...formData, durationPreference: e.target.value })}
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 placeholder="Weeks"
                 type="number"
               />
@@ -164,8 +170,8 @@ const RequirementsForm: React.FC = () => {
               <Label htmlFor="deliverymode">Delivery Mode</Label>
               <GlowSelect
                 id="deliverymode"
-                value={formData.deliveryMode}
-                onChange={(e) => setFormData({ ...formData, deliveryMode: e.target.value })}
+                value={formData.trainingType}
+                onChange={(e) => setFormData({ ...formData, trainingType: e.target.value })}
               >
                 <option value="" disabled>Select</option>
                 <option value="hybrid">Hybrid</option>
@@ -176,9 +182,9 @@ const RequirementsForm: React.FC = () => {
             <LabelInputContainer className="mb-4">
               <Label htmlFor="Prerequisites">Prerequisites</Label>
               <Input
-                id="Prerequisites"
-                value={formData.prerequisites}
-                onChange={(e) => setFormData({ ...formData, prerequisites: e.target.value })}
+                id="Prerequisite"
+                value={formData.prerequisite}
+                onChange={(e) => setFormData({ ...formData, prerequisite: e.target.value })}
                 placeholder="Any Skills"
                 type="text"
               />
@@ -187,8 +193,8 @@ const RequirementsForm: React.FC = () => {
               <Label htmlFor="trained">Skills to be trained</Label>
               <Input
                 id="trained"
-                value={formData.skillsToTrain}
-                onChange={(e) => setFormData({ ...formData, skillsToTrain: e.target.value })}
+                value={formData.skills_to_train}
+                onChange={(e) => setFormData({ ...formData, skills_to_train: e.target.value })}
                 placeholder="Skills"
                 type="text"
               />
@@ -219,6 +225,7 @@ const RequirementsForm: React.FC = () => {
               value={responseData.summary}
               disabled={!editable}
               onChange={(e) => setResponseData({ ...responseData, summary: e.target.value })}
+              style={{ minHeight: '200px' }} // Increase the height slightly
             />
           </div>
 
