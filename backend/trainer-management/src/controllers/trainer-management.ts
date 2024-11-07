@@ -174,3 +174,44 @@ export async function getTrainersForDropdown(
         return response.status(500).json({ message: 'Internal server error', error: error.message });
     }
 }
+
+
+export const getTrainingsAllocatedForATrainer = async (req: Request, res: Response) => {
+    try {
+        // Step 1: Extract the trainer's cognitoId from the request parameters
+        const { cognitoId } = req.params;
+
+        // Step 2: Find the trainer from the database using the cognitoId
+        const trainer: ITrainer | null = await TrainerManagement.findOne({ cognitoId }).exec();
+
+        // If the trainer does not exist
+        if (!trainer) {
+            return res.status(404).json({ message: 'Trainer not found' });
+        }
+
+        // Step 3: Get the list of trainingIds assigned to the trainer
+        const trainingIds = trainer.trainingIds;
+
+        // If no trainings are assigned to this trainer
+        if (trainingIds.length === 0) {
+            return res.status(404).json({ message: 'No trainings assigned to this trainer' });
+        }
+
+        // Step 4: Request detailed training data from the Training Requirements Microservice
+        const trainingDetailsResponse = await axios.post(
+            `http://localhost:3000/api/v1/training-requirements/getTrainingDetailsByIds`,
+            { trainingIds }
+        );
+
+        // Step 5: If no training details are returned
+        if (!trainingDetailsResponse.data || trainingDetailsResponse.data.trainings.length === 0) {
+            return res.status(404).json({ message: 'Training details not found for the given trainingIds' });
+        }
+
+        // Step 6: Send back the training details to the frontend
+        return res.status(200).json({ trainings: trainingDetailsResponse.data.trainings });
+    } catch (error) {
+        console.error("Error fetching training details for trainer:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};

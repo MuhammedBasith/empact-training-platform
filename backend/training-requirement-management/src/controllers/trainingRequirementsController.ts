@@ -357,3 +357,83 @@ export async function getTrainingRequirementsByManager(
         return response.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
+
+export const getTrainingDetailsByIds = async (req: Request, res: Response) => {
+    try {
+        // Step 1: Get the list of trainingIds from the request body
+        const { trainingIds } = req.body;
+
+        // Step 2: Fetch the training details from the Training Requirements database using the trainingIds
+        const trainings = await TrainingRequirement.find({
+            '_id': { $in: trainingIds }
+        }).exec();
+
+        // Step 3: If no trainings found
+        if (!trainings || trainings.length === 0) {
+            return res.status(404).json({ message: 'No training details found for the provided trainingIds' });
+        }
+
+        // Step 4: Return the training details
+        return res.status(200).json({ trainings });
+    } catch (error) {
+        console.error("Error fetching training details:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+export const getTrainingDetailsWithBatches = async (req: Request, res: Response) => {
+    try {
+        const { trainingId, cognitoId } = req.params;
+
+        // Validate IDs
+        if (!mongoose.Types.ObjectId.isValid(trainingId) || !mongoose.Types.ObjectId.isValid(cognitoId)) {
+            return res.status(400).json({ success: false, message: 'Invalid trainingId or cognitoId provided' });
+        }
+
+        // Fetch training requirement based on trainingId and cognitoId
+        const trainingRequirement = await TrainingRequirement.findOne({ _id: trainingId, cognitoId: cognitoId }).exec();
+        if (!trainingRequirement) {
+            return res.status(404).json({ success: false, message: 'Training not found' });
+        }
+
+        // Call Batch microservice to get batches related to this training
+        const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/getBatchesByTrainingId/${trainingId}`);
+
+        // Check for successful response from the Batch service
+        const batchDetails = batchResponse.data && batchResponse.data.success
+            ? batchResponse.data.data
+            : [];
+
+        // Combine both training and batch data
+        const responseData = {
+            trainingName: trainingRequirement.trainingName,
+            department: trainingRequirement.department,
+            trainingType: trainingRequirement.trainingType,
+            duration: trainingRequirement.duration,
+            skillsToTrain: trainingRequirement.skills_to_train,
+            objectives: trainingRequirement.objectives,
+            prerequisite: trainingRequirement.prerequisite,
+            status: trainingRequirement.status,
+            batchDetails: batchDetails.map((batch: any) => ({
+                batchId: batch._id,
+                batchNumber: batch.batchNumber,
+                trainer: batch.trainerId || 'Not Assigned',
+                employeeCount: batch.count,
+                range: batch.range,
+                duration: batch.duration,
+            })),
+        };
+
+        // Return the consolidated response
+        return res.json({
+            success: true,
+            data: responseData
+        });
+    } catch (error) {
+        console.error('Error fetching training details:', error);
+        return res.status(500).json({ success: false, message: 'An error occurred while fetching data' });
+    }
+};

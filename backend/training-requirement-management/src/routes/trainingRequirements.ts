@@ -1,6 +1,7 @@
 import express from 'express';
-import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager } from '../controllers/trainingRequirementsController';
+import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager, getTrainingDetailsByIds, getTrainingDetailsWithBatches } from '../controllers/trainingRequirementsController';
 import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../dtos/trainingRequirements.dto';
+import trainingRequirementModel from 'models/trainingRequirement.model';
 
 const router = express.Router();
 
@@ -15,6 +16,12 @@ router.get('/getTrainingRequirementsByManager/:id',getTrainingRequirementsByMana
 router.get('/',getTrainingRequirements)   // cognitoId, name & count
 router.get('/getEmpCountById/:id',getEmpCountById);  
 router.get('/getTrainingRequirementUnderAManager/:id',getTrainingRequirementUnderAManager);
+// @ts-ignore
+router.post('/getTrainingDetailsByIds', getTrainingDetailsByIds);
+
+// @ts-ignore
+// Endpoint to get training details with batch and trainer information
+router.get('/getTrainingDetails/:trainingId/:cognitoId', getTrainingDetailsWithBatches);
 
 
 export default router;

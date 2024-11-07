@@ -38,23 +38,23 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     const isConfirmed = await checkUserStatus(formData.username);
     if (!isConfirmed) {
       setError("Account not confirmed. Please verify your email.");
       setIsVerificationRequired(true);
       return;
     }
-  
+
     try {
       const result = await signIn(formData.username, formData.password, setUser);
       if (result) {
         console.log(result);
-  
+
         // Navigate to role-specific dashboard
         const role = result.role?.toLowerCase(); // Use the role from the result
         console.log(result.role, " from sign in");
-  
+
         if (role && role !== 'nill') {
           navigate(`/dashboard/${role}`);
         } else {
@@ -68,7 +68,7 @@ export default function SignIn() {
       setIsVerificationRequired(err.name === "UserNotConfirmedException");
     }
   };
-  
+
 
   const handleVerifyAccount = async () => {
     try {
@@ -155,7 +155,7 @@ export default function SignIn() {
       {/* Verification section */}
       {isVerificationRequired && (
         <div className="mt-6">
-          <h2 className="text-xl font-semibold">Verify Your Account</h2>
+          <h2 className="text-xl font-semibold mt-10">Set Your New Password</h2>
           <input
             type="password"
             placeholder="New Password"
@@ -163,8 +163,11 @@ export default function SignIn() {
             onChange={(e) => setNewPassword(e.target.value)}
             className="form-input w-full py-2"
           />
-          <button className="btn mt-2" onClick={handleVerifyAccount}>
-            Verify Account
+          <button
+            className="btn mt-5 mb-5 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%]"
+            onClick={handleVerifyAccount}
+          >
+            Update Password
           </button>
         </div>
       )}
