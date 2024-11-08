@@ -360,7 +360,11 @@ export async function getTrainingRequirementsByManager(
 
 
 
-export const getTrainingDetailsByIds = async (req: Request, res: Response) => {
+export const getTrainingDetailsByIds = async (
+    req: Request<{}, {}, { trainingIds: string[] }>,
+    res: Response<{ 
+        trainings: (mongoose.Document<unknown, {}, ITrainingRequirement> & ITrainingRequirement & Required<{ _id: unknown }> & { __v?: number })[] | undefined;} | {message?: string }>
+): Promise<any> => {
     try {
         // Step 1: Get the list of trainingIds from the request body
         const { trainingIds } = req.body;
@@ -384,7 +388,9 @@ export const getTrainingDetailsByIds = async (req: Request, res: Response) => {
 };
 
 
-export const getTrainingDetailsWithBatches = async (req: Request, res: Response) => {
+
+export const getTrainingDetailsWithBatches = async (req: Request<{trainingId: string, cognitoId: string}, {}, {}>,
+     res: Response<{success: boolean, message: string} | {success: boolean, data: string}>): Promise<any> => {
     try {
         const { trainingId, cognitoId } = req.params;
 
