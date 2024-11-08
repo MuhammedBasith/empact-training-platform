@@ -1,7 +1,7 @@
 // auth.routes.ts
 
 import { Router } from 'express';
-import { checkUserStatus, verifyController, confirmNewPasswordController, signUpController, getUserDetails, getUserCognitoId } from '../controllers/auth.controller';
+import { checkUserStatus, verifyController, confirmNewPasswordController, signUpController, getUserDetails, getUserCognitoId, createAccountByAdmin } from '../controllers/auth.controller';
 
 const router = Router();
 
