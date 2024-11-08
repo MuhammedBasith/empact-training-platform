@@ -12,7 +12,6 @@ router.post('/confirm-new-password', confirmNewPasswordController)
 router.post('/signup', signUpController);
 router.get('/:cognitoId',getUserDetails);
 router.get('/getUserCognitoId/:email',getUserCognitoId)
-// @ts-ignore
 router.post('/create-account', createAccountByAdmin)
 
 
