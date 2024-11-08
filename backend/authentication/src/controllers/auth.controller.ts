@@ -143,7 +143,8 @@ export async function getUserCognitoId(
 }
 
 
-export const createAccountByAdmin = async (req: Request, res: Response) => {
+export const createAccountByAdmin = async (req: Request<{}, {}, {name: string, email: string, account: string, skills: string, department: string}>,
+   res: Response<{message: string} | {cognitoId: string, email: string}>): Promise<any> => {
   const { name, email, account, skills, department } = req.body;
 
   // Validate required fields

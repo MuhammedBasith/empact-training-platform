@@ -117,14 +117,14 @@ export async function updateTrainerId(
 
 
 export async function getBatchById(
-    request: Request<{ batchId: string }>, // batchId will be passed as a URL parameter
+    request: Request<{ id: string }>, // batchId will be passed as a URL parameter
     response: Response<IBatch | { message: string; error?: string }>
 ): Promise<any> {
-    const { batchId } = request.params; // Extract the batchId from URL parameters
+    const { id } = request.params; // Extract the batchId from URL parameters
 
     try {
         // Find the batch by ID using `findById`
-        const batch = await Batch.findById(batchId);
+        const batch = await Batch.findById(id);
         
         // If batch is not found, return a 404
         if (!batch) {

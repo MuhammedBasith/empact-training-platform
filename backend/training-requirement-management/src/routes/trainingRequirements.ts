@@ -5,23 +5,26 @@ import trainingRequirementModel from 'models/trainingRequirement.model';
 
 const router = express.Router();
 
-router.post('/', createTrainingRequirement);
-router.post('/confirmRequirement/:requirementId', confirmRequirement);
- router.get('/getTrainingRequirement/:cognitoId/:id', getTrainingRequirement);
-// router.get('/', getAllTrainingRequirements);
-router.put('/:id/empCount', updateEmployeeCount);
-router.put('/updateBatchIds/:id/',updateBatchIds)
-router.delete('/:id', deleteTrainingRequirement);
-router.get('/getTrainingRequirementsByManager/:id',getTrainingRequirementsByManager);
-router.get('/',getTrainingRequirements)   // cognitoId, name & count
-router.get('/getEmpCountById/:id',getEmpCountById);  
-router.get('/getTrainingRequirementUnderAManager/:id',getTrainingRequirementUnderAManager);
-// @ts-ignore
-router.post('/getTrainingDetailsByIds', getTrainingDetailsByIds);
+// GET Routes (Fetch resources)
+router.get('/', getTrainingRequirements); // Get all training requirements (cognitoId, name & count)
+router.get('/getTrainingRequirement/:cognitoId/:id', getTrainingRequirement); // Get specific training requirement by cognitoId & id
+router.get('/getEmpCountById/:id', getEmpCountById); // Get employee count by id
+router.get('/getTrainingRequirementsByManager/:id', getTrainingRequirementsByManager); // Get training requirements by manager id
+router.get('/getTrainingRequirementUnderAManager/:id', getTrainingRequirementUnderAManager); // Get training requirements under a manager by id
+router.get('/getTrainingDetails/:trainingId/:cognitoId', getTrainingDetailsWithBatches); // Get training details with batches by trainingId & cognitoId
+router.post('/getTrainingDetailsByIds', getTrainingDetailsByIds); // Get training details by multiple ids
 
-// @ts-ignore
-// Endpoint to get training details with batch and trainer information
-router.get('/getTrainingDetails/:trainingId/:cognitoId', getTrainingDetailsWithBatches);
+// POST Routes (Create resources)
+router.post('/', createTrainingRequirement); // Create a new training requirement
+
+// PUT Routes (Update resources)
+router.put('/confirmRequirement/:requirementId', confirmRequirement); // Confirm a training requirement by requirementId
+router.put('/:id/empCount', updateEmployeeCount); // Update employee count by id
+router.put('/updateBatchIds/:id/', updateBatchIds); // Update batch IDs by id
+
+// DELETE Routes (Remove resources)
+router.delete('/:id', deleteTrainingRequirement); // Delete a training requirement by id
+
 
 
 export default router;

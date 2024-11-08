@@ -9,7 +9,7 @@ import TrainingEngagementOverview from './components/TrainingEngagementOverview'
 
 const Dashboard = () => {
   return (
-    <PageContainer title="Dashboard" description="this is Dashboard">
+    <PageContainer title="Dashboard" description="Managers Dashboard">
       <Box>
         <Grid container spacing={3}>
           <Grid item xs={12} lg={8}>

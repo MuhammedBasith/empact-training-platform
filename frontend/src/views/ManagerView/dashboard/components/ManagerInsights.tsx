@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
+import {  useUserContext } from '../../../../context/UserContext'
 
 interface Trainer {
     trainerId: string;
@@ -32,22 +33,25 @@ const ManagerInsights = () => {
     const [loading, setLoading] = useState(true);
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
     const navigate = useNavigate();
+    const { user } = useUserContext();
+
 
     useEffect(() => {
         const fetchTrainingDetails = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${cognitoId}`
+                    `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingRequirementsByManager/${user?.cognitoID}`
                 );
 
                 if (response.data.success) {
+                    console.log(response.data);
                     setTrainingRequirements(response.data.data);
                 } else {
-                    setTrainingRequirements([]); // Empty array to trigger "No data found"
+                    setTrainingRequirements([]);
                 }
             } catch (error) {
                 console.error('Error fetching training details:', error);
-                setTrainingRequirements([]); // Empty array to trigger "No data found"
+                setTrainingRequirements([]);
             } finally {
                 setLoading(false);
             }
@@ -85,7 +89,7 @@ const ManagerInsights = () => {
 
     if (trainingRequirements.length === 0) {
         return (
-            <Box sx={{ display: 'flex', marginTop: '10px', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+            <Box sx={{ display: 'flex', mt: '20px', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
 
                 {/* Add Training Button */}
                 <Button
@@ -110,7 +114,7 @@ const ManagerInsights = () => {
                 variant="contained"
                 color="primary"
                 onClick={handleAddTraining}
-                sx={{ mb: 2, alignSelf: 'flex-start' }}
+                sx={{ mb: 2, mt: '20px', alignSelf: 'flex-start' }}
             >
                 Add Training
             </Button>
@@ -127,7 +131,7 @@ const ManagerInsights = () => {
                     {trainingRequirements.map((training) => {
                         const hasBatchDetails = training.batchDetails && training.batchDetails.length > 0;
                         const totalEmployees = hasBatchDetails
-                            ? training.batchDetails.reduce((sum, batch) => sum + batch.employeeCount, 0)
+                            ? training.batchDetails?.reduce((sum, batch) => sum + batch.employeeCount, 0)
                             : training.batchDetails?.[0]?.employeeCount || 0;
 
                         return (
