@@ -268,7 +268,8 @@ export async function getTrainingRequirementsByManager(
     request: Request<{ id: string }, {}, {}>, 
     response: Response
 ): Promise<any> {
-    const { id } = request.params;  // Extract the cognitoId (manager ID) from URL parameters
+    
+    const { id } = request.params; 
     console.log(id);
     
     
