@@ -268,7 +268,7 @@ export async function getTrainingRequirementsByManager(
     request: Request<{ id: string }, {}, {}>, 
     response: Response
 ): Promise<any> {
-    
+
     const { id } = request.params; 
     console.log(id);
     
@@ -391,7 +391,7 @@ export const getTrainingDetailsByIds = async (
 
 
 export const getTrainingDetailsWithBatches = async (req: Request<{trainingId: string, cognitoId: string}, {}, {}>,
-     res: Response<{success: boolean, message: string} | {success: boolean, data: string}>): Promise<any> => {
+     res: Response<{success: boolean, message: string} | {success: boolean, data: any}>): Promise<any> => {
     try {
         const { trainingId, cognitoId } = req.params;
 
