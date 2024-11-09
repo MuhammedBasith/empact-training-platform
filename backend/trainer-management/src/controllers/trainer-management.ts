@@ -6,7 +6,7 @@ export async function createTrainer(
     request: Request<{}, ITrainer, Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { cognitoId,name, email, expertise, bio,  } = request.body;
+    const { cognitoId,name, email, expertise, bio, trainingIds } = request.body;
 
     try {
         // Create a new trainer instance
@@ -16,6 +16,8 @@ export async function createTrainer(
             email,
             expertise,
             bio,
+            trainingIds
+
            
 });
 

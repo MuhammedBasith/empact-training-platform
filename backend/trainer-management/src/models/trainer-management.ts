@@ -7,7 +7,7 @@ export interface ITrainer extends Document {
     email: string;
     expertise: string[];
     bio?: string;
-    trainingIds?: mongoose.Types.ObjectId[];
+    trainingIds: mongoose.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
     batchIDs?:mongoose.Types.ObjectId[]
@@ -20,7 +20,7 @@ const TrainerSchema: Schema<ITrainer> = new Schema({
     email: { type: String, required: true, unique: true },
     expertise: { type: [String], required: true },
     bio: { type: String },
-    trainingIds: [{ type: mongoose.Types.ObjectId, ref: 'trainingRequirements' }],
+    trainingIds: [{ type: Schema.Types.ObjectId, ref: 'trainingRequirements' }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     batchIDs:[{ type: Schema.Types.ObjectId}]             
