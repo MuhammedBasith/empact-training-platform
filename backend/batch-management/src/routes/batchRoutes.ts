@@ -7,7 +7,7 @@ const router = express.Router();
 // @ts-ignore
 router.post('/', createBatch);
 
-router.put('/:id/',updateTrainerId);
+router.put('/:id',updateTrainerId);
 
 router.get('/:id',getBatchById);
 

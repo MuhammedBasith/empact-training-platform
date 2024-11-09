@@ -1,11 +1,10 @@
-// auth.controller.ts
-
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken, saveUser, findUserByCognitoId } from '../services/auth.service';
 import { isUserConfirmed, confirmNewPassword, saveUserToDatabase  } from "../services/auth.service";
 import  User , { IUser } from '../models/user.model';
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
+import generateTemporaryPassword from '../utils/passwordGenerator';
 
 
 const cognito = new AWS.CognitoIdentityServiceProvider({
@@ -143,48 +142,74 @@ export async function getUserCognitoId(
 }
 
 
+
 export const createAccountByAdmin = async (req: Request<{}, {}, {name: string, email: string, account: string, skills: string, department: string}>,
-   res: Response<{message: string} | {cognitoId: string, email: string}>): Promise<any> => {
-  const { name, email, account, skills, department } = req.body;
+  res: Response<{message: string} | {cognitoId: string, email: string, name: string, role: string}>): Promise<any> => {
 
-  // Validate required fields
-  if (!name || !email) {
-    return res.status(400).json({ message: 'Name and email are required.' });
-  }
+ const { name, email, account, skills, department } = req.body;
 
-  // Generate a temporary password (You can customize this as needed)
-  const temporaryPassword = uuidv4().replace(/-/g, '').slice(0, 12); // 12-character password
+ // Validate required fields
+ if (!name || !email) {
+   return res.status(400).json({ message: 'Name and email are required.' });
+ }
 
-  try {
-    // Prepare parameters to create a user in Cognito
-    const createUserParams = {
-      UserPoolId: process.env.USER_POOL_ID!, // Your Cognito User Pool ID
-      Username: email, // Use email as the username
-      TemporaryPassword: temporaryPassword, // Assign dummy temporary password
-      UserAttributes: [
-        { Name: 'email', Value: email },
-        { Name: 'name', Value: name },
-        { Name: 'custom:role', Value: 'employee' }, 
-      ],
-      MessageAction: 'SUPPRESS', // Prevent Cognito from sending a default email
-    };
+ // Check if the user already exists in the database by email
+ const existingUser = await User.findOne({ email });
 
-    // Create the user in Cognito
-    const cognitoResponse = await cognito.adminCreateUser(createUserParams).promise();
+ if (existingUser) {
+   // If the user already exists, return the user details from the DB
+   return res.status(200).json({
+     message: 'User already exists.',
+     cognitoId: existingUser.cognitoId,
+     email: existingUser.email,
+     name: existingUser.name,
+     role: existingUser.role,
+   });
+ }
 
-    // Send invitation email (Cognito will send it automatically)
-    // Cognito will automatically send an invitation with the temporary password
-    console.log(`Cognito invitation email sent to ${email} with temporary password: ${temporaryPassword}`);
+ // Generate a temporary password
+ const temporaryPassword = generateTemporaryPassword();
 
-    // Respond with the Cognito user details
-    return res.status(201).json({
-      message: 'Account created successfully in Cognito. An invitation email has been sent.',
-      cognitoId: cognitoResponse.User?.Username,
-      email,
-    });
+ try {
+   const createUserParams = {
+     UserPoolId: process.env.USER_POOL_ID!, 
+     Username: email, // Use email as the username
+     TemporaryPassword: temporaryPassword, 
+     UserAttributes: [
+       { Name: 'email', Value: email },
+       { Name: 'name', Value: name },
+       { Name: 'custom:role', Value: 'employee' }, 
+     ],
+   };
 
-  } catch (error) {
-    console.error('Error creating user in Cognito:', error);
-    return res.status(500).json({ message: 'Error creating user account in Cognito.' });
-  }
+   // Create the user in Cognito
+   const cognitoResponse = await cognito.adminCreateUser(createUserParams).promise();
+
+   // Save the user to the database
+   const newUser = new User({
+     cognitoId: cognitoResponse.User?.Username,
+     email,
+     name,
+     role: 'Employee',
+   });
+
+   // Save the new user in the database
+   await newUser.save();
+
+   console.log(`Cognito invitation email sent to ${email} with temporary password: ${temporaryPassword}`);
+
+   // Respond with the Cognito user details and the newly created user
+   return res.status(201).json({
+     message: 'Account created successfully in Cognito. An invitation email has been sent.',
+     cognitoId: cognitoResponse.User?.Username,
+     email,
+     name,
+     role: 'employee', // Default role
+   });
+
+ } catch (error) {
+   console.error('Error creating user in Cognito:', error);
+   return res.status(500).json({ message: 'Error creating user account in Cognito.' });
+ }
 };
+

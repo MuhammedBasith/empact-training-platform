@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 connectDB();
-app.use('/api/v1/batch-management',BatchRoutes)
+app.use('/api/v1/batch-management', BatchRoutes)
 
 
 app.use(errorHandler);

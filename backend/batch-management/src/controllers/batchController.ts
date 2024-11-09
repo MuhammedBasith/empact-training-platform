@@ -4,12 +4,13 @@ import { CreateBatchDto, GetBatchResponse } from '../dtos/batch.dto';
 import { CreateTrainerFeedbackDto, TrainerFeedbackResponse } from '../dtos/trainerFeedback.dto';
 import mongoose from 'mongoose';
 import axios from 'axios';
+import { log } from 'console';
 
 export async function createBatch(request: Request, response: Response) {
     try {
         const { trainingRequirementId, batches } = request.body;
-        console.log(request.body)
         console.log(request.body.batches)
+        log("*************************")
 
         // Ensure batches are provided
         if (!batches || batches.length === 0) {
@@ -64,12 +65,12 @@ export async function createBatch(request: Request, response: Response) {
             const batchData = {
                 trainingRequirementId,
                 batchNumber,
-                cognitoId,  // Assuming trainerId is passed as an ObjectId
-                employeeIds: employeeCognitoIds,  // List of employee cognitoIds
-                duration,  // The batch duration (string)
-                range,     // The batch range (e.g., "85 - 80")
-                count: employees.length,  // Number of employees in the batch
-                createdAt: new Date()  // Store the date the batch is created
+                trainerId: cognitoId,
+                employeeIds: employeeCognitoIds, 
+                duration,
+                range, 
+                count: employees.length,
+                createdAt: new Date()
             };
 
             // Create batch in the database
