@@ -10,7 +10,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     const { trainingIds, cognitoId } = data; // Extract trainingIds and cognitoId
 
     // Convert trainingIds to ObjectId if they are not already ObjectIds
-    const trainingObjectIds = trainingIds.map((id: string) => mongoose.Types.ObjectId(id));
+    const trainingObjectIds = trainingIds.map((id: string) => new mongoose.Types.ObjectId(id));
 
     // Check if the employee already exists in the database
     const existingEmployee = await EmployeeManagement.findOne({ cognitoId });
