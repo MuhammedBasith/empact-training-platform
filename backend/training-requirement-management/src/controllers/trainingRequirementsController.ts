@@ -272,7 +272,6 @@ export async function getTrainingRequirementsByManager(
     const { id } = request.params; 
     console.log(id);
     
-    
     try {
         // Step 1: Fetch all training requirements created by the manager (cognitoId)
         const trainingRequirements = await TrainingRequirement.find({ cognitoId:id });
@@ -281,7 +280,7 @@ export async function getTrainingRequirementsByManager(
             return response.status(404).json({ message: 'No training requirements found for the given manager.' });
         }
 
-        // Step 2: Initialize an array to store the aggregated results
+        // Step 2: Initialize an array to store the aggregated results.
         const result = [];
 
         // Step 3: Iterate through each training requirement to fetch trainer and batch details
@@ -290,16 +289,6 @@ export async function getTrainingRequirementsByManager(
 
             // 1. Fetch trainer details for the current training from the trainer-management microservice
             let trainerDetails = null;
-
-            if (!batchIds || batchIds.length === 0) {
-                // If no batchIds, get trainer details directly
-                try {
-                    const trainerResponse = await axios.get(`http://localhost:3002/api/v1/trainer-management/trainers/${_id}`);
-                    trainerDetails = trainerResponse.data;
-                } catch (error) {
-                    console.error(`Error fetching trainer details for trainingId: ${_id}`, error);
-                }
-            }
 
             // 2. If batchIds is not empty, fetch batch details from the batch-management microservice
             let batchDetails = null;
