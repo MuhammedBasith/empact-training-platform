@@ -1,23 +1,23 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IEmployeeManagement extends Document {
-  cognitoId: mongoose.Types.ObjectId;
+  cognitoId: string;
   empName: string,
   empEmail: string,
   empAccount: string,
   empSkills: string,
-  trainingIds: mongoose.Types.ObjectId | null;
+  trainingIds: Types.Array<Types.ObjectId>;
   department: string;
   hiredAt: Date;
 }
 
 const EmployeeManagementSchema: Schema<IEmployeeManagement> = new Schema({
-  cognitoId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+  cognitoId: { type: String, ref: 'users', required: true },
   empName: { type: String, required: true },
   empEmail: { type: String, required: true },
   empAccount: { type: String, required: true },
   empSkills: { type: String, required: true },
-  trainingIds: { type: Schema.Types.ObjectId, ref: 'trainingRequirements' },
+  trainingIds: [{ type: Schema.Types.ObjectId, ref: 'trainingRequirements' }],
   department: { type: String, required: true },
   hiredAt: { type: Date }
 });
