@@ -7,6 +7,7 @@ import { TextArea } from "./ui/textArea";
 import { useUserContext } from "../context/UserContext";  // Import user context
 import axios from "axios";
 import { useNavigate } from "react-router-dom";  // for redirection
+import { Paper } from "@mui/material";
 
 const RequirementsForm: React.FC = () => {
   const { user } = useUserContext(); // Get user context
@@ -66,6 +67,10 @@ const RequirementsForm: React.FC = () => {
     setEditable(true);
   };
 
+  const handleOk = () => {
+    setEditable(false);  // Exit edit mode after clicking OK
+  };
+
   const handleConfirm = async () => {
     setConfirmationDialogOpen(true);
   };
@@ -105,157 +110,160 @@ const RequirementsForm: React.FC = () => {
   }
 
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      {!showSummary ? (
-        <>
-          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-            Welcome to Empact!
-          </h2>
-          <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-            Please fill out the following form with your training requirements.
-          </p>
+    <Paper elevation={3} sx={{ p: 3, margin: '20px auto' }}>
+      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+        {!showSummary ? (
+          <>
+            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+              Welcome to Empact!
+            </h2>
+            <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+              Please fill out the following form with your training requirements.
+            </p>
 
-          <form className="my-8" onSubmit={handleSubmit}>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="trainingname">Training Name</Label>
-              <Input
-                id="trainingname"
-                value={formData.trainingName}
-                onChange={(e) => setFormData({ ...formData, trainingName: e.target.value })}
-                placeholder="Technical/Soft Skills"
-                type="text"
-              />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="targetaudience">Target Audience</Label>
-              <Input
-                id="targetaudience"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                placeholder="Department/Role"
-                type="text"
-              />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="outcomes">Desired Outcomes</Label>
-              <TextArea
-                id="outcomes"
-                value={formData.objectives}
-                onChange={(e) => setFormData({ ...formData, objectives: e.target.value })}
-                placeholder="Outcomes"
-                type="text"
-              />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="durationpreference">Duration Preference</Label>
-              <Input
-                id="durationpreference"
-                value={formData.duration}
-                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                placeholder="Weeks"
-                type="number"
-              />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="Preferredtimeframe">Preferred Time Frame</Label>
-              <Input
-                id="Preferredtimeframe"
-                value={formData.preferredTimeFrame}
-                onChange={(e) => setFormData({ ...formData, preferredTimeFrame: e.target.value })}
-                placeholder="Date"
-                type="date"
-              />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="deliverymode">Delivery Mode</Label>
-              <GlowSelect
-                id="deliverymode"
-                value={formData.trainingType}
-                onChange={(e) => setFormData({ ...formData, trainingType: e.target.value })}
+            <form className="my-8" onSubmit={handleSubmit}>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="trainingname">Training Name</Label>
+                <Input
+                  id="trainingname"
+                  value={formData.trainingName}
+                  onChange={(e) => setFormData({ ...formData, trainingName: e.target.value })}
+                  placeholder="Technical/Soft Skills"
+                  type="text"
+                />
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="targetaudience">Target Audience</Label>
+                <Input
+                  id="targetaudience"
+                  value={formData.department}
+                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  placeholder="Department/Role"
+                  type="text"
+                />
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="outcomes">Desired Outcomes</Label>
+                <TextArea
+                  id="outcomes"
+                  value={formData.objectives}
+                  onChange={(e) => setFormData({ ...formData, objectives: e.target.value })}
+                  placeholder="Outcomes"
+                  type="text"
+                />
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="durationpreference">Duration Preference</Label>
+                <Input
+                  id="durationpreference"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                  placeholder="Weeks"
+                  type="number"
+                />
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="Preferredtimeframe">Preferred Time Frame</Label>
+                <Input
+                  id="Preferredtimeframe"
+                  value={formData.preferredTimeFrame}
+                  onChange={(e) => setFormData({ ...formData, preferredTimeFrame: e.target.value })}
+                  placeholder="Date"
+                  type="date"
+                />
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="deliverymode">Delivery Mode</Label>
+                <GlowSelect
+                  id="deliverymode"
+                  value={formData.trainingType}
+                  onChange={(e) => setFormData({ ...formData, trainingType: e.target.value })}
+                >
+                  <option value="" disabled>Select</option>
+                  <option value="hybrid">Hybrid</option>
+                  <option value="online">Online</option>
+                  <option value="remote">Remote</option>
+                </GlowSelect>
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="Prerequisites">Prerequisites</Label>
+                <Input
+                  id="Prerequisite"
+                  value={formData.prerequisite}
+                  onChange={(e) => setFormData({ ...formData, prerequisite: e.target.value })}
+                  placeholder="Any Skills"
+                  type="text"
+                />
+              </LabelInputContainer>
+              <LabelInputContainer className="mb-4">
+                <Label htmlFor="trained">Skills to be trained</Label>
+                <Input
+                  id="trained"
+                  value={formData.skills_to_train}
+                  onChange={(e) => setFormData({ ...formData, skills_to_train: e.target.value })}
+                  placeholder="Skills"
+                  type="text"
+                />
+              </LabelInputContainer>
+
+              <button
+                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-transform duration-200 ease-in-out transform hover:scale-105"
+                type="submit"
               >
-                <option value="" disabled>Select</option>
-                <option value="hybrid">Hybrid</option>
-                <option value="online">Online</option>
-                <option value="remote">Remote</option>
-              </GlowSelect>
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="Prerequisites">Prerequisites</Label>
-              <Input
-                id="Prerequisite"
-                value={formData.prerequisite}
-                onChange={(e) => setFormData({ ...formData, prerequisite: e.target.value })}
-                placeholder="Any Skills"
-                type="text"
+                Submit &rarr;
+                <BottomGradient />
+              </button>
+            </form>
+          </>
+        ) : (
+
+          <div>
+            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200 mb-4">
+              Training Requirement Summary
+            </h2>
+            <div className="space-y-3">
+              <p><strong>Training Name:</strong> {responseData.trainingName}</p>
+              <p><strong>Training Type:</strong> {responseData.trainingType}</p>
+              <p><strong>Department:</strong> {responseData.department}</p>
+              <p><strong>Duration (Weeks):</strong> {responseData.duration}</p>
+
+              <TextArea
+                className="mt-4"
+                value={responseData.summary}
+                disabled={!editable}
+                onChange={(e) => setResponseData({ ...responseData, summary: e.target.value })}
+                style={{ minHeight: '200px' }} // Increased height slightly
               />
-            </LabelInputContainer>
-            <LabelInputContainer className="mb-4">
-              <Label htmlFor="trained">Skills to be trained</Label>
-              <Input
-                id="trained"
-                value={formData.skills_to_train}
-                onChange={(e) => setFormData({ ...formData, skills_to_train: e.target.value })}
-                placeholder="Skills"
-                type="text"
-              />
-            </LabelInputContainer>
-
-            <button
-              className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-transform duration-200 ease-in-out transform hover:scale-105"
-              type="submit"
-            >
-              Submit &rarr;
-              <BottomGradient />
-            </button>
-          </form>
-        </>
-      ) : (
-        <div>
-          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-            Training Requirement Summary
-          </h2>
-          <div className="mt-4">
-            <p><strong>Training Name:</strong> {responseData.trainingName}</p>
-            <p><strong>Training Type:</strong> {responseData.trainingType}</p>
-            <p><strong>Department:</strong> {responseData.department}</p>
-            <p><strong>Duration (Weeks):</strong> {responseData.duration}</p>
-
-            <TextArea
-              className="mt-4"
-              value={responseData.summary}
-              disabled={!editable}
-              onChange={(e) => setResponseData({ ...responseData, summary: e.target.value })}
-              style={{ minHeight: '200px' }} // Increase the height slightly
-            />
-          </div>
-
-          <div className="flex mt-4 space-x-4">
-            <button
-              className="bg-blue-500 text-white p-2 rounded-md"
-              onClick={editable ? handleConfirm : handleEdit}
-            >
-              {editable ? "OK" : "Edit"}
-            </button>
-            <button
-              className="bg-green-500 text-white p-2 rounded-md"
-              onClick={handleConfirm}
-            >
-              Confirm
-            </button>
-          </div>
-
-          {confirmationDialogOpen && (
-            <div className="mt-4">
-              <p>Are you sure you want to submit the requirement for {responseData.trainingName}?</p>
-              <div className="flex space-x-4">
-                <button className="bg-red-500 text-white p-2 rounded-md" onClick={handleConfirmYes}>Yes</button>
-                <button className="bg-gray-500 text-white p-2 rounded-md" onClick={handleConfirmNo}>No</button>
-              </div>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+
+            <div className="flex mt-4 space-x-4">
+              <button
+                className="bg-blue-500 text-white p-2 rounded-md"
+                onClick={editable ? handleOk : handleEdit}
+              >
+                {editable ? "OK" : "Edit"}
+              </button>
+              <button
+                className="bg-green-500 text-white p-2 rounded-md"
+                onClick={handleConfirm}
+              >
+                Confirm
+              </button>
+            </div>
+
+            {confirmationDialogOpen && (
+              <div className="mt-4">
+                <p>Are you sure you want to submit the requirement for {responseData.trainingName}?</p>
+                <div className="flex space-x-4">
+                  <button className="bg-red-500 text-white p-2 rounded-md" onClick={handleConfirmYes}>Yes</button>
+                  <button className="bg-gray-500 text-white p-2 rounded-md" onClick={handleConfirmNo}>No</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </Paper>
   );
 };
 
