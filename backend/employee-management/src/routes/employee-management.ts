@@ -3,6 +3,7 @@ import { createEmployee,findEmployeesByTrainingId,getAllEmployees,getEmployeeByC
 
 const router=Router();
 
+// @ts-ignore
 router.post('/',createEmployee);
 router.get('/', getAllEmployees);
 router.get('/:cognitoId',getEmployeeByCognitoId);
