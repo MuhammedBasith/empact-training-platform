@@ -112,42 +112,42 @@ export async function deleteTrainer(
     }
 }
 
-export async function assignTrainingToTrainer(
-    request: Request<{ id: string }, {}, { trainingId: string }>,
-    response: Response
-): Promise<any> {
-    const { id } = request.params; // Extract the trainer ID from URL parameters
-    const { trainingId } = request.body; // Get the training ID from the request body
+// export async function assignTrainingToTrainer(
+//     request: Request<{ id: string }, {}, { trainingId: string }>,
+//     response: Response
+// ): Promise<any> {
+//     const { id } = request.params; // Extract the trainer ID from URL parameters
+//     const { trainingId } = request.body; // Get the training ID from the request body
 
-    try {
-        // Check if the trainer exists
-        const trainerId = new mongoose.Types.ObjectId(id);
-        const trainingIdObj = new mongoose.Types.ObjectId(trainingId);
+//     try {
+//         // Check if the trainer exists
+//         const trainerId = new mongoose.Types.ObjectId(id);
+//         const trainingIdObj = new mongoose.Types.ObjectId(trainingId);
 
-        const trainer = await TrainerManagement.findById(trainerId);
-        if (!trainer) {
-            return response.status(404).json({ message: 'Trainer not found' });
-        }
+//         const trainer = await TrainerManagement.findById(trainerId);
+//         if (!trainer) {
+//             return response.status(404).json({ message: 'Trainer not found' });
+//         }
 
-        // Fetch training details from the training microservice
-        const trainingResponse = await axios.get(`http://localhost:3000/api/v1/training-requirements/${trainingId}`);
+//         // Fetch training details from the training microservice
+//         const trainingResponse = await axios.get(`http://localhost:3003/api/v1/training-requirements/${trainingId}`);
         
-        if (trainingResponse.status !== 200) {
-            return response.status(404).json({ message: 'Training not found' });
-        }
+//         if (trainingResponse.status !== 200) {
+//             return response.status(404).json({ message: 'Training not found' });
+//         }
 
-        // Assign the training to the trainer if it exists
-        if (!trainer.trainingIds.includes(trainingIdObj)) {
-            trainer.trainingIds.push(trainingIdObj);
-            await trainer.save(); // Save the updated trainer
-        }
+//         // Assign the training to the trainer if it exists
+//         if (!trainer.trainingIds.includes(trainingIdObj)) {
+//             trainer.trainingIds.push(trainingIdObj);
+//             await trainer.save(); // Save the updated trainer
+//         }
 
-        return response.status(200).json(trainer); // Respond with the updated trainer
-    } catch (error) {
-        console.error(error);
-        return response.status(500).json({ message: 'Error assigning training to trainer', error: error.message });
-    }
-}
+//         return response.status(200).json(trainer); // Respond with the updated trainer
+//     } catch (error) {
+//         console.error(error);
+//         return response.status(500).json({ message: 'Error assigning training to trainer', error: error.message });
+//     }
+// }
 
 
 export async function getTrainersForDropdown(

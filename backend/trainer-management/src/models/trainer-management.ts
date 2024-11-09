@@ -7,10 +7,10 @@ export interface ITrainer extends Document {
     email: string;
     expertise: string[];
     bio?: string;
-    trainingIds: mongoose.Types.ObjectId[];
+    trainingIds?: mongoose.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
-    batchIDs:mongoose.Types.ObjectId[]
+    batchIDs?:mongoose.Types.ObjectId[]
 }
 
 // Create the Trainer schema
