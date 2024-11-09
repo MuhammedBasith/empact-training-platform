@@ -27,6 +27,7 @@ export async function createBatch(request: Request, response: Response) {
             if (!employees || employees.length === 0) {
                 return response.status(400).json({ success: false, message: `Batch ${batchNumber} has no employees` });
             }
+            
 
             // Step 1: Fetch cognitoIds for each employee
             const employeeCognitoIds = [];
