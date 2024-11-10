@@ -6,8 +6,8 @@ import mongoose from "mongoose";
 
 export const createEmployee = async (req: Request, res: Response) => {
   try {
-    const data = req.body; // Assuming req.body contains the employee data
-    const { trainingIds, cognitoId } = data; // Extract trainingIds and cognitoId
+    const data = req.body;
+    const { trainingIds, cognitoId } = data;
 
     // Convert trainingIds to ObjectId if they are not already ObjectIds
     const trainingObjectIds = trainingIds.map((id: string) => new mongoose.Types.ObjectId(id));
@@ -108,10 +108,6 @@ export async function findEmployeesByTrainingId(
   const { trainingId } = request.params; // Extract the training ID from the request parameters
 
   try {
-    // Ensure that the trainingId is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(trainingId)) {
-      return response.status(400).json({ message: 'Invalid training ID format' });
-    }
 
     // Find all employees with the specified training ID
     const employees = await EmployeeManagement.find({ trainingIds: trainingId });
