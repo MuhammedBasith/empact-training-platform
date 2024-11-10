@@ -4,6 +4,7 @@ import { UploadFile, DownloadForOffline } from '@mui/icons-material';
 import readXlsxFile from 'read-excel-file';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Employee {
   name: string;
@@ -20,6 +21,7 @@ interface Cutoff {
   count: number;
   duration: number | null;
   cognitoId: string | null;
+  skills: string; // Added to store the selected trainer's skills
   employees: Employee[];
 }
 
@@ -28,7 +30,7 @@ interface Trainer {
   name: string;
   email: string;
   bio: string;
-  expertise: string[];
+  expertise: string[]; // Expertise now contains the trainer's skills
   cognitoId: string;
 }
 
@@ -42,6 +44,7 @@ const AddResultsPage: React.FC = () => {
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchTrainers = async () => {
@@ -95,6 +98,7 @@ const AddResultsPage: React.FC = () => {
           count: batchEmployees.length,
           duration: null,
           cognitoId: null,
+          skills: '', // Added skills field
           employees: batchEmployees,
         };
       });
@@ -110,7 +114,11 @@ const AddResultsPage: React.FC = () => {
 
   const handleTrainerSelection = (index: number, trainerId: string) => {
     const updatedCutoffs = [...cutoffs];
-    updatedCutoffs[index].cognitoId = trainerId;
+    const selectedTrainer = trainers.find((trainer) => trainer.cognitoId === trainerId);
+    if (selectedTrainer) {
+      updatedCutoffs[index].cognitoId = trainerId;
+      updatedCutoffs[index].skills = selectedTrainer.expertise.join(', '); // Store trainer's expertise as skills
+    }
     setCutoffs(updatedCutoffs);
   };
 
@@ -119,6 +127,8 @@ const AddResultsPage: React.FC = () => {
   const handleCreateBatches = () => {
     setDialogOpen(true);
   };
+
+
 
   const confirmAndSendData = async () => {
     setDialogOpen(false);
@@ -130,14 +140,33 @@ const AddResultsPage: React.FC = () => {
           `${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/create-account`,
           {
             name: employee.name,
-            email: employee.email,
-            account: employee.account,
-            skills: employee.skills,
-            department: employee.department,
+            email: employee.email
           }
         );
         if (cognitoResponse.status === 200) {
           employee.cognitoId = cognitoResponse.data.cognitoId;
+          // Step 6: Create employee management entry for each employee
+          const employeeManagementData = {
+            cognitoId: employee.cognitoId,
+            empName: employee.name,
+            empEmail: employee.email,
+            empAccount: employee.account,
+            empSkills: employee.skills,
+            department: employee.department,
+            trainingIds: trainingId,
+          };
+
+          try {
+            const employeeManagementResponse = await axios.post(
+              `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICES_URL}/api/v1/employee-management`,
+              employeeManagementData
+            );
+            if (employeeManagementResponse.status === 201) {
+              console.log(`Employee ${employee.name} added to employee management.`);
+            }
+          } catch (err) {
+            console.error(`Error creating entry for employee ${employee.name} in Employee Management service:`, err);
+          }
         }
         return employee;
       } catch (err) {
@@ -161,7 +190,7 @@ const AddResultsPage: React.FC = () => {
     // Step 3: Send batch data to the batch management service
     try {
       const batchManagementResponse = await axios.post(
-        `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`,
+        `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICES_URL}/api/v1/batch-management`,
         dataToSend
       );
       const batchIds = batchManagementResponse.data.data.map((batch: { _id: string }) => batch._id);
@@ -169,14 +198,50 @@ const AddResultsPage: React.FC = () => {
       // Step 4: Update the training requirement with batch IDs
       const updateData = { batchIds };
       await axios.put(
-        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/updateBatchIds/${trainingId}`,
+        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICES_URL}/api/v1/training-requirements/updateBatchIds/${trainingId}`,
         updateData
       );
+
+      // Step 5: Update trainer information in the trainer microservice
+      await Promise.all(cutoffs.map(async (cutoff) => {
+        if (cutoff.cognitoId) {
+          try {
+            const trainerUpdateData = {
+              trainingIds: [trainingId], // Add the training ID to the trainer's trainingIds array
+              batchIDs: batchIds, // Add the batch IDs to the trainer's batchIDs array
+            };
+
+            // Find the trainer using the cognitoId associated with this cutoff
+            const trainer = trainers.find((trainer) => trainer.cognitoId === cutoff.cognitoId);
+
+            if (trainer) {
+              const trainerResponse = await axios.put(
+                `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainer/${trainer.cognitoId}`,
+                trainerUpdateData
+              );
+
+              if (trainerResponse.status === 200) {
+                console.log(`Trainer ${trainer.name} updated successfully.`);
+              }
+            }
+          } catch (err) {
+            console.error(`Error updating trainer for batch range ${cutoff.range}:`, err);
+          }
+        }
+      }));
+
+
+      // After all updates, navigate to the manager dashboard or desired page
       navigate(`/dashboard/admin/managers/`);
+
     } catch (error) {
       console.error('Error sending batch data or updating training requirement:', error);
     }
   };
+
+
+
+
 
   // Generate Excel template for download
   const generateExcelTemplate = () => {
@@ -188,12 +253,12 @@ const AddResultsPage: React.FC = () => {
     const ws = XLSX.utils.aoa_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Employee Data');
-    
+
     // Generate file
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(file);
-    
+
     // Create download link and trigger download
     const a = document.createElement('a');
     a.href = url;
@@ -258,6 +323,7 @@ const AddResultsPage: React.FC = () => {
                   <TableCell>Count</TableCell>
                   <TableCell>Duration (hours)</TableCell>
                   <TableCell>Trainer</TableCell>
+                  <TableCell>Trainer Skills</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -288,19 +354,20 @@ const AddResultsPage: React.FC = () => {
                         ))}
                       </Select>
                     </TableCell>
+                    <TableCell>{cutoff.skills ? cutoff.skills : "Please Select"}</TableCell> {/* Display trainer's skills */}
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           )}
-          <Button
+          <button
             onClick={handleCreateBatches}
-            variant="contained"
             disabled={!allDurationsAndTrainersFilled}
             sx={{ mt: 3 }}
+            className="btn group mb-4 mt-5 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-0 mt-5 sm:w-auto"
           >
             Create Batches
-          </Button>
+          </button>
         </Box>
       )}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
