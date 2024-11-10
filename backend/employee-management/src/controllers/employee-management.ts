@@ -8,10 +8,10 @@ export const createEmployee = async (req: Request, res: Response) => {
   try {
     // Extract the data from the request body
     const data = req.body;
-    const { cognitoId, empName, empEmail, empAccount, empSkills, department, trainingIds } = data;
+    const { cognitoId, empName, empEmail, empAccount, empSkills, department, trainingId } = data;
 
-    // Convert trainingIds to ObjectId if they are not already ObjectIds
-    const trainingObjectIds = trainingIds.map((id: string) => new mongoose.Types.ObjectId(id));
+    // Convert the single trainingId to ObjectId
+    const trainingObjectId = new mongoose.Types.ObjectId(trainingId);
 
     // Check if the employee already exists in the database based on the cognitoId
     const existingEmployee = await EmployeeManagement.findOne({ cognitoId });
@@ -21,7 +21,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       await EmployeeManagement.updateOne(
         { cognitoId },
         { 
-          $addToSet: { trainingIds: { $each: trainingObjectIds } }, // $each allows adding multiple items
+          $addToSet: { trainingIds: trainingObjectId }, // Only add one trainingId (single reference)
         }
       );
 
@@ -38,7 +38,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       empAccount,
       empSkills,
       department,
-      trainingIds: trainingObjectIds, // Add converted trainingIds here
+      trainingIds: [trainingObjectId], // Store the single trainingId in an array
       hiredAt: new Date(), // Add the hiredAt date if required
     });
 
@@ -52,6 +52,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
