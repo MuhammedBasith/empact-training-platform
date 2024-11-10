@@ -8,7 +8,6 @@ router.get('/trainers', getAllTrainers);
 router.get('/trainers/:trainingId',getTrainerById);
 router.put('/trainer/:cognitoId', updateTrainer); // for assignTrainingToTrainer
 router.delete('/trainer/:id', deleteTrainer);
-// router.post('/trainer/:id', assignTrainingToTrainer);
 router.get('/getTrainersForDropdown',getTrainersForDropdown)
 router.get('/getTrainingsAllocatedForATrainer/:cognitoId', getTrainingsAllocatedForATrainer);
 

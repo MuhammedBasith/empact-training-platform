@@ -20,6 +20,7 @@ mongoose.connect(config.mongoUri)
 });
 
 app.use('/api/v1/trainer-management',TrainerManagementRoutes);
+
 app.listen(PORT,()=>{
     console.log(`Server started on ${PORT}`)
 })

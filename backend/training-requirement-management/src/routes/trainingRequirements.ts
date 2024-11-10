@@ -20,7 +20,7 @@ router.post('/', createTrainingRequirement); // Create a new training requiremen
 // PUT Routes (Update resources)
 router.put('/confirmRequirement/:requirementId', confirmRequirement); // Confirm a training requirement by requirementId
 router.put('/:id/empCount', updateEmployeeCount); // Update employee count by id
-router.put('/updateBatchIds/:id/', updateBatchIds); // Update batch IDs by id
+router.put('/updateBatchIds/:id', updateBatchIds); // Update batch IDs by id
 
 // DELETE Routes (Remove resources)
 router.delete('/:id', deleteTrainingRequirement); // Delete a training requirement by id

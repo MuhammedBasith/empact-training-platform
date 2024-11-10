@@ -155,10 +155,12 @@ const AddResultsPage: React.FC = () => {
             department: employee.department,
             trainingIds: trainingId,
           };
+          console.log(employeeManagementData);
+          
 
           try {
             const employeeManagementResponse = await axios.post(
-              `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICES_URL}/api/v1/employee-management`,
+              `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/employee-management`,
               employeeManagementData
             );
             if (employeeManagementResponse.status === 201) {
@@ -187,18 +189,22 @@ const AddResultsPage: React.FC = () => {
       })),
     };
 
+    console.log(dataToSend);
+    
+
     // Step 3: Send batch data to the batch management service
     try {
       const batchManagementResponse = await axios.post(
-        `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICES_URL}/api/v1/batch-management`,
+        `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`,
         dataToSend
       );
       const batchIds = batchManagementResponse.data.data.map((batch: { _id: string }) => batch._id);
+      console.log(batchIds)
 
       // Step 4: Update the training requirement with batch IDs
       const updateData = { batchIds };
       await axios.put(
-        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICES_URL}/api/v1/training-requirements/updateBatchIds/${trainingId}`,
+        `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/updateBatchIds/${trainingId}`,
         updateData
       );
 
@@ -321,7 +327,7 @@ const AddResultsPage: React.FC = () => {
                 <TableRow>
                   <TableCell>Range</TableCell>
                   <TableCell>Count</TableCell>
-                  <TableCell>Duration (hours)</TableCell>
+                  <TableCell>Duration (Weeks)</TableCell>
                   <TableCell>Trainer</TableCell>
                   <TableCell>Trainer Skills</TableCell>
                 </TableRow>

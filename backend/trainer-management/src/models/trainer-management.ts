@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface for the Trainer
 export interface ITrainer extends Document {
-    cognitoId: mongoose.Types.ObjectId;
+    cognitoId: string;
     name: string;
     email: string;
     expertise: string[];
@@ -15,7 +15,7 @@ export interface ITrainer extends Document {
 
 // Create the Trainer schema
 const TrainerSchema: Schema<ITrainer> = new Schema({
-    cognitoId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    cognitoId: { type: String, ref: 'users', required: true },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     expertise: { type: [String], required: true },

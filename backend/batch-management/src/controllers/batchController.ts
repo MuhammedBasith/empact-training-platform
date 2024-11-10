@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 import { log } from 'console';
 
+
 export async function createBatch(request: Request, response: Response) {
     try {
         const { trainingRequirementId, batches } = request.body;
