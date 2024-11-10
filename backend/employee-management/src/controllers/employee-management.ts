@@ -6,20 +6,23 @@ import mongoose from "mongoose";
 
 export const createEmployee = async (req: Request, res: Response) => {
   try {
+    // Extract the data from the request body
     const data = req.body;
-    const { trainingIds, cognitoId } = data;
+    const { cognitoId, empName, empEmail, empAccount, empSkills, department, trainingIds } = data;
 
     // Convert trainingIds to ObjectId if they are not already ObjectIds
     const trainingObjectIds = trainingIds.map((id: string) => new mongoose.Types.ObjectId(id));
 
-    // Check if the employee already exists in the database
+    // Check if the employee already exists in the database based on the cognitoId
     const existingEmployee = await EmployeeManagement.findOne({ cognitoId });
 
     if (existingEmployee) {
       // If the employee exists, update their trainingIds array using $addToSet to ensure uniqueness
       await EmployeeManagement.updateOne(
         { cognitoId },
-        { $addToSet: { trainingIds: { $each: trainingObjectIds } } } // $each allows adding multiple items
+        { 
+          $addToSet: { trainingIds: { $each: trainingObjectIds } }, // $each allows adding multiple items
+        }
       );
 
       // Respond with the updated employee data
@@ -28,21 +31,29 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
 
     // If the employee does not exist, create a new employee entry
-    const employee = new EmployeeManagement({
-      ...data,
+    const newEmployee = new EmployeeManagement({
+      cognitoId,
+      empName,
+      empEmail,
+      empAccount,
+      empSkills,
+      department,
       trainingIds: trainingObjectIds, // Add converted trainingIds here
+      hiredAt: new Date(), // Add the hiredAt date if required
     });
 
     // Save the new employee
-    await employee.save();
+    await newEmployee.save();
 
-    // Respond with the created employee
-    return res.status(201).json(employee);
+    // Respond with the created employee data
+    return res.status(201).json(newEmployee);
   } catch (error) {
-    console.error(error);
+    console.error('Error creating employee:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
 
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
