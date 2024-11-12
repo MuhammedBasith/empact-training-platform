@@ -42,7 +42,7 @@ const EmployeeDetails = () => {
         }
         setLoading(false);
       } catch (error) {
-        setError('An error occurred while fetching employee data.');
+        setError('No employees added yet.');
         setLoading(false);
       }
     };
