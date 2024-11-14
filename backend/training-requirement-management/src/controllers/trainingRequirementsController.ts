@@ -270,7 +270,7 @@ export async function getTrainingRequirementsByManager(
     
     try {
         // Step 1: Fetch all training requirements created by the manager (cognitoId)
-        const trainingRequirements = await TrainingRequirement.find({ cognitoId:id });
+        const trainingRequirements = await TrainingRequirement.find({ cognitoId: id });
 
         if (!trainingRequirements || trainingRequirements.length === 0) {
             return response.status(404).json({ message: 'No training requirements found for the given manager.' });
@@ -303,7 +303,7 @@ export async function getTrainingRequirementsByManager(
                                 if (batchData) {
                                     // Fetch trainer details for the current batch's trainerId
                                     const batchTrainerResponse = await axios.get(
-                                        `http://localhost:3002/api/v1/trainer-management/trainers/${batchData.trainerId}`
+                                        `http://localhost:3002/api/v1/trainer-management/trainers/getTrainerByCognitoId/${batchData.trainerId}`
                                     );
                                     batchData.trainerDetails = batchTrainerResponse.data;
                                 }
