@@ -1,12 +1,14 @@
-import TrainerManagement,{ITrainer} from "../models/trainer-management";
+import TrainerManagement, { ITrainer } from "../models/trainer-management";
 import { Request, Response } from "express";
 import axios from "axios";
 import mongoose from "mongoose";
+
+
 export async function createTrainer(
     request: Request<{}, ITrainer, Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { cognitoId,name, email, expertise, bio, trainingIds } = request.body;
+    const { cognitoId, name, email, expertise, bio, trainingIds } = request.body;
 
     try {
         // Create a new trainer instance
@@ -18,12 +20,11 @@ export async function createTrainer(
             bio,
             trainingIds
 
-           
-});
+        });
 
         // Save the trainer to the database
         await trainer.save();
-        
+
         // Respond with the created trainer
         return response.status(201).json(trainer);
     } catch (error) {
@@ -49,15 +50,13 @@ export async function getTrainerById(
     request: Request<{ trainingId: string }>,
     response: Response<ITrainer | { message: string; error?: string }>
 ): Promise<any> {
-    const { trainingId } = request.params; // Extract the trainingId from URL parameters
+    const { trainingId } = request.params;
 
     try {
-        // Convert the trainingId to ObjectId using the `new` keyword
-        const trainingIdObjectId = new mongoose.Types.ObjectId(trainingId);
 
         // Find the trainer where the trainingId is in the trainingIds array
         const trainer = await TrainerManagement.findOne({
-            trainingIds: { $in: [trainingIdObjectId] }
+            trainingIds: { $in: [trainingId] }
         });
 
         if (!trainer) {
@@ -81,7 +80,7 @@ export async function updateTrainer(
     const updateData = request.body; // Get the update data from the request body
 
     try {
-        const trainer = await TrainerManagement.findOneAndUpdate({cognitoId}, updateData, {
+        const trainer = await TrainerManagement.findOneAndUpdate({ cognitoId }, updateData, {
             new: true, // Return the updated document
             runValidators: true // Run schema validations
         });
@@ -133,7 +132,7 @@ export async function deleteTrainer(
 
 //         // Fetch training details from the training microservice
 //         const trainingResponse = await axios.get(`http://localhost:3003/api/v1/training-requirements/${trainingId}`);
-        
+
 //         if (trainingResponse.status !== 200) {
 //             return response.status(404).json({ message: 'Training not found' });
 //         }
@@ -153,7 +152,7 @@ export async function deleteTrainer(
 
 
 export async function getTrainersForDropdown(
-    request: Request, 
+    request: Request,
     response: Response
 ): Promise<any> {
     try {
@@ -179,7 +178,7 @@ export async function getTrainersForDropdown(
 
 
 export async function getTrainingsAllocatedForATrainer(
-    request: Request, 
+    request: Request,
     response: Response
 ): Promise<any> {
     try {

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import EmployeeManagement, { IEmployeeManagement } from "../models/employee-management";
-import mongoose from "mongoose";
 
 
 
@@ -10,8 +9,6 @@ export const createEmployee = async (req: Request, res: Response) => {
     const data = req.body;
     const { cognitoId, empName, empEmail, empAccount, empSkills, department, trainingId } = data;
 
-    // Convert the single trainingId to ObjectId
-    const trainingObjectId = new mongoose.Types.ObjectId(trainingId);
 
     // Check if the employee already exists in the database based on the cognitoId
     const existingEmployee = await EmployeeManagement.findOne({ cognitoId });
@@ -21,7 +18,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       await EmployeeManagement.updateOne(
         { cognitoId },
         { 
-          $addToSet: { trainingIds: trainingObjectId }, // Only add one trainingId (single reference)
+          $addToSet: { trainingIds: trainingId }, // Only add one trainingId (single reference)
         }
       );
 
@@ -38,7 +35,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       empAccount,
       empSkills,
       department,
-      trainingIds: [trainingObjectId], // Store the single trainingId in an array
+      trainingIds: [trainingId], // Store the single trainingId in an array
       hiredAt: new Date(), // Add the hiredAt date if required
     });
 
@@ -90,10 +87,6 @@ export async function updateEmployeeTrainingIds(
   const { trainingIds } = request.body; // Extract the training ID from the request body
 
   try {
-    // Ensure that the trainingId is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(trainingIds)) {
-      return response.status(400).json({ message: 'Invalid training ID format' });
-    }
 
     // Find the employee by cognitoId and push the new training ID to the trainingIds array
     const updatedEmployee = await EmployeeManagement.findOneAndUpdate(
@@ -113,21 +106,24 @@ export async function updateEmployeeTrainingIds(
   }
 }
 
+
 export async function findEmployeesByTrainingId(
   request: Request<{ trainingId: string }, {}, {}>,
   response: Response
 ): Promise<any> {
   const { trainingId } = request.params; // Extract the training ID from the request parameters
+  console.log(trainingId);
 
   try {
 
-    // Find all employees with the specified training ID
-    const employees = await EmployeeManagement.find({ trainingIds: trainingId });
+    // Find all employees whose trainingIds array contains the specified trainingId
+    const employees = await EmployeeManagement.find({ trainingIds: { $in: [trainingId] } });
 
     if (employees.length === 0) {
       return response.status(404).json({ message: 'No employees found with the specified training ID' });
     }
 
+    // Return the found employees
     response.status(200).json(employees);
   } catch (error) {
     console.error(error); // Log the error for debugging

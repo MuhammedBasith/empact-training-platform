@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ISummary extends Document {
-  trainingRequirementId: mongoose.Types.ObjectId;
+  trainingRequirementId: string;
   summary: string;
   editedSummary?: string;
   confirmed: boolean;
@@ -9,7 +9,7 @@ export interface ISummary extends Document {
 }
 
 const SummarySchema: Schema = new Schema({
-  trainingRequirementId: { type: Schema.Types.ObjectId, ref: 'trainingRequirements', required: true },
+  trainingRequirementId: { type: String, ref: 'trainingRequirements', required: true },
   summary: { type: String, required: true },
   editedSummary: { type: String },
   confirmed: { type: Boolean, default: false },

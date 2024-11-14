@@ -1,9 +1,9 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IBatch extends Document {
-    trainingRequirementId: mongoose.Types.ObjectId;
+    trainingRequirementId: string;
     batchNumber: number;
-    trainerId: mongoose.Types.ObjectId;
+    trainerId: string;
     employeeIds: string[];
     duration: string;
     range: string;
@@ -13,9 +13,9 @@ export interface IBatch extends Document {
 }
 
 const BatchSchema: Schema<IBatch> = new Schema({
-    trainingRequirementId: { type: Schema.Types.ObjectId, required: true, ref: 'TrainingRequirement' },
+    trainingRequirementId: { type: String, required: true, ref: 'TrainingRequirement' },
     batchNumber: { type: Number, required: true },
-    trainerId: { type: Schema.Types.ObjectId, ref: 'Trainer' },
+    trainerId: { type: String, ref: 'Trainer' },
     employeeIds: [{ type: String, ref: 'EmployeeManagement' }],
     duration: { type: String, required: true },
     range: { type: String, required: true },

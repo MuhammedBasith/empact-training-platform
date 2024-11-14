@@ -6,7 +6,7 @@ export interface IEmployeeManagement extends Document {
   empEmail: string,
   empAccount: string,
   empSkills: string,
-  trainingIds: Types.Array<Types.ObjectId>;
+  trainingIds: string[];
   department: string;
   hiredAt: Date;
 }
@@ -17,7 +17,7 @@ const EmployeeManagementSchema: Schema<IEmployeeManagement> = new Schema({
   empEmail: { type: String, required: true },
   empAccount: { type: String, required: true },
   empSkills: { type: String, required: true },
-  trainingIds: [{ type: Schema.Types.ObjectId, ref: 'trainingRequirements' }],
+  trainingIds: [{ type: String, ref: 'trainingRequirements' }],
   department: { type: String, required: true },
   hiredAt: { type: Date }
 });

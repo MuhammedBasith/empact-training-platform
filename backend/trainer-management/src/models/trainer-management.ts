@@ -1,16 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-// Define an interface for the Trainer
 export interface ITrainer extends Document {
     cognitoId: string;
     name: string;
     email: string;
     expertise: string[];
     bio?: string;
-    trainingIds: mongoose.Types.ObjectId[];
+    trainingIds: string[];
     createdAt: Date;
     updatedAt: Date;
-    batchIDs?:mongoose.Types.ObjectId[]
+    batchIDs?:string[]
 }
 
 // Create the Trainer schema
@@ -20,12 +19,12 @@ const TrainerSchema: Schema<ITrainer> = new Schema({
     email: { type: String, required: true, unique: true },
     expertise: { type: [String], required: true },
     bio: { type: String },
-    trainingIds: [{ type: Schema.Types.ObjectId, ref: 'trainingRequirements' }],
+    trainingIds: [{ type: String, ref: 'trainingRequirements' }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-    batchIDs:[{ type: Schema.Types.ObjectId}]             
+    batchIDs:[{ type: String}]             
 }, {
-    timestamps: true // Automatically create createdAt and updatedAt fields
+    timestamps: true
 });
 
 // Create the Trainer model

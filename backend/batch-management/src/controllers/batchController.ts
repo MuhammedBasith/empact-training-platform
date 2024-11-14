@@ -90,7 +90,7 @@ export async function createBatch(request: Request, response: Response) {
 
 
 export async function updateTrainerId(
-    request: Request<{ id: string }, {}, { trainerID: mongoose.Types.ObjectId }>,
+    request: Request<{ id: string }, {}, { trainerID: string }>,
     response: Response<{ message?: string; updatedBatch?: any } | { message: string }>
 ): Promise<any> {
     const { trainerID } = request.body;
@@ -146,10 +146,6 @@ export const getBatchesByTrainingId = async (req: Request, res: Response) => {
     try {
         const { trainingId } = req.params;
 
-        // Validate the trainingId
-        if (!mongoose.Types.ObjectId.isValid(trainingId)) {
-            return res.status(400).json({ success: false, message: 'Invalid trainingId provided' });
-        }
 
         // Fetch batches from the Batch model using the trainingId
         const batches = await Batch.find({ trainingRequirementId: trainingId })
