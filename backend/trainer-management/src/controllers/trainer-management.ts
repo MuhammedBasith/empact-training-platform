@@ -38,13 +38,16 @@ export async function getAllTrainers(
     response: Response<ITrainer[] | { message: string; error?: string }>
 ): Promise<any> {
     try {
-        const trainers = await TrainerManagement.find(); // Retrieve all trainers
-        return response.status(200).json(trainers); // Respond with the list of trainers
+        const trainers = await TrainerManagement.find({}, 'cognitoId name email expertise bio trainingIds batchIDs createdAt updatedAt');
+        console.log(trainers);
+
+        return response.status(200).json(trainers);
     } catch (error) {
         console.error(error);
         return response.status(500).json({ message: 'Error retrieving trainers', error });
     }
 }
+
 
 export async function getTrainerById(
     request: Request<{ trainingId: string }>,

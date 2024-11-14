@@ -21,7 +21,7 @@ interface Cutoff {
   count: number;
   duration: number | null;
   cognitoId: string | null;
-  skills: string; // Added to store the selected trainer's skills
+  skills: string; 
   employees: Employee[];
 }
 
@@ -30,7 +30,7 @@ interface Trainer {
   name: string;
   email: string;
   bio: string;
-  expertise: string[]; // Expertise now contains the trainer's skills
+  expertise: string[]; 
   cognitoId: string;
 }
 
@@ -50,7 +50,7 @@ const AddResultsPage: React.FC = () => {
     const fetchTrainers = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
-        console.log(response.data.cognitoId);
+        console.log(response.data);
         
         setTrainers(response.data);
       } catch (error) {
@@ -145,6 +145,8 @@ const AddResultsPage: React.FC = () => {
             email: employee.email
           }
         );
+        console.log(cognitoResponse.status);
+        
         if (cognitoResponse.status === 200) {
           employee.cognitoId = cognitoResponse.data.cognitoId;
           // Step 6: Create employee management entry for each employee
@@ -155,7 +157,6 @@ const AddResultsPage: React.FC = () => {
             empAccount: employee.account,
             empSkills: employee.skills,
             department: employee.department,
-            trainingIds: trainingId,
           };
           console.log(employeeManagementData);
           
