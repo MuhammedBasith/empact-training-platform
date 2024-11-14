@@ -222,3 +222,43 @@ export async function getTrainingsAllocatedForATrainer(
         return response.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
+/**
+ * Fetch a trainer by their Cognito ID
+ * @param req - The Express Request object, where `req.params.cognitoId` contains the Cognito ID.
+ * @param res - The Express Response object.
+ */
+export const getTrainerByCognitoId = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { cognitoId } = req.params;  // Get cognitoId from request params
+  
+      // Validate if cognitoId is provided
+      if (!cognitoId) {
+        return res.status(400).json({ message: 'Cognito ID is required' });
+      }
+  
+      // Fetch the trainer by cognitoId
+      const trainer = await Trainer.findOne({ cognitoId });
+  
+      // If trainer not found
+      if (!trainer) {
+        return res.status(404).json({ message: 'Trainer not found' });
+      }
+  
+      // Return the trainer details
+      res.status(200).json({
+        name: trainer.name,
+        email: trainer.email,
+        expertise: trainer.expertise,
+        bio: trainer.bio,
+        trainingIds: trainer.trainingIds,
+        batchIDs: trainer.batchIDs,
+        createdAt: trainer.createdAt,
+        updatedAt: trainer.updatedAt,
+      });
+    } catch (error) {
+      console.error('Error fetching trainer:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
