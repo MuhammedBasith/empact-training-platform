@@ -229,7 +229,7 @@ export async function getTrainingsAllocatedForATrainer(
  * @param req - The Express Request object, where `req.params.cognitoId` contains the Cognito ID.
  * @param res - The Express Response object.
  */
-export const getTrainerByCognitoId = async (req: Request, res: Response): Promise<void> => {
+export const getTrainerByCognitoId = async (req: Request, res: Response): Promise<any> => {
     try {
       const { cognitoId } = req.params;  // Get cognitoId from request params
   
@@ -239,7 +239,7 @@ export const getTrainerByCognitoId = async (req: Request, res: Response): Promis
       }
   
       // Fetch the trainer by cognitoId
-      const trainer = await Trainer.findOne({ cognitoId });
+      const trainer = await TrainerManagement.findOne({ cognitoId });
   
       // If trainer not found
       if (!trainer) {
