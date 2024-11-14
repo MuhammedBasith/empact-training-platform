@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse } from '@mui/material';
+import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse, IconButton, Tooltip } from '@mui/material';
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
 
 interface Trainer {
-  trainerId: string;
   name: string;
   email: string;
   expertise: string[];
 }
 
 interface BatchDetail {
-  batchId: string;
+  _id: string;
   batchNumber: number;
+  trainerId: string;
+  employeeIds: string[];
   duration: string;
-  employeeCount: number;
   range: string;
-  trainer: Trainer | null;
+  count: number;
+  trainerDetails: Trainer | null;
 }
 
 interface TrainingRequirement {
   _id: string;
   trainingName: string;
-  trainer: Trainer | null;
   batchDetails: BatchDetail[] | null;
 }
 
@@ -34,10 +35,10 @@ interface ManagerDetailsResponse {
 const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
   const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set()); // Set to track expanded rows
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
-  const navigate = useNavigate();  // Hook for programmatic navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTrainingRequirements = async () => {
@@ -47,8 +48,6 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
         );
 
         if (response.data.success) {
-          console.log(response.data.data);
-          
           setTrainingRequirements(response.data.data);
         } else {
           setError('Failed to fetch training requirements.');
@@ -74,7 +73,6 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
   };
 
   const handleShowEmployees = (trainingId: string, batchId?: string) => {
-    // Navigate to the employee details page with the trainingId and optional batchId
     if (batchId) {
       navigate(`/dashboard/admin/managers/${id}/${trainingId}/${batchId}`);
     } else {
@@ -82,9 +80,7 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
     }
   };
 
-  // Add the handleAddResults function to navigate to the "Add Results" page
   const handleAddResults = (trainingId: string) => {
-    // Navigate to the add results page with trainingId
     navigate(`/dashboard/admin/managers/${id}/${trainingId}/results`);
   };
 
@@ -112,66 +108,41 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
         <TableHead>
           <TableRow>
             <TableCell>Training Name</TableCell>
-            <TableCell>No. of Employees</TableCell>
-            <TableCell>Trainer Name</TableCell>
+            <TableCell>No. of Batches</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {trainingRequirements.map((training) => {
-            const hasBatchDetails = training.batchDetails && training.batchDetails.length > 0;
-            const totalEmployees = hasBatchDetails
-              ? training.batchDetails.reduce((sum, batch) => sum + batch.employeeCount, 0)
-              : training.batchDetails?.[0]?.employeeCount || 0;
+            const hasBatches = training.batchDetails && training.batchDetails.length > 0;
 
             return (
               <React.Fragment key={training._id}>
                 <TableRow
                   hover
-                  onClick={() => handleRowToggle(training._id)} // Toggle on row click
+                  onClick={() => handleRowToggle(training._id)}
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell>{training.trainingName}</TableCell>
-                  <TableCell>{totalEmployees}</TableCell>
+                  <TableCell>{hasBatches ? training.batchDetails?.length : 'No batches'}</TableCell>
                   <TableCell>
-                    {hasBatchDetails ? 'Trainer not specified (Batch-specific)' : training.trainer ? training.trainer.name : 'Trainer not assigned'}
-                  </TableCell>
-                  <TableCell>
-                    {!hasBatchDetails && (
+                    {hasBatches && (
                       <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => handleShowEmployees(training._id)}
-                      >
-                        Show Employees
-                      </Button>
-                    )}
-                    {hasBatchDetails && training.batchDetails?.map((batch) => (
-                      <Button
-                        key={batch.batchId}
-                        variant="outlined"
+                        variant="contained"
                         color="primary"
                         sx={{ ml: 1 }}
-                        onClick={() => handleShowEmployees(training._id, batch.batchId)} // Pass batchId when available
+                        onClick={() => handleAddResults(training._id)}
                       >
-                        Show Employees (Batch {batch.batchNumber})
+                        Add Results
                       </Button>
-                    ))}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ ml: 1 }}
-                      onClick={() => handleAddResults(training._id)} // Now uses handleAddResults to route to the Add Results page
-                    >
-                      Add Results
-                    </Button>
+                    )}
                   </TableCell>
                 </TableRow>
 
                 {/* Render batch details if available */}
-                {hasBatchDetails && (
+                {hasBatches && (
                   <TableRow>
-                    <TableCell colSpan={4}>
+                    <TableCell colSpan={3}>
                       <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
                         <Table sx={{ marginTop: 2 }}>
                           <TableHead>
@@ -179,16 +150,25 @@ const ManagerDetails = ({ cognitoId }: { cognitoId: string }) => {
                               <TableCell>Batch Number</TableCell>
                               <TableCell>Duration</TableCell>
                               <TableCell>Employee Count</TableCell>
-                              <TableCell>Trainer</TableCell>
+                              <TableCell>Actions</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
                             {training.batchDetails?.map((batch) => (
-                              <TableRow key={batch.batchId}>
+                              <TableRow key={batch._id}>
                                 <TableCell>{batch.batchNumber}</TableCell>
                                 <TableCell>{batch.duration}</TableCell>
-                                <TableCell>{batch.employeeCount}</TableCell>
-                                <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
+                                <TableCell>{batch.count}</TableCell>
+                                <TableCell>
+                                  <Tooltip title="Show Employees">
+                                    <IconButton
+                                      color="primary"
+                                      onClick={() => handleShowEmployees(training._id, batch._id)}
+                                    >
+                                      <ExpandMore />
+                                    </IconButton>
+                                  </Tooltip>
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>

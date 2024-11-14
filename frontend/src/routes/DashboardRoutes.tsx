@@ -43,7 +43,7 @@ const DashboardRoutes = (role: string | undefined) => [
       { path: 'admin/managers/:id', element: role === 'admin' ? <ManagerDetailsPage /> : <Navigate to="/404" /> },
       { path: 'admin/managers/:id/:trainingId', element: role === 'admin' ? <EmployeeDetails /> : <Navigate to="/404" /> },
       { path: 'admin/managers/:id/:trainingId/:batchId', element: role === 'admin' ? <EmployeeDetails /> : <Navigate to="/404" /> },
-      { path: 'admin/managers/:id/:trainingId/progress/:cognitoId', element: role === 'admin' ? <ProgressDetails /> : <Navigate to="/404" /> },
+      { path: 'admin/managers/:id/:trainingId/:batchId/progress/:cognitoId', element: role === 'admin' ? <ProgressDetails /> : <Navigate to="/404" /> },
       { path: 'admin/managers/:id/:trainingId/results', element: role === 'admin' ? <AddResultsPage /> : <Navigate to="/404" /> },
       { path: 'admin/trainers/', element: role === 'admin' ? <TrainersData /> : <Navigate to="/404" /> },
 

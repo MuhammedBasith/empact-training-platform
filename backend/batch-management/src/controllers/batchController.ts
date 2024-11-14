@@ -120,10 +120,10 @@ export async function updateTrainerId(
 
 
 export async function getBatchById(
-    request: Request<{ id: string }>, // batchId will be passed as a URL parameter
+    request: Request<{ id: string }>,
     response: Response<IBatch | { message: string; error?: string }>
 ): Promise<any> {
-    const { id } = request.params; // Extract the batchId from URL parameters
+    const { id } = request.params;
 
     try {
         // Find the batch by ID using `findById`
@@ -131,11 +131,13 @@ export async function getBatchById(
         
         // If batch is not found, return a 404
         if (!batch) {
+            console.log(`Batch not found for batch id ${id}`);
             return response.status(404).json({ message: 'Batch not found' });
         }
-
-        // Return the found batch
+        console.log(batch);
+        
         return response.status(200).json(batch);
+
     } catch (error) {
         console.error(error);
         return response.status(500).json({ message: 'Error retrieving batch' });
@@ -164,5 +166,47 @@ export const getBatchesByTrainingId = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error fetching batches:', error);
         return res.status(500).json({ success: false, message: 'An error occurred while fetching batches' });
+    }
+};
+
+
+
+export const getEmployeesForBatch = async (req: Request, res: Response): Promise<any> => {
+    const { batchId } = req.params; // Get batchId from the request params
+
+    try {
+        // Step 1: Fetch the batch by batchId
+        const batch = await Batch.findById(batchId)
+        if (!batch) {
+            return res.status(404).json({ message: 'Batch not found' });
+        }
+
+        // Step 2: Extract employeeIds from the batch
+        const { employeeIds } = batch;
+        console.log(employeeIds);
+        
+
+        // If no employeeIds, return an empty list
+        if (employeeIds.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        // Step 3: Fetch employee details from the employee microservice
+        const employeePromises = employeeIds.map((employeeId: string) =>
+            axios.get(`http://localhost:3006/api/v1/employee-management/${employeeId}`)
+        );
+
+        // Wait for all employee details to be fetched
+        const employeeResponses = await Promise.all(employeePromises);
+
+        // Step 4: Extract employee data from the responses
+        const employees = employeeResponses.map(response => response.data);
+
+        // Step 5: Return the employee details as a response
+        return res.status(200).json(employees);
+
+    } catch (error) {
+        console.error('Error fetching employees for batch:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };

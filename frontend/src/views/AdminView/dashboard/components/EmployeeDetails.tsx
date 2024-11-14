@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress } from '@mui/material';
-
+import { Paper } from "@mui/material";
+// Adjusted Employee interface based on the actual response structure
 interface Employee {
   cognitoId: string;
-  name: string;
+  empName: string;
+  empEmail: string;
+  empAccount: string;
+  empSkills: string;
+  department: string;
 }
 
-interface EmployeeDetailsResponse {
-  success: boolean;
-  data: Employee[];
-}
 
 const EmployeeDetails = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]); // Typing employees as an array of Employee
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { id, trainingId, batchId } = useParams();
@@ -23,33 +24,46 @@ const EmployeeDetails = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        let url = `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/employee-management/emp/${trainingId}`;
-        if (batchId) {
-          url = `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management/getEmployeesForBatch/${batchId}`;
-        }
-        
-        console.log(url);
-        
-       
-        const response = await axios.get<EmployeeDetailsResponse>(url);
+        // URL to fetch employees for a specific batch
+        const url = `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management/getEmployeesForBatch/${batchId}`;
 
-        if (response.data) {
-          console.log(response.data);
-          
-          setEmployees(response.data);
+        // Fetch the employee data
+        const response = await axios.get<Employee[]>(url);
+
+        // Log the full response to debug
+        console.log("Full response", response);
+
+        // If the response is successful and contains employee data, update the state
+        if (response.status === 200 && response.data) {
+          // Map over the response data to extract only necessary fields
+          const mappedEmployees = response.data.map((employee) => ({
+            cognitoId: employee.cognitoId,
+            empName: employee.empName,
+            empEmail: employee.empEmail,
+            empAccount: employee.empAccount,
+            empSkills: employee.empSkills,
+            department: employee.department,
+          }));
+
+          // Set the employees state with the mapped data
+          setEmployees(mappedEmployees);
         } else {
-          setError('Failed to fetch employee data.');
+          setError('No employees found in this batch.');
         }
+
         setLoading(false);
       } catch (error) {
-        setError('No employees added yet.');
+        console.error('Error fetching employee data:', error); // Log the actual error
+        setError('Failed to fetch employee data.');
         setLoading(false);
       }
     };
 
+    // Call the fetch function
     fetchEmployees();
-  }, [trainingId, batchId]);
+  }, [trainingId, batchId]); // Dependency array to re-fetch if trainingId or batchId changes
 
+  // If data is still loading, show a loading spinner
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
@@ -58,6 +72,7 @@ const EmployeeDetails = () => {
     );
   }
 
+  // If an error occurred during data fetching, display the error message
   if (error) {
     return (
       <Typography variant="h6" color="error">
@@ -66,42 +81,54 @@ const EmployeeDetails = () => {
     );
   }
 
+  // Function to handle the "Show Progress" button click
   const handleShowProgress = (cognitoId: string) => {
-    navigate(`/dashboard/admin/managers/${id}/${trainingId}/progress/${cognitoId}`);
+    navigate(`/dashboard/admin/managers/${id}/${trainingId}/${batchId}/progress/${cognitoId}`);
   };
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="h6">Employee Details</Typography>
+    <Paper elevation={3} sx={{ p: 3, margin: '20px auto' }}>
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          Employee Details
+        </Typography>
 
-      <Table sx={{ marginTop: 2 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Index</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {employees.map((employee, index) => (
-            <TableRow key={employee.cognitoId}>
-              {/* Add the index as the first column */}
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{employee.empName}</TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleShowProgress(employee.cognitoId)}
-                >
-                  Show Progress
-                </Button>
-              </TableCell>
+        <Table sx={{ marginTop: 2 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Index</TableCell>
+              <TableCell>Employee Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Account</TableCell>
+              <TableCell>Skills</TableCell>
+              <TableCell>Department</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
+          </TableHead>
+          <TableBody>
+            {employees.map((employee, index) => (
+              <TableRow key={employee.cognitoId}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{employee.empName}</TableCell>
+                <TableCell>{employee.empEmail}</TableCell>
+                <TableCell>{employee.empAccount}</TableCell>
+                <TableCell>{employee.empSkills}</TableCell>
+                <TableCell>{employee.department}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleShowProgress(employee.cognitoId)}
+                  >
+                    Show Progress
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+    </Paper>
   );
 };
 

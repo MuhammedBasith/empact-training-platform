@@ -58,10 +58,12 @@ export const getAllTrainerFeedbackWithProgress = async (
 };
 
 export const getTrainerFeedbackWithProgressBycognitoId = async (
-    req: Request<{ trainingId: string,cognitoId: string }>, // Expecting an ID parameter
+    req: Request<{ trainingId: string, cognitoId: string }>, // Expecting an ID parameter
     res: Response
 ): Promise<any> => {
     const { cognitoId, trainingId } = req.params;
+    console.log(cognitoId);
+    
 
     try {
         // Fetch the training progress record by ID from the database
@@ -69,11 +71,15 @@ export const getTrainerFeedbackWithProgressBycognitoId = async (
             trainingId: trainingId,
             cognitoId: cognitoId
         })
+        console.log(trainerFeedbackWithProgressRecord);
+
 
         // Check if the record was found
         if (!trainerFeedbackWithProgressRecord) {
             return res.status(404).json({ message: 'Training progress record not found' });
         }
+        console.log(trainerFeedbackWithProgressRecord);
+        
 
         // Return the found record with a 200 OK status
         return res.status(200).json(trainerFeedbackWithProgressRecord);
