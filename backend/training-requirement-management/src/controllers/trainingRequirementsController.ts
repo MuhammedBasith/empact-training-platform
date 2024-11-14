@@ -105,7 +105,7 @@ export async function updateEmployeeCount(
     }
 }
 export async function updateBatchIds(
-    request: Request<{ id: string }, {}, { batchIds: mongoose.Types.ObjectId[] }>,
+    request: Request<{ id: string }, {}, { batchIds: string }>,
     response: Response<{ message?: string; updatedRequirement?: any } | { message: string }>
 ): Promise<any> {
     const { batchIds } = request.body;
@@ -214,10 +214,6 @@ export async function getEmpCountById(
         // Extract the training requirement ID from the request parameters
         const { id } = request.params;
 
-        // Check if the ID is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return response.status(400).json({ message: 'Invalid ID format' });
-        }
 
         // Find the training requirement by ID
         const trainingRequirement = await TrainingRequirement.findById(id);
@@ -384,10 +380,6 @@ export const getTrainingDetailsWithBatches = async (req: Request<{trainingId: st
     try {
         const { trainingId, cognitoId } = req.params;
 
-        // Validate IDs
-        if (!mongoose.Types.ObjectId.isValid(trainingId) || !mongoose.Types.ObjectId.isValid(cognitoId)) {
-            return res.status(400).json({ success: false, message: 'Invalid trainingId or cognitoId provided' });
-        }
 
         // Fetch training requirement based on trainingId and cognitoId
         const trainingRequirement = await TrainingRequirement.findOne({ _id: trainingId, cognitoId: cognitoId }).exec();
