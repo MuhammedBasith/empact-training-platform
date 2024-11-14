@@ -2,25 +2,16 @@ import { Request, Response } from "express";
 import EmployeeManagement, { IEmployeeManagement } from "../models/employee-management";
 
 
-
 export const createEmployee = async (req: Request, res: Response) => {
   try {
-    // Extract the data from the request body
     const data = req.body;
-    const { cognitoId, empName, empEmail, empAccount, empSkills, department, trainingId } = data;
+    const { cognitoId, empName, empEmail, empAccount, empSkills, department } = data;
 
 
     // Check if the employee already exists in the database based on the cognitoId
     const existingEmployee = await EmployeeManagement.findOne({ cognitoId });
 
     if (existingEmployee) {
-      // If the employee exists, update their trainingIds array using $addToSet to ensure uniqueness
-      await EmployeeManagement.updateOne(
-        { cognitoId },
-        { 
-          $addToSet: { trainingIds: trainingId }, // Only add one trainingId (single reference)
-        }
-      );
 
       // Respond with the updated employee data
       const updatedEmployee = await EmployeeManagement.findOne({ cognitoId });
@@ -35,8 +26,6 @@ export const createEmployee = async (req: Request, res: Response) => {
       empAccount,
       empSkills,
       department,
-      trainingIds: [trainingId], // Store the single trainingId in an array
-      hiredAt: new Date(), // Add the hiredAt date if required
     });
 
     // Save the new employee
@@ -44,12 +33,12 @@ export const createEmployee = async (req: Request, res: Response) => {
 
     // Respond with the created employee data
     return res.status(201).json(newEmployee);
+
   } catch (error) {
     console.error('Error creating employee:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 
 
 
@@ -62,6 +51,7 @@ export const getAllEmployees = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 export async function getEmployeeByCognitoId(
   request: Request<{ cognitoId: string }>,
@@ -80,53 +70,3 @@ export async function getEmployeeByCognitoId(
   }
 }
 
-export async function updateEmployeeTrainingIds(
-  request: Request<{ cognitoId: string }, {}, { trainingIds: string }>,
-  response: Response
-): Promise<any> {
-  const { trainingIds } = request.body; // Extract the training ID from the request body
-
-  try {
-
-    // Find the employee by cognitoId and push the new training ID to the trainingIds array
-    const updatedEmployee = await EmployeeManagement.findOneAndUpdate(
-      { cognitoId: request.params.cognitoId }, // Use cognitoId to find the employee
-      { trainingIds: trainingIds }, // Use $addToSet to avoid duplicates
-      { new: true, useFindAndModify: false } // Return the updated document
-    );
-
-    if (!updatedEmployee) {
-      return response.status(404).json({ message: 'Employee not found' });
-    }
-
-    response.status(200).json(updatedEmployee);
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    response.status(500).json({ message: 'Error updating training IDs', error });
-  }
-}
-
-
-export async function findEmployeesByTrainingId(
-  request: Request<{ trainingId: string }, {}, {}>,
-  response: Response
-): Promise<any> {
-  const { trainingId } = request.params; // Extract the training ID from the request parameters
-  console.log(trainingId);
-
-  try {
-
-    // Find all employees whose trainingIds array contains the specified trainingId
-    const employees = await EmployeeManagement.find({ trainingIds: { $in: [trainingId] } });
-
-    if (employees.length === 0) {
-      return response.status(404).json({ message: 'No employees found with the specified training ID' });
-    }
-
-    // Return the found employees
-    response.status(200).json(employees);
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    response.status(500).json({ message: 'Error retrieving employees', error });
-  }
-}
