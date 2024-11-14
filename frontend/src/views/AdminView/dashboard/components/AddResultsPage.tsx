@@ -50,6 +50,8 @@ const AddResultsPage: React.FC = () => {
     const fetchTrainers = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
+        console.log(response.data.cognitoId);
+        
         setTrainers(response.data);
       } catch (error) {
         console.error('Error fetching trainers:', error);

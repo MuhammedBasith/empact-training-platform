@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse, Paper } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../../../context/UserContext'
@@ -36,6 +36,7 @@ const ManagerInsights = () => {
     const { user } = useUserContext();
 
 
+
     useEffect(() => {
         const fetchTrainingDetails = async () => {
             try {
@@ -50,7 +51,24 @@ const ManagerInsights = () => {
                     setTrainingRequirements([]);
                 }
             } catch (error) {
-                console.error('Error fetching training details:', error);
+                if (error instanceof AxiosError) {
+                    // Check if the error has a response (i.e., a 404 or other HTTP error)
+                    if (error.response) {
+                        console.error(`HTTP Error: ${error.response.status}`, error.response.data);
+                        if (error.response.status === 404) {
+                            console.log("Please add a requirement.");
+                            
+                        }
+                    } else {
+                        // If there's no response, it might be a network error or timeout
+                        console.error('Network or other error:', error.message);
+                    }
+                } else {
+                    // For non-Axios errors (if they occur)
+                    console.error('Unexpected error:', error);
+                }
+
+                // Set the state to empty array on error
                 setTrainingRequirements([]);
             } finally {
                 setLoading(false);
@@ -93,13 +111,13 @@ const ManagerInsights = () => {
 
                 <Box sx={{ display: 'flex', mt: '20px', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
 
-                <button
+                    <button
 
-                    className="btn group mb-7 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-7 sm:w-auto"
-                    onClick={handleAddTraining}
-                >
-                    Add Training Requirement
-                </button>
+                        className="btn group mb-7 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-7 sm:w-auto"
+                        onClick={handleAddTraining}
+                    >
+                        Add Training Requirement
+                    </button>
                 </Box>
             </Paper>
         );
