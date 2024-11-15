@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse, Paper } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useUserContext } from '../../../../context/UserContext'
+import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse, Paper, IconButton } from '@mui/material';
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../../../context/UserContext';
 
 interface Trainer {
     trainerId: string;
@@ -15,9 +16,9 @@ interface BatchDetail {
     batchId: string;
     batchNumber: number;
     duration: string;
-    employeeCount: number;
+    count: number;
     range: string;
-    trainer: Trainer | null;
+    trainerDetails: Trainer | null;
 }
 
 interface TrainingRequirement {
@@ -28,14 +29,11 @@ interface TrainingRequirement {
 }
 
 const ManagerInsights = () => {
-    const { cognitoId } = useParams(); // Get the cognitoId from the URL params
+    const { user } = useUserContext(); // Get the manager's info from the context
     const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
     const navigate = useNavigate();
-    const { user } = useUserContext();
-
-
 
     useEffect(() => {
         const fetchTrainingDetails = async () => {
@@ -45,30 +43,18 @@ const ManagerInsights = () => {
                 );
 
                 if (response.data.success) {
-                    console.log(response.data);
                     setTrainingRequirements(response.data.data);
                 } else {
                     setTrainingRequirements([]);
                 }
             } catch (error) {
                 if (error instanceof AxiosError) {
-                    // Check if the error has a response (i.e., a 404 or other HTTP error)
                     if (error.response) {
                         console.error(`HTTP Error: ${error.response.status}`, error.response.data);
-                        if (error.response.status === 404) {
-                            console.log("Please add a requirement.");
-                            
-                        }
                     } else {
-                        // If there's no response, it might be a network error or timeout
                         console.error('Network or other error:', error.message);
                     }
-                } else {
-                    // For non-Axios errors (if they occur)
-                    console.error('Unexpected error:', error);
                 }
-
-                // Set the state to empty array on error
                 setTrainingRequirements([]);
             } finally {
                 setLoading(false);
@@ -76,7 +62,7 @@ const ManagerInsights = () => {
         };
 
         fetchTrainingDetails();
-    }, [cognitoId]);
+    }, [user?.cognitoID]);
 
     const handleRowToggle = (trainingId: string) => {
         const newExpandedRows = new Set(expandedRows);
@@ -89,11 +75,10 @@ const ManagerInsights = () => {
     };
 
     const handleShowEmployees = (trainingId: string, batchId: string) => {
-        navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}`);
+        navigate(`/dashboard/manager/trainings/${user?.cognitoID}/${trainingId}/${batchId}`);
     };
 
     const handleAddTraining = () => {
-        // Navigate to the "Add Training" page
         navigate('/dashboard/manager/trainings/add');
     };
 
@@ -108,11 +93,8 @@ const ManagerInsights = () => {
     if (trainingRequirements.length === 0) {
         return (
             <Paper elevation={3} sx={{ p: 3, margin: '20px auto', textAlign: 'center' }}>
-
                 <Box sx={{ display: 'flex', mt: '20px', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-
                     <button
-
                         className="btn group mb-7 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-7 sm:w-auto"
                         onClick={handleAddTraining}
                     >
@@ -125,63 +107,75 @@ const ManagerInsights = () => {
 
     return (
         <Paper elevation={3} sx={{ p: 3, margin: '20px auto', textAlign: 'center' }}>
-
             <Box sx={{ mt: 2 }}>
-
                 {/* Add Training Button */}
                 <button
-
                     className="btn group mb-7 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-7 sm:w-auto"
                     onClick={handleAddTraining}
                 >
                     Add Training Requirement
                 </button>
 
-                <Table sx={{ marginTop: 2 }}>
-                    <TableHead>
+                <Table sx={{ marginTop: 2, border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell>Training Name</TableCell>
-                            <TableCell>No. of Employees</TableCell>
-                            <TableCell>Trainer Name</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Training Name</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>No. of Employees</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {trainingRequirements.map((training) => {
                             const hasBatchDetails = training.batchDetails && training.batchDetails.length > 0;
                             const totalEmployees = hasBatchDetails
-                                ? training.batchDetails?.reduce((sum, batch) => sum + batch.employeeCount, 0)
-                                : training.batchDetails?.[0]?.employeeCount || 0;
+                                ? training.batchDetails?.reduce((sum, batch) => sum + batch.count, 0)
+                                : 0;
 
                             return (
                                 <React.Fragment key={training._id}>
-                                    <TableRow hover onClick={() => handleRowToggle(training._id)} sx={{ cursor: 'pointer' }}>
-                                        <TableCell>{training.trainingName}</TableCell>
-                                        <TableCell>{totalEmployees}</TableCell>
-                                        <TableCell>{training.trainer ? training.trainer.name : 'Trainer not assigned'}</TableCell>
+                                    <TableRow hover sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f0f0f0' } }}>
+                                        <TableCell sx={{ border: '1px solid #ddd' }}>{training.trainingName}</TableCell>
+                                        <TableCell sx={{ border: '1px solid #ddd' }}>{totalEmployees}</TableCell>
+                                        <TableCell sx={{ border: '1px solid #ddd' }}>
+                                            {hasBatchDetails ? (
+                                                <IconButton
+                                                    onClick={() => handleRowToggle(training._id)}
+                                                    aria-expanded={expandedRows.has(training._id)}
+                                                >
+                                                    {expandedRows.has(training._id) ? <ExpandLess /> : <ExpandMore />}
+                                                </IconButton>
+                                            ) : (
+                                                <Typography variant="body2" color="textSecondary">
+                                                    Batches not created
+                                                </Typography>
+                                            )}
+                                        </TableCell>
                                     </TableRow>
 
                                     {hasBatchDetails && (
                                         <TableRow>
-                                            <TableCell colSpan={3}>
+                                            <TableCell colSpan={3} sx={{ padding: 0 }}>
                                                 <Collapse in={expandedRows.has(training._id)} timeout="auto" unmountOnExit>
-                                                    <Table sx={{ marginTop: 2 }}>
-                                                        <TableHead>
+                                                    <Table sx={{ marginTop: 2, borderTop: '1px solid #ddd' }}>
+                                                        <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                                                             <TableRow>
-                                                                <TableCell>Batch Number</TableCell>
-                                                                <TableCell>Duration</TableCell>
-                                                                <TableCell>Employee Count</TableCell>
-                                                                <TableCell>Trainer</TableCell>
-                                                                <TableCell>Actions</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Batch Number</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Duration</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Employee Count</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Trainer</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', border: '1px solid #ddd' }}>Actions</TableCell>
                                                             </TableRow>
                                                         </TableHead>
                                                         <TableBody>
                                                             {training.batchDetails?.map((batch) => (
                                                                 <TableRow key={batch.batchId}>
-                                                                    <TableCell>{batch.batchNumber}</TableCell>
-                                                                    <TableCell>{batch.duration}</TableCell>
-                                                                    <TableCell>{batch.employeeCount}</TableCell>
-                                                                    <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
-                                                                    <TableCell>
+                                                                    <TableCell sx={{ border: '1px solid #ddd' }}>{batch.batchNumber}</TableCell>
+                                                                    <TableCell sx={{ border: '1px solid #ddd' }}>{batch.duration}</TableCell>
+                                                                    <TableCell sx={{ border: '1px solid #ddd' }}>{batch.count}</TableCell>
+                                                                    <TableCell sx={{ border: '1px solid #ddd' }}>
+                                                                        {batch.trainerDetails ? batch.trainerDetails.name : 'Trainer not assigned'}
+                                                                    </TableCell>
+                                                                    <TableCell sx={{ border: '1px solid #ddd' }}>
                                                                         <Button
                                                                             variant="outlined"
                                                                             color="primary"
@@ -204,7 +198,6 @@ const ManagerInsights = () => {
                     </TableBody>
                 </Table>
             </Box>
-
         </Paper>
     );
 };
