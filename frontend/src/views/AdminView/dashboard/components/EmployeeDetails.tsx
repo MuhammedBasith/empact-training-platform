@@ -82,7 +82,8 @@ const EmployeeDetails = () => {
   }
 
   // Function to handle the "Show Progress" button click
-  const handleShowProgress = (cognitoId: string) => {
+  const handleShowProgress = (cognitoId: string, empName: string) => {
+    localStorage.setItem("empName", empName)
     navigate(`/dashboard/admin/managers/${id}/${trainingId}/${batchId}/progress/${cognitoId}`);
   };
 
@@ -118,7 +119,7 @@ const EmployeeDetails = () => {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleShowProgress(employee.cognitoId)}
+                    onClick={() => handleShowProgress(employee.cognitoId, employee.empName)}
                   >
                     Show Progress
                   </Button>

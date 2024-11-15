@@ -7,7 +7,7 @@ interface Progress {
   feedback: string;
   progress: number;
   status: string;
-  startedAt: string;
+  createdAt: string;
   completedAt: string;
   trainerName: string;
 }
@@ -117,7 +117,7 @@ const ProgressDetails = () => {
 
       {/* Employee Progress Section */}
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
-        Employee Progress for {employee?.name}
+        Employee Progress for {localStorage.getItem("empName")}
       </Typography>
 
       {progress.length === 0 ? (
@@ -136,10 +136,7 @@ const ProgressDetails = () => {
                 Progress: {item.progress}% - Status: {item.status}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Started at: {new Date(item.startedAt).toLocaleString()}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Completed at: {item.completedAt ? new Date(item.completedAt).toLocaleString() : 'N/A'}
+                Given at: {new Date(item.createdAt).toLocaleString()}
               </Typography>
             </CardContent>
           </Card>
