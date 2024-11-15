@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MultiStepLoader as Loader } from "../../../../../src/components/ui/multi-step-loader";
 import { Button, Typography, Box, Paper, CircularProgress, Table, TableHead, TableRow, TableCell, TableBody, TextField, Select, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { UploadFile, DownloadForOffline } from '@mui/icons-material';
 import readXlsxFile from 'read-excel-file';
@@ -21,7 +22,7 @@ interface Cutoff {
   count: number;
   duration: number | null;
   cognitoId: string | null;
-  skills: string; 
+  skills: string;
   employees: Employee[];
 }
 
@@ -30,7 +31,7 @@ interface Trainer {
   name: string;
   email: string;
   bio: string;
-  expertise: string[]; 
+  expertise: string[];
   cognitoId: string;
 }
 
@@ -44,6 +45,9 @@ const AddResultsPage: React.FC = () => {
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingStates, setLoadingStates] = useState<{ text: string }[]>([]);  // To track the loading state
+  const [progress, setProgress] = useState<number>(0);  // To track overall progress
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -51,7 +55,7 @@ const AddResultsPage: React.FC = () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainers`);
         console.log(response.data);
-        
+
         setTrainers(response.data);
       } catch (error) {
         console.error('Error fetching trainers:', error);
@@ -134,10 +138,12 @@ const AddResultsPage: React.FC = () => {
 
   const confirmAndSendData = async () => {
     setDialogOpen(false);
+    setLoading(true);  // Start loading
 
     // Step 1: Create employee accounts in Cognito
-    const updatedEmployees = await Promise.all(employees.map(async (employee) => {
+    const updatedEmployees = await Promise.all(employees.map(async (employee, index) => {
       try {
+        setLoadingStates([{ text: `Processing Employee ${employee.name}: Creating Account in Cognito` }]);
         const cognitoResponse = await axios.post(
           `${import.meta.env.VITE_APP_AUTHENTICATION_MICROSERVICE_BACKEND}/api/auth/create-account`,
           {
@@ -145,11 +151,17 @@ const AddResultsPage: React.FC = () => {
             email: employee.email
           }
         );
-        console.log(cognitoResponse.status);
-        
+
         if (cognitoResponse.status === 200) {
           employee.cognitoId = cognitoResponse.data.cognitoId;
-          // Step 6: Create employee management entry for each employee
+
+          // After creating the account, update progress and display the next step
+          setProgress(((index + 1) / employees.length) * 100);  // Update progress
+          setLoadingStates([{
+            text: `Employee ${index + 1}, ${employee.name}, created successfully in Cognito!`
+          }]);
+
+          // Step 2: Create employee management entry for each employee
           const employeeManagementData = {
             cognitoId: employee.cognitoId,
             empName: employee.name,
@@ -158,24 +170,20 @@ const AddResultsPage: React.FC = () => {
             empSkills: employee.skills,
             department: employee.department,
           };
-          console.log(employeeManagementData);
-          
 
-          try {
-            const employeeManagementResponse = await axios.post(
-              `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/employee-management`,
-              employeeManagementData
-            );
-            if (employeeManagementResponse.status === 201) {
-              console.log(`Employee ${employee.name} added to employee management.`);
-            }
-          } catch (err) {
-            console.error(`Error creating entry for employee ${employee.name} in Employee Management service:`, err);
+          const employeeManagementResponse = await axios.post(
+            `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/employee-management`,
+            employeeManagementData
+          );
+
+          if (employeeManagementResponse.status === 201) {
+            console.log(`Employee ${employee.name} added to employee management.`);
           }
         }
+
         return employee;
       } catch (err) {
-        console.error(`Error creating account for ${employee.name}:`, err);
+        console.log(err);
         return null;
       }
     }));
@@ -192,61 +200,55 @@ const AddResultsPage: React.FC = () => {
       })),
     };
 
-    console.log(dataToSend);
-    
-
-    // Step 3: Send batch data to the batch management service
     try {
+      setLoadingStates([{ text: `Creating batches based on employee data...` }]);
+
       const batchManagementResponse = await axios.post(
         `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management`,
         dataToSend
       );
       const batchIds = batchManagementResponse.data.data.map((batch: { _id: string }) => batch._id);
-      console.log(batchIds)
 
-      // Step 4: Update the training requirement with batch IDs
+      setProgress(100); // Set progress to 100% after batches are created
+
+      // Step 3: Update the training requirement with batch IDs
       const updateData = { batchIds };
       await axios.put(
         `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/updateBatchIds/${trainingId}`,
         updateData
       );
 
-      // Step 5: Update trainer information in the trainer microservice
+      // Step 4: Update trainer information in the trainer microservice
       await Promise.all(cutoffs.map(async (cutoff) => {
         if (cutoff.cognitoId) {
-          try {
-            const trainerUpdateData = {
-              trainingIds: [trainingId], // Add the training ID to the trainer's trainingIds array
-              batchIDs: batchIds, // Add the batch IDs to the trainer's batchIDs array
-            };
+          const trainerUpdateData = {
+            trainingIds: [trainingId],
+            batchIDs: batchIds,
+          };
 
-            // Find the trainer using the cognitoId associated with this cutoff
-            const trainer = trainers.find((trainer) => trainer.cognitoId === cutoff.cognitoId);
+          const trainer = trainers.find((trainer) => trainer.cognitoId === cutoff.cognitoId);
+          if (trainer) {
+            const trainerResponse = await axios.put(
+              `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainer/${trainer.cognitoId}`,
+              trainerUpdateData
+            );
 
-            if (trainer) {
-              const trainerResponse = await axios.put(
-                `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainer/${trainer.cognitoId}`,
-                trainerUpdateData
-              );
-
-              if (trainerResponse.status === 200) {
-                console.log(`Trainer ${trainer.name} updated successfully.`);
-              }
+            if (trainerResponse.status === 200) {
+              console.log(`Trainer ${trainer.name} updated successfully.`);
             }
-          } catch (err) {
-            console.error(`Error updating trainer for batch range ${cutoff.range}:`, err);
           }
         }
       }));
 
-
       // After all updates, navigate to the manager dashboard or desired page
       navigate(`/dashboard/admin/managers/`);
-
     } catch (error) {
-      console.error('Error sending batch data or updating training requirement:', error);
+      console.error('Error during batch creation:', error);
+    } finally {
+      setLoading(false);
     }
   };
+
 
 
 
@@ -278,6 +280,10 @@ const AddResultsPage: React.FC = () => {
 
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 900, margin: '20px auto', textAlign: 'center' }}>
+      {loading && (
+        <Loader loadingStates={loadingStates} loading={loading} duration={2000} />
+      )}
+
       {!file ? (
         <Box>
           <Typography variant="h6">Upload Employee Data</Typography>
