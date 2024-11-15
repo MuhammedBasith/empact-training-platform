@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Box, Typography, Card, CardContent, CircularProgress, Button } from '@mui/material';
+import { Paper } from "@mui/material";
+
 
 interface Progress {
   feedback: string;
@@ -42,9 +44,9 @@ const ProgressDetails = () => {
         const progressResponse = await axios.get<ProgressDetailsResponse>(
           `${import.meta.env.VITE_APP_TRAINING_PROGRESS_MICROSERVICE}/api/v1/training-progress/${trainingId}/${cognitoId}`
         );
-        
+
         console.log('Fetched progress data:', progressResponse.data);
-        
+
         if (Array.isArray(progressResponse.data)) {
           // Filter out items with null or invalid createdAt, and sort by createdAt
           const sortedProgress = progressResponse.data
@@ -71,7 +73,7 @@ const ProgressDetails = () => {
       setError('Missing trainingId or cognitoId.');
       setLoading(false);
     }
-  }, [trainingId, cognitoId]); 
+  }, [trainingId, cognitoId]);
 
 
 
@@ -93,56 +95,60 @@ const ProgressDetails = () => {
   }
 
   return (
-    <Box sx={{ mt: 2, maxWidth: '800px', margin: 'auto' }}>
-      {/* Employee Information Section */}
-      {employee && (
-        <Card sx={{ marginBottom: 2 }}>
-          <CardContent>
-            <Typography variant="h5">{employee.name}</Typography>
-            <Typography variant="body1" color="text.secondary">
-              Email: {employee.email}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Project: {employee.project}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Skills: {employee.skills}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Department: {employee.department}
-            </Typography>
-          </CardContent>
-        </Card>
-      )}
+    <Paper elevation={3} sx={{ p: 3, margin: '20px auto' }}>
 
-      {/* Employee Progress Section */}
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
-        Employee Progress for {localStorage.getItem("empName")}
-      </Typography>
-
-      {progress.length === 0 ? (
-        <Typography variant="body1" color="text.secondary">
-          No progress feedback available.
-        </Typography>
-      ) : (
-        progress.map((item, index) => (
-          <Card key={index} sx={{ marginTop: 2 }}>
+      <Box sx={{ mt: 2, maxWidth: '800px', margin: 'auto' }}>
+        {/* Employee Information Section */}
+        {employee && (
+          <Card sx={{ marginBottom: 2 }}>
             <CardContent>
-              <Typography variant="h6">Feedback from Trainer: {item.trainerName}</Typography>
+              <Typography variant="h5">{employee.name}</Typography>
               <Typography variant="body1" color="text.secondary">
-                {item.feedback}
+                Email: {employee.email}
               </Typography>
-              <Typography variant="body1" color="primary">
-                Progress: {item.progress}% - Status: {item.status}
+              <Typography variant="body1" color="text.secondary">
+                Project: {employee.project}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Given at: {new Date(item.createdAt).toLocaleString()}
+              <Typography variant="body1" color="text.secondary">
+                Skills: {employee.skills}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Department: {employee.department}
               </Typography>
             </CardContent>
           </Card>
-        ))
-      )}
-    </Box>
+        )}
+
+        {/* Employee Progress Section */}
+        <Typography variant="h6" sx={{ marginBottom: 2 }}>
+          Employee Progress for {localStorage.getItem("empName")}
+        </Typography>
+
+        {progress.length === 0 ? (
+          <Typography variant="body1" color="text.secondary">
+            No progress feedback available.
+          </Typography>
+        ) : (
+          progress.map((item, index) => (
+            <Card key={index} sx={{ marginTop: 2 }}>
+              <CardContent>
+                <Typography variant="h6">Feedback from Trainer: {item.trainerName}</Typography>
+                <Typography variant="body1" color="text.secondary">
+                  {item.feedback}
+                </Typography>
+                <Typography variant="body1" color="primary">
+                  Progress: {item.progress}% - Status: {item.status}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Given at: {new Date(item.createdAt).toLocaleString()}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </Box>
+
+    </ Paper>
   );
 };
 

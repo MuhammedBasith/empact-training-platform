@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress, Paper } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 
+// Define the employee interface based on the expected response structure
 interface Employee {
   cognitoId: string;
   name: string;
-}
-
-interface EmployeeDetailsResponse {
-  success: boolean;
-  data: Employee[];
+  empName: string
+  empEmail: string
 }
 
 const EmployeeDetailsForManagers = () => {
-  const { cognitoId, trainingId, batchId } = useParams(); // Get the necessary parameters from the URL
+  const { cognitoId, trainingId, batchId } = useParams<{ cognitoId: string; trainingId: string; batchId: string }>(); 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,16 +21,15 @@ const EmployeeDetailsForManagers = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        // URL to fetch employee data based on trainingId and batchId
-        let url = `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/employee-management/emp/${trainingId}`;
-        if (batchId) {
-          url = `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management/getEmployeesForBatch/${batchId}`;
-        }
+        // Construct the URL to fetch employee data based on the trainingId and batchId
+        const url = `${import.meta.env.VITE_APP_BATCH_MANAGEMENT_MICROSERVICE}/api/v1/batch-management/getEmployeesForBatch/${batchId}`;
 
-        const response = await axios.get<EmployeeDetailsResponse>(url);
+        const response = await axios.get(url);
+        console.log(response.data, response.status);
+        
 
-        if (response.data.success) {
-          setEmployees(response.data.data);
+        if (response.status === 200) {
+          setEmployees(response.data);
         } else {
           setError('Failed to fetch employee data.');
         }
@@ -43,6 +40,7 @@ const EmployeeDetailsForManagers = () => {
       }
     };
 
+    // Fetch employees on component mount or when batchId or trainingId changes
     fetchEmployees();
   }, [trainingId, batchId]);
 
@@ -55,7 +53,7 @@ const EmployeeDetailsForManagers = () => {
     );
   }
 
-  // Show error message if there's an issue
+  // Show error message if there's an issue fetching the data
   if (error) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
@@ -69,54 +67,42 @@ const EmployeeDetailsForManagers = () => {
     navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}/progress`);
   };
 
-  // Navigate to the Add Employees page
-  const handleAddEmployees = () => {
-    navigate(`/dashboard/manager/trainings/${cognitoId}/${trainingId}/${batchId}/add-employees`);
-  };
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="h6">Employee Details for Training {trainingId} - Batch {batchId}</Typography>
-
-      {/* Global "Add Employees" button */}
-      <Box sx={{ mt: 2, mb: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddEmployees}
-        >
-          Add Employees to This Training
-        </Button>
-      </Box>
-
-      <Table sx={{ marginTop: 2 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Index</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {employees.map((employee, index) => (
-            <TableRow key={employee.cognitoId}>
-              {/* Add the index as the first column */}
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{employee.name}</TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => handleShowProgress(employee.cognitoId)}
-                >
-                  Show Progress
-                </Button>
-              </TableCell>
+    <Paper elevation={3} sx={{ p: 3, margin: '20px auto' }}>
+      <Box sx={{ mt: 2 }}>
+        {/* Employees Table */}
+        <Table sx={{ marginTop: 2 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Index</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
+          </TableHead>
+          <TableBody>
+            {employees.map((employee, index) => (
+              <TableRow key={employee.cognitoId}>
+                {/* Add the index as the first column */}
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{employee.empName}</TableCell>
+                <TableCell>{employee.empEmail}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleShowProgress(employee.cognitoId)}
+                  >
+                    Show Progress
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+    </Paper>
   );
 };
 

@@ -13,7 +13,7 @@ interface Trainer {
 }
 
 interface BatchDetail {
-    batchId: string;
+    _id: string;
     batchNumber: number;
     duration: string;
     count: number;
@@ -27,6 +27,7 @@ interface TrainingRequirement {
     trainer: Trainer | null;
     batchDetails: BatchDetail[] | null;
 }
+
 
 const ManagerInsights = () => {
     const { user } = useUserContext(); // Get the manager's info from the context
@@ -168,7 +169,7 @@ const ManagerInsights = () => {
                                                         </TableHead>
                                                         <TableBody>
                                                             {training.batchDetails?.map((batch) => (
-                                                                <TableRow key={batch.batchId}>
+                                                                <TableRow key={batch._id}>
                                                                     <TableCell sx={{ border: '1px solid #ddd' }}>{batch.batchNumber}</TableCell>
                                                                     <TableCell sx={{ border: '1px solid #ddd' }}>{batch.duration}</TableCell>
                                                                     <TableCell sx={{ border: '1px solid #ddd' }}>{batch.count}</TableCell>
@@ -179,7 +180,7 @@ const ManagerInsights = () => {
                                                                         <Button
                                                                             variant="outlined"
                                                                             color="primary"
-                                                                            onClick={() => handleShowEmployees(training._id, batch.batchId)}
+                                                                            onClick={() => handleShowEmployees(training._id, batch._id)}
                                                                         >
                                                                             Show Employees
                                                                         </Button>
