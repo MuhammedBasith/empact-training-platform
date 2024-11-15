@@ -227,6 +227,8 @@ const AddResultsPage: React.FC = () => {
           };
 
           const trainer = trainers.find((trainer) => trainer.cognitoId === cutoff.cognitoId);
+          console.log('trainer ', trainer);
+          
           if (trainer) {
             const trainerResponse = await axios.put(
               `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/trainer/${trainer.cognitoId}`,

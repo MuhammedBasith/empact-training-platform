@@ -20,14 +20,16 @@ const TrainersEngagementData = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>(''); // For error handling
     const navigate = useNavigate();
-    const { user } = useUserContext(); // Get user context
+    const { user } = useUserContext();
+    console.log(user?.cognitoID);
+    
 
     useEffect(() => {
         // Fetch assigned trainings for the trainer
         const fetchAssignedTrainings = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/getTrainingsAllocatedForATrainer/${user.cognitoID}`
+                    `${import.meta.env.VITE_APP_TRAINER_MICROSERVICES_URL}/api/v1/trainer-management/getTrainingsAllocatedForATrainer/${user?.cognitoID}`
                 );
                 console.log(response.data);
 
@@ -48,7 +50,7 @@ const TrainersEngagementData = () => {
         };
 
         fetchAssignedTrainings();
-    }, [user.cognitoID]);
+    }, [user?.cognitoID]);
 
     const handleViewDetailsClick = (trainingId: string) => {
         // Navigate to the details page of the selected training

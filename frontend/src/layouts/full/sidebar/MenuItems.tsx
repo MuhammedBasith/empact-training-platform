@@ -65,7 +65,7 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Team Performance',
     icon: IconUser,
-    href: '/dashboard/manager/team-performance',
+    href: '/dashboard/manager/trainings',
     roles: ['manager']
   },
   {
@@ -91,7 +91,7 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Training Schedule',
     icon: IconCalendarClock,
-    href: '/trainer/schedule',
+    href: '/dashboard/trainer/trainings',
     roles: ['trainer']
   },
   {

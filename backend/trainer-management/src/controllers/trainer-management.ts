@@ -74,7 +74,6 @@ export async function getTrainerById(
 }
 
 
-
 export async function updateTrainer(
     request: Request<{ cognitoId: string }, ITrainer, Partial<Omit<ITrainer, '_id' | 'createdAt' | 'updatedAt'>>>,
     response: Response<ITrainer | { message: string; error?: string }>
@@ -83,20 +82,41 @@ export async function updateTrainer(
     const updateData = request.body; // Get the update data from the request body
 
     try {
-        const trainer = await TrainerManagement.findOneAndUpdate({ cognitoId }, updateData, {
-            new: true, // Return the updated document
-            runValidators: true // Run schema validations
-        });
+        // Fetch the trainer from the database
+        const trainer = await TrainerManagement.findOne({ cognitoId });
 
+        // If the trainer doesn't exist, return a 404 response
         if (!trainer) {
             return response.status(404).json({ message: 'Trainer not found' });
         }
-        return response.status(200).json(trainer); // Respond with the updated trainer
+
+        // Add the new trainingIds and batchIDs to the existing lists without duplicates
+        if (updateData.trainingIds) {
+            trainer.trainingIds = [
+                ...new Set([...trainer.trainingIds, ...updateData.trainingIds])
+            ];
+        }
+
+        if (updateData.batchIDs) {
+            trainer.batchIDs = [
+                ...new Set([...trainer.batchIDs, ...updateData.batchIDs])
+            ];
+        }
+
+
+        // Save the trainer document, using versioning control
+        await trainer.save();
+
+        // Return the updated trainer document
+        return response.status(200).json(trainer);
+
     } catch (error) {
         console.error(error);
         return response.status(500).json({ message: 'Error updating trainer', error });
     }
 }
+
+
 
 export async function deleteTrainer(
     request: Request<{ id: string }>,
