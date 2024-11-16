@@ -23,6 +23,7 @@ const EmployeeDetailsForManagers = Loadable(lazy(() => import('../views/ManagerV
 const AddEmployees = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/AddEmployees')));
 const TrainingDetails = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/TrainingDetails')));
 const TrainersEngagementData = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/TrainersEngagementData')));
+const EmployeeDetailsForTrainer = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/EmployeeDetails')));
 
 
 
@@ -60,6 +61,8 @@ const DashboardRoutes = (role: string | undefined) => [
       // Traine Route 
       { path: 'trainer/trainings', element: role === 'trainer' ? <TrainersEngagementData /> : <Navigate to="/404" /> },
       { path: 'trainer/trainings/:trainingId', element: role === 'trainer' ? <TrainingDetails /> : <Navigate to="/404" /> },
+      { path: 'trainer/trainings/:trainingId/batch/:batchId', element: role === 'trainer' ? <EmployeeDetailsForTrainer /> : <Navigate to="/404" /> },
+      
       
 
 

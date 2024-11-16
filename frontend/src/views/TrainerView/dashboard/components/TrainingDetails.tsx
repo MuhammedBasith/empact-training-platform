@@ -78,7 +78,6 @@ const TrainingDetails = () => {
   };
 
   const handleShowEmployees = (batchId: string) => {
-    // Navigate to employee details page for this batch
     navigate(`/dashboard/trainer/trainings/${trainingId}/batch/${batchId}`);
   };
 
@@ -144,7 +143,7 @@ const TrainingDetails = () => {
                 <React.Fragment key={batch._id}>
                   <TableRow hover sx={{ cursor: 'pointer' }} onClick={() => handleRowToggle(training._id, batch._id)}>
                     <TableCell>{batch.batchNumber}</TableCell>
-                    <TableCell>{batch.duration}</TableCell>
+                    <TableCell>{batch.duration} Weeks</TableCell>
                     <TableCell>{batch.count}</TableCell>
                     <TableCell>{batch.trainerDetails?.name || 'Trainer not assigned'}</TableCell>
                     <TableCell>
@@ -167,7 +166,7 @@ const TrainingDetails = () => {
                               <strong>Trainer:</strong> {batch.trainerDetails?.name || 'Not Assigned'}
                             </Typography>
                             <Typography variant="body2">
-                              <strong>Duration:</strong> {batch.duration} hours
+                              <strong>Duration:</strong> {batch.duration} Weeks
                             </Typography>
                             <Typography variant="body2">
                               <strong>Employee Count:</strong> {batch.count}
