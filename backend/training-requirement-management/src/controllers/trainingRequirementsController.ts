@@ -375,53 +375,86 @@ export const getTrainingDetailsByIds = async (
 
 
 
-export const getTrainingDetailsWithBatches = async (req: Request<{trainingId: string, cognitoId: string}, {}, {}>,
-     res: Response<{success: boolean, message: string} | {success: boolean, data: any}>): Promise<any> => {
+export const getTrainingDetailsByTrainer = async (
+    req: Request<{ cognitoId: string }, {}, {}>,
+    res: Response<{ success: boolean, message: string } | { success: boolean, data: any }>
+): Promise<any> => {
     try {
-        const { trainingId, cognitoId } = req.params;
+        const { cognitoId } = req.params;
 
+        // Step 1: Fetch all training requirements where there are batchIds
+        const trainingRequirements = await TrainingRequirement.find({ batchIds: { $exists: true, $not: { $size: 0 } } }).exec();
+        console.log(trainingRequirements);
+        
 
-        // Fetch training requirement based on trainingId and cognitoId
-        const trainingRequirement = await TrainingRequirement.findOne({ _id: trainingId, cognitoId: cognitoId }).exec();
-        if (!trainingRequirement) {
-            return res.status(404).json({ success: false, message: 'Training not found' });
+        if (!trainingRequirements || trainingRequirements.length === 0) {
+            return res.status(404).json({ success: false, message: 'No training requirements found.' });
         }
 
-        // Call Batch microservice to get batches related to this training
-        const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/getBatchesByTrainingId/${trainingId}`);
+        // Step 2: Initialize an array to store the aggregated training and batch details
+        const result = [];
 
-        // Check for successful response from the Batch service
-        const batchDetails = batchResponse.data && batchResponse.data.success
-            ? batchResponse.data.data
-            : [];
+        // Step 3: Iterate through each training requirement and fetch the associated batch details
+        for (const training of trainingRequirements) {
+            const { _id, trainingName, batchIds } = training;
 
-        // Combine both training and batch data
-        const responseData = {
-            trainingName: trainingRequirement.trainingName,
-            department: trainingRequirement.department,
-            trainingType: trainingRequirement.trainingType,
-            duration: trainingRequirement.duration,
-            skillsToTrain: trainingRequirement.skills_to_train,
-            objectives: trainingRequirement.objectives,
-            prerequisite: trainingRequirement.prerequisite,
-            status: trainingRequirement.status,
-            batchDetails: batchDetails.map((batch: any) => ({
-                batchId: batch._id,
-                batchNumber: batch.batchNumber,
-                trainer: batch.trainerId || 'Not Assigned',
-                employeeCount: batch.count,
-                range: batch.range,
-                duration: batch.duration,
-            })),
-        };
+            // Step 3a: Fetch batch details from batch-management for all batchIds in the training
+            let batchDetails = null;
+            if (batchIds && batchIds.length > 0) {
+                try {
+                    // Send requests to the batch-management service for each batchId
+                    const batchResponses = await Promise.all(
+                        batchIds.map(async (batchId) => {
+                            try {
+                                // Fetch batch details for each batchId
+                                const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/${batchId}`);
+                                const batchData = batchResponse.data;
+                                console.log("***", batchData);
+                                
 
-        // Return the consolidated response
-        return res.json({
+                                // Check if the trainer for this batch matches the provided cognitoId
+                                if (batchData && batchData.trainerId === cognitoId) {
+                                    // Fetch trainer details for this batch
+                                    const batchTrainerResponse = await axios.get(
+                                        `http://localhost:3002/api/v1/trainer-management/trainers/getTrainerByCognitoId/${batchData.trainerId}`
+                                    );
+                                    batchData.trainerDetails = batchTrainerResponse.data;
+                                    return batchData;  // Return batch details only if the trainer matches
+                                }
+
+                                return null;  // Skip this batch if the trainer doesn't match
+                            } catch (error) {
+                                console.error(`Error fetching batch details for batchId: ${batchId}`, error);
+                                return null;
+                            }
+                        })
+                    );
+
+                    // Filter out any null results (batches where the trainer doesn't match or errors occurred)
+                    batchDetails = batchResponses.filter(batch => batch !== null);
+                } catch (error) {
+                    console.error('Error fetching batch details:', error);
+                }
+            }
+
+            // Step 4: If there are any batches assigned to the trainer, add to result
+            if (batchDetails && batchDetails.length > 0) {
+                result.push({
+                    _id,
+                    trainingName,
+                    batchDetails,  // Only include batches where the trainer is assigned
+                });
+            }
+        }
+
+        // Step 5: Return the aggregated result in the response
+        return res.status(200).json({
             success: true,
-            data: responseData
+            data: result,
         });
+
     } catch (error) {
-        console.error('Error fetching training details:', error);
-        return res.status(500).json({ success: false, message: 'An error occurred while fetching data' });
+        console.error('Error retrieving training details for trainer:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };

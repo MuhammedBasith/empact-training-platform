@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager, getTrainingDetailsByIds, getTrainingDetailsWithBatches } from '../controllers/trainingRequirementsController';
+import { createTrainingRequirement, getTrainingRequirement, getAllTrainingRequirements, updateEmployeeCount, deleteTrainingRequirement, confirmRequirement, updateBatchIds, getTrainingRequirements, getEmpCountById, getTrainingRequirementUnderAManager, getTrainingRequirementsByManager, getTrainingDetailsByIds, getTrainingDetailsByTrainer } from '../controllers/trainingRequirementsController';
 import { CreateTrainingRequirementDto, UpdateTrainingRequirementDto } from '../dtos/trainingRequirements.dto';
 import trainingRequirementModel from 'models/trainingRequirement.model';
 
@@ -11,7 +11,7 @@ router.get('/getTrainingRequirement/:cognitoId/:id', getTrainingRequirement); //
 router.get('/getEmpCountById/:id', getEmpCountById); // Get employee count by id
 router.get('/getTrainingRequirementsByManager/:id', getTrainingRequirementsByManager); // Get training requirements by manager id
 router.get('/getTrainingRequirementUnderAManager/:id', getTrainingRequirementUnderAManager); // Get training requirements under a manager by id
-router.get('/getTrainingDetails/:trainingId/:cognitoId', getTrainingDetailsWithBatches); // Get training details with batches by trainingId & cognitoId
+router.get('/getTrainingDetails/:trainingId/:cognitoId', getTrainingDetailsByTrainer); // Get training details with batches by trainingId & cognitoId
 router.post('/getTrainingDetailsByIds', getTrainingDetailsByIds); // Get training details by multiple ids
 
 // POST Routes (Create resources)

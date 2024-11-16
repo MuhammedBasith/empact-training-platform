@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse } from '@mui/material';
+import { Box, Typography, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow, Button, Collapse, MenuItem, Select, FormControl, InputLabel, TableSortLabel } from '@mui/material';
 import { useUserContext } from "../../../../context/UserContext"; 
 
 interface Trainer {
@@ -12,31 +12,32 @@ interface Trainer {
 }
 
 interface BatchDetail {
-  batchId: string;
+  _id: string;
   batchNumber: number;
   duration: string;
   employeeCount: number;
   range: string;
-  trainer: Trainer | null;
+  count: number;  // Employee count in the batch
+  trainerDetails: Trainer | null;
 }
 
 interface TrainingRequirement {
   _id: string;
   trainingName: string;
-  trainer: Trainer | null;
   batchDetails: BatchDetail[] | null;
 }
 
 interface ManagerDetailsResponse {
   success: boolean;
-  data: TrainingRequirement | null;
+  data: TrainingRequirement[];
 }
 
 const TrainingDetails = () => {
-  const [trainingRequirement, setTrainingRequirement] = useState<TrainingRequirement | null>(null);
+  const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set()); // Set to track expanded rows
   const [error, setError] = useState<string | null>(null);
+  const [selectedTraining, setSelectedTraining] = useState<string>(''); // State to manage selected training
 
   const { trainingId } = useParams();  // Get trainingId from path params
   const { user } = useUserContext(); // Get the user context to access cognitoId
@@ -47,11 +48,11 @@ const TrainingDetails = () => {
       try {
         // Fetch the training details by trainingId and trainer's cognitoId
         const response = await axios.get<ManagerDetailsResponse>(
-          `${import.meta.env.VITE_APP_EMPLOYEE_MANAGEMENT_MICROSERVICE}/api/v1/training-requirements/getTrainingDetails/${trainingId}/${user.cognitoID}`
+          `${import.meta.env.VITE_APP_TRAINING_REQUIREMENTS_MICROSERVICE_BACKEND}/api/v1/training-requirements/getTrainingDetails/${trainingId}/${user?.cognitoID}`
         );
 
         if (response.data.success && response.data.data) {
-          setTrainingRequirement(response.data.data);
+          setTrainingRequirements(response.data.data);
         } else {
           setError('Failed to fetch training details.');
         }
@@ -63,14 +64,15 @@ const TrainingDetails = () => {
     };
 
     fetchTrainingDetails();
-  }, [trainingId, user.cognitoID]);
+  }, [trainingId, user?.cognitoID]);
 
-  const handleRowToggle = (batchId: string) => {
+  const handleRowToggle = (trainingId: string, batchId: string) => {
     const newExpandedRows = new Set(expandedRows);
-    if (newExpandedRows.has(batchId)) {
-      newExpandedRows.delete(batchId);
+    const key = `${trainingId}-${batchId}`;
+    if (newExpandedRows.has(key)) {
+      newExpandedRows.delete(key);
     } else {
-      newExpandedRows.add(batchId);
+      newExpandedRows.add(key);
     }
     setExpandedRows(newExpandedRows);
   };
@@ -78,6 +80,10 @@ const TrainingDetails = () => {
   const handleShowEmployees = (batchId: string) => {
     // Navigate to employee details page for this batch
     navigate(`/dashboard/trainer/trainings/${trainingId}/batch/${batchId}`);
+  };
+
+  const handleTrainingChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedTraining(event.target.value as string);
   };
 
   if (loading) {
@@ -98,66 +104,85 @@ const TrainingDetails = () => {
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="h6">Training: {trainingRequirement?.trainingName}</Typography>
+      <Typography variant="h6">Training Details</Typography>
 
-      {trainingRequirement?.batchDetails && trainingRequirement.batchDetails.length > 0 ? (
-        <Table sx={{ marginTop: 2 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Batch Number</TableCell>
-              <TableCell>Duration</TableCell>
-              <TableCell>Employee Count</TableCell>
-              <TableCell>Trainer</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {trainingRequirement.batchDetails.map((batch) => (
-              <React.Fragment key={batch.batchId}>
-                <TableRow
-                  hover
-                  onClick={() => handleRowToggle(batch.batchId)} // Toggle on row click
-                  sx={{ cursor: 'pointer' }}
-                >
-                  <TableCell>{batch.batchNumber}</TableCell>
-                  <TableCell>{batch.duration}</TableCell>
-                  <TableCell>{batch.employeeCount}</TableCell>
-                  <TableCell>{batch.trainer ? batch.trainer.name : 'Trainer not assigned'}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => handleShowEmployees(batch.batchId)} 
-                    >
-                      Show Employees
-                    </Button>
-                  </TableCell>
-                </TableRow>
+      {/* Dropdown for Selecting Training */}
+      <FormControl sx={{ width: '200px', marginTop: 2 }}>
+        <InputLabel id="training-select-label">Select Training</InputLabel>
+        <Select
+          labelId="training-select-label"
+          value={selectedTraining}
+          label="Select Training"
+          onChange={handleTrainingChange}
+        >
+          {trainingRequirements.map((training) => (
+            <MenuItem key={training._id} value={training._id}>
+              {training.trainingName}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-                {/* Render batch details if expanded */}
-                <TableRow>
-                  <TableCell colSpan={5}>
-                    <Collapse in={expandedRows.has(batch.batchId)} timeout="auto" unmountOnExit>
-                      <Box sx={{ paddingLeft: 2 }}>
-                        <Typography variant="body2">
-                          <strong>Batch Range:</strong> {batch.range}
-                        </Typography>
-                        <Typography variant="body2">
-                          <strong>Trainer:</strong> {batch.trainer ? batch.trainer.name : 'Not Assigned'}
-                        </Typography>
-                      </Box>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
-      ) : (
-        <Typography variant="h6" color="textSecondary">
-          No batches available for this training.
-        </Typography>
-      )}
+      {/* Display Training Table */}
+      {trainingRequirements.filter(training => selectedTraining === '' || training._id === selectedTraining).map((training) => (
+        <Box key={training._id} sx={{ mt: 2 }}>
+          <Typography variant="h6">{training.trainingName}</Typography>
+
+          {/* Display Batch Details Table */}
+          <Table sx={{ marginTop: 2 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Batch Number</TableCell>
+                <TableCell>Duration</TableCell>
+                <TableCell>Employee Count</TableCell>
+                <TableCell>Trainer</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {training.batchDetails?.map((batch) => (
+                <React.Fragment key={batch._id}>
+                  <TableRow hover sx={{ cursor: 'pointer' }} onClick={() => handleRowToggle(training._id, batch._id)}>
+                    <TableCell>{batch.batchNumber}</TableCell>
+                    <TableCell>{batch.duration}</TableCell>
+                    <TableCell>{batch.count}</TableCell>
+                    <TableCell>{batch.trainerDetails?.name || 'Trainer not assigned'}</TableCell>
+                    <TableCell>
+                      <Button variant="outlined" color="primary" onClick={() => handleShowEmployees(batch._id)}>
+                        Show Employees
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+
+                  {/* Render expanded batch details */}
+                  {expandedRows.has(`${training._id}-${batch._id}`) && (
+                    <TableRow>
+                      <TableCell colSpan={5}>
+                        <Collapse in={expandedRows.has(`${training._id}-${batch._id}`)} timeout="auto" unmountOnExit>
+                          <Box sx={{ paddingLeft: 2 }}>
+                            <Typography variant="body2">
+                              <strong>Batch Range:</strong> {batch.range}
+                            </Typography>
+                            <Typography variant="body2">
+                              <strong>Trainer:</strong> {batch.trainerDetails?.name || 'Not Assigned'}
+                            </Typography>
+                            <Typography variant="body2">
+                              <strong>Duration:</strong> {batch.duration} hours
+                            </Typography>
+                            <Typography variant="body2">
+                              <strong>Employee Count:</strong> {batch.count}
+                            </Typography>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      ))}
     </Box>
   );
 };

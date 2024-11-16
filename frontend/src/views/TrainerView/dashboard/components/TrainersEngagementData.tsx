@@ -119,11 +119,7 @@ const TrainersEngagementData = () => {
                                     Duration
                                 </Typography>
                             </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600}>
-                                    No of Employees
-                                </Typography>
-                            </TableCell>
+
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
                                     Action
@@ -146,19 +142,14 @@ const TrainersEngagementData = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2" fontWeight={600}>
-                                        {Array.isArray(training.skillsToTrain)
-                                            ? training.skillsToTrain.join(', ') 
-                                            : training.skillsToTrain}
+                                        {Array.isArray(training.skills_to_train)
+                                            ? training.skills_to_train.join(', ') 
+                                            : training.skills_to_train}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2" fontWeight={600}>
-                                        {training.duration} hrs
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="subtitle2" fontWeight={600}>
-                                        {training.empCount}
+                                        {training.duration} Weeks
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
