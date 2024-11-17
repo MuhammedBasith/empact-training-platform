@@ -1,15 +1,14 @@
-// YOUR_BASE_DIRECTORY/netlify/functions/api.ts
-
 import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import { connectToDatabase } from '../../authentication/src/config/db.config';
 import authRoutes from './routes/auth.routes';
-import 'dotenv/config';
-import serverless from 'serverless-http';
+import 'dotenv/config'
+
 
 const app = express();
+const port = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet()); // For security headers
@@ -32,14 +31,16 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ message: 'An unexpected error occurred' });
 });
 
-// Connect to the database after the app has started
-connectToDatabase()
-  .then(() => {
-    console.log('Database connected successfully!')
-  })
-  .catch((error) => {
-    console.error('Failed to connect to the database:', error)
-  });
+// Start server and connect to the database
+const startServer = async () => {
+  try {
+    await connectToDatabase();
+    app.listen(port, () => {
+      console.log(Server is running on http://localhost:${port});
+    });
+  } catch (error) {
+    console.error('Failed to start the server:', error);
+  }
+};
 
-// Export the handler for Netlify
-export const handler = serverless(app);
+startServer();
