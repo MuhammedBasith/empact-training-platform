@@ -38,7 +38,7 @@ connectToDatabase()
     console.log('Database connected successfully!');
   })
   .catch((error) => {
-    console.error('Failed to connect to the database:', error);
+    console.error('Failed to connect to the database:', error)
   });
 
 // Export the handler for Netlify
