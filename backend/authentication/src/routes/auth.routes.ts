@@ -14,5 +14,9 @@ router.get('/:cognitoId',getUserDetails);
 router.get('/getUserCognitoId/:email',getUserCognitoId)
 router.post('/create-account', createAccountByAdmin)
 
+router.get('/hello', (req, res) => {
+    res.json({"message": "Alive!"})
+})
+
 
 export default router;
