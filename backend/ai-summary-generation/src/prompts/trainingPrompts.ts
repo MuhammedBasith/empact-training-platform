@@ -33,12 +33,11 @@ export const generateTrainingSummaryPrompt = (
 
 
 export const generateFeedbackSummaryPrompt = (feedbacks: string[]): string => {
-  const feedbackList = feedbacks.map((feedback, index) => `Feedback ${index + 1}: ${feedback}`).join("\n");
 
   return `
     Below are feedbacks provided by a trainer about an employee's performance in a training:
 
-    ${feedbackList}
+    ${feedbacks}
 
     Please generate a concise summary of the feedbacks, highlighting key points of progress, areas of improvement, and overall status of the employee's development.
   `;

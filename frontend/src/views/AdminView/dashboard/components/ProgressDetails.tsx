@@ -49,7 +49,7 @@ const ProgressDetails = () => {
 
         if (Array.isArray(progressResponse.data)) {
           // Filter out items with null or invalid createdAt, and sort by createdAt
-          const sortedProgress = progressResponse.data.data
+          const sortedProgress = progressResponse.data
             .filter((item) => item.createdAt) // Filter out items with null createdAt
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -76,15 +76,20 @@ const ProgressDetails = () => {
 
   const handleGenerateAiSummary = async () => {
     try {
-      setIsGeneratingSummary(true); // Set loading state to true
-      const feedbacks = progress.map((item) => item.feedback).join(' '); // Concatenate all feedbacks into one string
+      setIsGeneratingSummary(true);
+      const feedbacks = progress.map((item) => item.feedback).join(' '); 
+      console.log(feedbacks);
+      
 
       const response = await axios.post(
         `${import.meta.env.VITE_APP_AI_SUMMARY_GENERATION_MICROSERVICE}/api/v1/summaries/feedbackSummary`,
         { feedbacks }
       );
 
-      if (response.status === 200) {
+      console.log(response.data);
+      
+
+      if (response.status === 201) {
         setAiSummary(response.data.summary);
       } else {
         setAiSummary('Error generating summary');
@@ -165,7 +170,7 @@ const ProgressDetails = () => {
         )}
 
         {/* AI Summary Section */}
-        <Typography variant="h6" sx={{ marginTop: 4 }}>
+        <Typography variant="h6" sx={{ marginTop: 10, marginBottom: 4 }}>
           AI Generated Feedback Summary
         </Typography>
 

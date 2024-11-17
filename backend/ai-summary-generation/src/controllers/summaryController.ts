@@ -95,11 +95,7 @@ export const confirmSummary = async (req: Request<{ requirementId: string }, {},
 
 
 export const generateFeedbackSummary = async (req: Request, res: Response): Promise<any> => {
-  const { feedbacks } = req.body; // Expecting an array of feedback strings
-
-  if (!feedbacks || feedbacks.length === 0) {
-    return res.status(400).json({ error: 'No feedback provided' });
-  }
+  const { feedbacks } = req.body;
 
   try {
     // Step 1: Generate the prompt for AI based on the provided feedbacks
