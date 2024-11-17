@@ -35,7 +35,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Connect to the database after the app has started
 connectToDatabase()
   .then(() => {
-    console.log('Database connected successfully!');
+    console.log('Database connected successfully!')
   })
   .catch((error) => {
     console.error('Failed to connect to the database:', error)
