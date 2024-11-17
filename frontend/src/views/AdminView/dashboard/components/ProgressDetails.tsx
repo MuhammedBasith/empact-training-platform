@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Card, CardContent, CircularProgress, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, CircularProgress, Button, Skeleton } from '@mui/material';
 import { Paper } from "@mui/material";
-
 
 interface Progress {
   feedback: string;
   progress: number;
   status: string;
   createdAt: string;
-  completedAt: string;
   trainerName: string;
 }
 
@@ -33,6 +31,8 @@ const ProgressDetails = () => {
   const [progress, setProgress] = useState<Progress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const { id, trainingId, cognitoId } = useParams();
 
   useEffect(() => {
@@ -49,8 +49,8 @@ const ProgressDetails = () => {
 
         if (Array.isArray(progressResponse.data)) {
           // Filter out items with null or invalid createdAt, and sort by createdAt
-          const sortedProgress = progressResponse.data
-            .filter((item) => item.createdAt)  // Filter out items with null createdAt
+          const sortedProgress = progressResponse.data.data
+            .filter((item) => item.createdAt) // Filter out items with null createdAt
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
           setProgress(sortedProgress); // Set sorted progress
@@ -60,7 +60,6 @@ const ProgressDetails = () => {
 
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);  // Log full error details for debugging
         setError('An error occurred while fetching data.');
         setLoading(false);
       }
@@ -75,8 +74,27 @@ const ProgressDetails = () => {
     }
   }, [trainingId, cognitoId]);
 
+  const handleGenerateAiSummary = async () => {
+    try {
+      setIsGeneratingSummary(true); // Set loading state to true
+      const feedbacks = progress.map((item) => item.feedback).join(' '); // Concatenate all feedbacks into one string
 
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_AI_SUMMARY_GENERATION_MICROSERVICE}/api/v1/summaries/feedbackSummary`,
+        { feedbacks }
+      );
 
+      if (response.status === 200) {
+        setAiSummary(response.data.summary);
+      } else {
+        setAiSummary('Error generating summary');
+      }
+    } catch (error) {
+      setError('Error generating AI summary.');
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -96,7 +114,6 @@ const ProgressDetails = () => {
 
   return (
     <Paper elevation={3} sx={{ p: 3, margin: '20px auto' }}>
-
       <Box sx={{ mt: 2, maxWidth: '800px', margin: 'auto' }}>
         {/* Employee Information Section */}
         {employee && (
@@ -146,9 +163,32 @@ const ProgressDetails = () => {
             </Card>
           ))
         )}
-      </Box>
 
-    </ Paper>
+        {/* AI Summary Section */}
+        <Typography variant="h6" sx={{ marginTop: 4 }}>
+          AI Generated Feedback Summary
+        </Typography>
+
+        {/* Loading Skeleton or Animated UI */}
+        {isGeneratingSummary ? (
+          <Box sx={{ marginTop: 2, padding: 2, background: '#f5f5f5', borderRadius: 2 }}>
+            <Skeleton variant="text" width="100%" height={100} />
+            <Skeleton variant="text" width="80%" height={50} />
+            <Skeleton variant="text" width="60%" height={50} />
+          </Box>
+        ) : aiSummary ? (
+          <Card sx={{ marginTop: 2 }}>
+            <CardContent>
+              <Typography variant="body1">{aiSummary}</Typography>
+            </CardContent>
+          </Card>
+        ) : (
+          <Button variant="contained" color="primary" fullWidth onClick={handleGenerateAiSummary}>
+            Generate AI Summary
+          </Button>
+        )}
+      </Box>
+    </Paper>
   );
 };
 
