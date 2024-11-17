@@ -1,3 +1,4 @@
+import React from 'react';
 import Chart from 'react-apexcharts';
 import { useTheme } from '@mui/material/styles';
 import { Stack, Typography, Avatar, Fab } from '@mui/material';
@@ -5,13 +6,13 @@ import { IconArrowDownRight, IconCalendarMonth } from '@tabler/icons-react';
 import DashboardCard from '../../../../components/shared/DashboardCard';
 
 const MonthlyTrainingEngagement = () => {
-  // chart color
+  // Chart color
   const theme = useTheme();
   const secondary = theme.palette.secondary.main;
   const secondarylight = '#f5fcff';
   const errorlight = '#fdede8';
 
-  // chart
+  // Chart options for the training engagement sparkline (monthly training participation trend)
   const optionscolumnchart = {
     chart: {
       type: 'area',
@@ -42,19 +43,20 @@ const MonthlyTrainingEngagement = () => {
       theme: theme.palette.mode === 'dark' ? 'dark' : 'light',
     },
   };
+
   const seriescolumnchart = [
     {
-      name: '',
+      name: 'Employee Engagement',
       color: secondary,
-      data: [25, 66, 20, 40, 12, 58, 20],
+      data: [120, 150, 180, 200, 250, 300, 350], 
     },
   ];
 
   return (
     <DashboardCard
-      title="Monthly Training Engagement"
+      title="Monthly Employee Training Engagement"
       action={
-        <Fab color="secondary" size="medium" sx={{color: '#ffffff'}}>
+        <Fab color="secondary" size="medium" sx={{ color: '#ffffff' }}>
           <IconCalendarMonth width={24} />
         </Fab>
       }
@@ -64,17 +66,17 @@ const MonthlyTrainingEngagement = () => {
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">
-          6,820
+          3,450
         </Typography>
         <Stack direction="row" spacing={1} my={1} alignItems="center">
           <Avatar sx={{ bgcolor: errorlight, width: 27, height: 27 }}>
             <IconArrowDownRight width={20} color="#FA896B" />
           </Avatar>
           <Typography variant="subtitle2" fontWeight="600">
-            +9%
+            +8%
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            last year
+            compared to last year
           </Typography>
         </Stack>
       </>
