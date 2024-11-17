@@ -10,7 +10,7 @@ router.post('/verify', verifyController);
 router.get("/checkUserStatus", checkUserStatus);
 router.post('/confirm-new-password', confirmNewPasswordController)
 router.post('/signup', signUpController);
-router.get('/:cognitoId',getUserDetails);
+router.get('/:cognitoId',getUserDetails)
 router.get('/getUserCognitoId/:email',getUserCognitoId)
 router.post('/create-account', createAccountByAdmin)
 
