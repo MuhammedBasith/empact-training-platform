@@ -18,7 +18,7 @@ app.use('/api/auth', authRoutes);
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);
-  res.status(500).json({ message: 'An unexpected error occurred' });
+  res.status(500).json({ message: 'An unexpected error occurred' })
 });
 
 
