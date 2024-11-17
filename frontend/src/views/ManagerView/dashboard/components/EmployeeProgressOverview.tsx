@@ -84,7 +84,7 @@ const EmployeeProgressOverview = () => {
         },
         {
             name: 'L&D Expenses this month',
-            data: [280, 250, 325, 215, 250, 310, 280, 250],
+            data: [280, 250, 325, 215, 250, 310, 280, 240],
         },
     ];
 
