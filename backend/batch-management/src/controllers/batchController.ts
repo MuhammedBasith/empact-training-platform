@@ -43,7 +43,7 @@ export async function createBatch(request: Request, response: Response) {
                 try {
                     // Send request to the user-auth-microservice to get cognitoId by email
                     const responseFromAuthService = await axios.get(
-                        `http://localhost:3001/api/auth/getUserCognitoId/${email}`  // Assuming the endpoint for user-auth microservice
+                        `${process.env.AUTH_MS_URL}/api/auth/getUserCognitoId/${email}`  // Assuming the endpoint for user-auth microservice
                     );
   
                     if (responseFromAuthService.data && responseFromAuthService.data.cognitoId) {
@@ -193,7 +193,7 @@ export const getEmployeesForBatch = async (req: Request, res: Response): Promise
 
         // Step 3: Fetch employee details from the employee microservice
         const employeePromises = employeeIds.map((employeeId: string) =>
-            axios.get(`http://localhost:3006/api/v1/employee-management/${employeeId}`)
+            axios.get(`${process.env.EMPLOYEE_MS_URL}/api/v1/employee-management/${employeeId}`)
         );
 
         // Wait for all employee details to be fetched

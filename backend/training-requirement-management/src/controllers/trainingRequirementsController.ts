@@ -30,7 +30,7 @@ export async function createTrainingRequirement(
             
         };
         console.log(summaryData);
-        const responsedata = await axios.post('http://localhost:3004/api/v1/summaries/generate', summaryData);
+        const responsedata = await axios.post(`${process.env.AI_SUMMARY_MS_URL}/api/v1/summaries/generate`, summaryData);
         const data = responsedata.data.summary
 
         response.status(201).json({...summaryData, summary: data});
@@ -179,7 +179,7 @@ export const confirmRequirement = async (req: Request<{ requirementId: string },
           // Step 2: Fetch user names concurrently for each cognitoId
           const enrichedTrainingData = await Promise.all(trainingData.map(async item => {
               try {
-                  const userResponse = await axios.get(`http://localhost:3001/api/auth/${item._id}`);
+                  const userResponse = await axios.get(`${process.env.AUTH_MS_URL}/api/auth/${item._id}`);
                   const user = userResponse.data; // Assuming user has the name property
                   
                   return {
@@ -295,7 +295,7 @@ export async function getTrainingRequirementsByManager(
                         batchIds.map(async (batchId) => {
                             try {
                                 // Fetch batch details for each batchId
-                                const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/${batchId}`);
+                                const batchResponse = await axios.get(`${process.env.BATCH_MANAGEMENT_URL}/api/v1/batch-management/${batchId}`);
                                 
                                 const batchData = batchResponse.data;
 
@@ -303,7 +303,7 @@ export async function getTrainingRequirementsByManager(
                                 if (batchData) {
                                     // Fetch trainer details for the current batch's trainerId
                                     const batchTrainerResponse = await axios.get(
-                                        `http://localhost:3002/api/v1/trainer-management/trainers/getTrainerByCognitoId/${batchData.trainerId}`
+                                        `${process.env.TRAINER_MANAGEMENT_URL}/api/v1/trainer-management/trainers/getTrainerByCognitoId/${batchData.trainerId}`
                                     );
                                     batchData.trainerDetails = batchTrainerResponse.data;
                                 }
@@ -407,7 +407,7 @@ export const getTrainingDetailsByTrainer = async (
                         batchIds.map(async (batchId) => {
                             try {
                                 // Fetch batch details for each batchId
-                                const batchResponse = await axios.get(`http://localhost:3009/api/v1/batch-management/${batchId}`);
+                                const batchResponse = await axios.get(`${process.env.BATCH_MANAGEMENT_URL}/api/v1/batch-management/${batchId}`);
                                 const batchData = batchResponse.data;
                                 console.log("***", batchData);
                                 
@@ -416,7 +416,7 @@ export const getTrainingDetailsByTrainer = async (
                                 if (batchData && batchData.trainerId === cognitoId) {
                                     // Fetch trainer details for this batch
                                     const batchTrainerResponse = await axios.get(
-                                        `http://localhost:3002/api/v1/trainer-management/trainers/getTrainerByCognitoId/${batchData.trainerId}`
+                                        `${process.env.TRAINER_MANAGEMENT_URL}/api/v1/trainer-management/trainers/getTrainerByCognitoId/${batchData.trainerId}`
                                     );
                                     batchData.trainerDetails = batchTrainerResponse.data;
                                     return batchData;  // Return batch details only if the trainer matches

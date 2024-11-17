@@ -12,7 +12,7 @@ export const sendBaselineAssessments = async (
 
     try {
         // Fetch training details and associated employees from the training microservice
-        const trainingResponse = await axios.get(`http://localhost:3000/api/v1/training-requirement-management/${trainingId}`);
+        const trainingResponse = await axios.get(`${process.env.TRAINING_REQUIREMENTS_MICROSERVICE_URL}/api/v1/training-requirement-management/${trainingId}`);
         const training = trainingResponse.data;
 
         if (!training) {
@@ -21,10 +21,6 @@ export const sendBaselineAssessments = async (
 
         const employeeIds = training.employeeIds; // Assuming training includes an array of employee IDs
         const employees = employeeIds.data;
-
-         // Call the notification service using Axios
-         const response = await axios.post('http://localhost:8000/api/v1/notification-service/send-notification', {
-        });
     
        
         return res.status(200).json({ message: 'Baseline assessments sent successfully' });
