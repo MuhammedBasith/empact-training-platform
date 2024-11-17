@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "start": "ts-node --max-old-space-size=512 src/server.ts"
+    "start": "ts-node --max-old-space-size=512 src/server.ts",
     "build": "tsc"
   },
   "keywords": [],
