@@ -7,11 +7,10 @@ const EmployeeProgressOverview = () => {
   // select
   const [month, setMonth] = React.useState('1');
 
-  const handleChange = (event) => {
+  const handleChange = (event: any) => {
     setMonth(event.target.value);
   };
 
-  // Simple bar chart options
   const options = {
     chart: {
       type: 'bar',
@@ -27,10 +26,10 @@ const EmployeeProgressOverview = () => {
       },
     },
     dataLabels: {
-      enabled: false, // Disable data labels
+      enabled: false, 
     },
     legend: {
-      show: true, // Show legend
+      show: true,
     },
   };
 
@@ -38,15 +37,16 @@ const EmployeeProgressOverview = () => {
   const series = [
     {
       name: 'Learnings',
-      data: [500, 700, 600, 800], // Hardcoded earnings data
+      data: [500, 700, 600, 800],
     },
     {
       name: 'Expenses',
-      data: [400, 350, 450, 500], // Hardcoded expenses data
+      data: [400, 350, 450, 500],
     },
   ];
 
   return (
+    // @ts-ignore
     <DashboardCard
       title="Employee Progress Overview"
       action={
