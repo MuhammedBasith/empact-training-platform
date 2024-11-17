@@ -11,19 +11,22 @@ const AdminDashboard = Loadable(lazy(() => import('../components/Dashboard/Admin
 const ManagerDashboard = Loadable(lazy(() => import('../components/Dashboard/ManagerDashboard')));
 const TrainerDashboard = Loadable(lazy(() => import('../components/Dashboard/TrainerDashboard')));
 
-// Manager Details page
+// Components
 const ManagerDetailsPage = Loadable(lazy(() => import('../views/AdminView/dashboard/components/ManagerDetails')));
 const ManagersData = Loadable(lazy(() => import('../views/AdminView/dashboard/components/ManagersData')));
 const TrainersData = Loadable(lazy(() => import('../views/AdminView/dashboard/components/TrainersData')));
 const EmployeeDetails = Loadable(lazy(() => import('../views/AdminView/dashboard/components/EmployeeDetails')));
 const ProgressDetails = Loadable(lazy(() => import('../views/AdminView/dashboard/components/ProgressDetails')));
 const AddResultsPage = Loadable(lazy(() => import('../views/AdminView/dashboard/components/AddResultsPage')));
+
 const ManagerInsights = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/ManagerInsights')));
 const EmployeeDetailsForManagers = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/EmployeeDetailsForManagers')));
 const AddEmployees = Loadable(lazy(() => import('../views/ManagerView/dashboard/components/AddEmployees')));
+
 const TrainingDetails = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/TrainingDetails')));
 const TrainersEngagementData = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/TrainersEngagementData')));
 const EmployeeDetailsForTrainer = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/EmployeeDetails')));
+const ProgressDetailsForTrainer = Loadable(lazy(() => import('../views/TrainerView/dashboard/components/ProgressDetails')));
 
 
 
@@ -62,6 +65,7 @@ const DashboardRoutes = (role: string | undefined) => [
       { path: 'trainer/trainings', element: role === 'trainer' ? <TrainersEngagementData /> : <Navigate to="/404" /> },
       { path: 'trainer/trainings/:trainingId', element: role === 'trainer' ? <TrainingDetails /> : <Navigate to="/404" /> },
       { path: 'trainer/trainings/:trainingId/batch/:batchId', element: role === 'trainer' ? <EmployeeDetailsForTrainer /> : <Navigate to="/404" /> },
+      { path: 'trainer/trainings/:trainingId/batch/:batchId/progress/:cognitoId', element: role === 'trainer' ? <ProgressDetailsForTrainer /> : <Navigate to="/404" /> },
       
       
 

@@ -15,7 +15,7 @@ interface Employee {
 
 
 const EmployeeDetails = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]); // Typing employees as an array of Employee
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { trainingId, batchId } = useParams();
@@ -82,9 +82,9 @@ const EmployeeDetails = () => {
   }
 
   // Function to handle the "Show Progress" button click
-  const handleShowProgress = (cognitoId: string, empName: string) => {
+  const handleAddFeedback = (cognitoId: string, empName: string) => {
     localStorage.setItem("empName", empName)
-    navigate(`/dashboard/admin/managers/${trainingId}/${batchId}/progress/${cognitoId}`);
+    navigate(`/dashboard/trainer/trainings/${trainingId}/batch/${batchId}/progress/${cognitoId}`);
   };
 
   return (
@@ -119,9 +119,9 @@ const EmployeeDetails = () => {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleShowProgress(employee.cognitoId, employee.empName)}
+                    onClick={() => handleAddFeedback(employee.cognitoId, employee.empName)}
                   >
-                    Show Progress
+                    Add Feedback
                   </Button>
                 </TableCell>
               </TableRow>
