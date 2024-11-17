@@ -31,16 +31,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ message: 'An unexpected error occurred' });
 });
 
-// Start server and connect to the database
-const startServer = async () => {
-  try {
-    await connectToDatabase();
-    app.listen(port, () => {
-      console.log("Server is running on http://localhost:${port}");
-    });
-  } catch (error) {
-    console.error('Failed to start the server:', error);
-  }
-};
 
-startServer();
+connectToDatabase();
+
+app.listen(port, () => {
+  console.log("Server is running on http://localhost:${port}");
+});
