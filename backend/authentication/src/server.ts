@@ -3,7 +3,7 @@ import cors from 'cors';
 import { connectToDatabase } from '../../authentication/src/config/db.config';
 import authRoutes from './routes/auth.routes';
 import 'dotenv/config'
-
+import ngrok from '@ngrok/ngrok'
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -28,3 +28,6 @@ connectToDatabase();
 app.listen(port, () => {
   console.log("Server is running on http://localhost:${port}");
 });
+
+ngrok.connect({ addr: port, authtoken_from_env: true })
+	.then(listener => console.log(`Ingress established at: ${listener.url()}`));
