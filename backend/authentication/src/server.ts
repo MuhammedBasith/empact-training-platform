@@ -3,6 +3,7 @@ import cors from 'cors';
 import { connectToDatabase } from '../../authentication/src/config/db.config';
 import authRoutes from './routes/auth.routes';
 import 'dotenv/config'
+import mongoose from 'mongoose';
 
 
 const app = express();
@@ -23,7 +24,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 
-connectToDatabase();
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 app.listen(port, () => {
   console.log("Server is running on http://localhost:${port}");
