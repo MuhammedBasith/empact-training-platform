@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.682.0",
+    "@netlify/functions": "^2.8.2",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
@@ -27,6 +28,7 @@
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.0",
     "morgan": "^1.10.0",
+    "serverless-http": "^3.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
     "uuid": "^11.0.2"

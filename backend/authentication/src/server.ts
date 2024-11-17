@@ -4,8 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { connectToDatabase } from '../../authentication/src/config/db.config';
 import authRoutes from './routes/auth.routes';
-import 'dotenv/config'
-
+import 'dotenv/config';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -31,16 +30,16 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ message: 'An unexpected error occurred' });
 });
 
-// Start server and connect to the database
-const startServer = async () => {
-  try {
-    await connectToDatabase();
-    app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
-    });
-  } catch (error) {
-    console.error('Failed to start the server:', error);
-  }
-};
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 
-startServer();
+  // Connect to the database after the server has started
+  connectToDatabase()
+    .then(() => {
+      console.log('Database connected successfully!');
+    })
+    .catch((error) => {
+      console.error('Failed to connect to the database:', error);
+    });
+});
