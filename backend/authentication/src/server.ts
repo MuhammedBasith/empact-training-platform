@@ -9,7 +9,7 @@ const port = process.env.PORT || 3001;
 
 app.use(cors()); // Enable CORS
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }))
 
 // Routes
 app.use('/api/auth', authRoutes);
