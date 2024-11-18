@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node dummy-server.ts",
+    "build": "tsc",
+    "start:prod": "node dist/dummy-server.js"
   },
   "author": "Basith",
   "license": "ISC",
