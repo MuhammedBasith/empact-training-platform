@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES6",                          // Compile to ES6-compatible JavaScript
+    "module": "CommonJS",                     // Use CommonJS for module resolution
+    "strict": true,                           // Enable all strict type-checking options
+    "esModuleInterop": true,                  // Handle CommonJS/ES module interop
+    "skipLibCheck": true,                     // Skip checking type declaration files
+    "outDir": "./dist"                        // Output compiled files to the 'dist' folder
+  },
+  "include": ["**/*.ts"],                     // Include all .ts files in the project
+  "exclude": ["node_modules"]                 // Exclude dependencies
+}
