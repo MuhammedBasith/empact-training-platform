@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Proxy setup
-const target = 'http://15.206.171.183:3001'; // Target EC2 endpoint
+const target = 'http://13.234.34.162:3001'; // Target EC2 endpoint
 const proxy = httpProxy.createProxyServer({ target });
 
 // Route to forward requests
